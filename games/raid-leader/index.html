@@ -2079,7 +2079,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1819";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1822";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -8972,6 +8972,74 @@ var SFX = (function () {
   };
 })();
 
+// 背景音乐:只放团长自己丢在本机 bgm/ 文件夹里的文件(仓库和打包版里都没有音乐)。
+// 文件名约定见 bgm/说明.txt:hub / dungeon / boss / raid / raidboss / win / lose,后面可以跟数字放多首轮换(hub.mp3、hub2.mp3……)。
+// 怎么找文件:开发时的本地服务器(python3 -m http.server)会列出 bgm/ 目录,读一次目录就知道有哪些,不用挨个去试(试不到的会在控制台刷 404)。
+// 打包版(window.RAID_BUILD)和读不到目录时:整个功能静默,什么都不请求。参数在 feel.js 的 FEEL.bgm。
+var BGM = (function () {
+  const C = () => (window.FEEL && FEEL.bgm) || { fade: 1.2, vol: 0.5, duck: 0.25, fallback: {} };
+  const EXT = /\.(mp3|ogg|m4a|wav)$/i, SCENES = ['hub', 'dungeon', 'boss', 'raid', 'raidboss', 'win', 'lose'];
+  let lib = null, on = true, vol = C().vol, want = null, curScene = null, cur = null, idx = {}, waiting = false, fadeT = 0, stinger = null;
+  try { const p = JSON.parse(localStorage.getItem('raidleader_pref') || '{}'); if (p.music != null) on = !!p.music; if (p.musicVol != null) vol = +p.musicVol; } catch (e) { /* 忽略 */ }
+  function scan() { // 读一次 bgm/ 目录
+    if (lib || window.RAID_BUILD || location.protocol === 'file:' || !window.fetch) { if (!lib) lib = {}; return Promise.resolve(lib); }
+    lib = {};
+    return fetch('bgm/', { cache: 'no-store' }).then(r => (r.ok ? r.text() : '')).then(html => {
+      const names = (html.match(/href="([^"]+)"/g) || []).map(h => decodeURIComponent(h.slice(6, -1)).split('/').pop()).filter(n => EXT.test(n));
+      names.sort((a, b) => a.localeCompare(b, 'en', { numeric: true }));
+      names.forEach(n => { const m = n.match(/^([a-z]+?)(\d*)\./i), k = m && m[1].toLowerCase(); if (k && SCENES.indexOf(k) >= 0) (lib[k] = lib[k] || []).push('bgm/' + encodeURIComponent(n)); });
+      return lib;
+    }).catch(() => lib);
+  }
+  const listOf = s => { let k = s, n = 0; while (k && !(lib && lib[k] && lib[k].length) && n++ < 4) k = (C().fallback || {})[k]; return lib && lib[k] ? lib[k] : null; };
+  const target = () => (on ? vol : 0);
+  function fadeTo(a, v, sec, done) { // 用定时器淡入淡出(页面在后台也走)
+    const from = a.volume, steps = Math.max(1, Math.round((sec || 0.01) * 20)); let i = 0;
+    const t = setInterval(() => { i++; try { a.volume = Math.max(0, Math.min(1, from + (v - from) * i / steps)); } catch (e) { /* 有的浏览器不让改音量 */ } if (i >= steps) { clearInterval(t); if (done) done(); } }, 50);
+    return t;
+  }
+  function start(scene) {
+    const L = listOf(scene);
+    if (!L) { stopCur(); return; } // 这个场景没有曲子:安静
+    const i = (idx[scene] = ((idx[scene] == null ? -1 : idx[scene]) + 1) % L.length), a = new Audio(L[i]);
+    a.loop = L.length === 1; a.volume = 0; a.preload = 'auto';
+    a.onended = () => { if (cur === a && curScene === scene) { cur = null; start(scene); } }; // 多首就轮着放
+    a.onerror = () => { if (cur === a) cur = null; };
+    stopCur(); cur = a; a._scene = scene;
+    const p = a.play();
+    const go = () => fadeTo(a, target() * (stinger ? C().duck : 1), C().fade);
+    if (p && p.then) p.then(go).catch(() => { waiting = true; }); else go(); // 还没点过页面:等第一下点击
+  }
+  function stopCur() { const a = cur; cur = null; if (a) fadeTo(a, 0, C().fade, () => { try { a.pause(); a.src = ''; } catch (e) { /* 忽略 */ } }); }
+  ['pointerdown', 'keydown'].forEach(ev => addEventListener(ev, () => { if (waiting && cur) { waiting = false; cur.play().then(() => fadeTo(cur, target(), C().fade)).catch(() => { waiting = true; }); } }, { passive: true }));
+  return {
+    // 换场景:同一个场景重复叫不重放(在副本里一关接一关,曲子不断)
+    scene(s) {
+      want = s;
+      scan().then(() => { if (want !== s) return; if (curScene === s && cur) return; curScene = s; start(s); });
+    },
+    // 胜利 / 失败的短曲:有就放一遍,放的时候主曲压低
+    sting(s) {
+      scan().then(() => {
+        const L = lib && lib[s]; if (!L || !on) return;
+        if (stinger) { try { stinger.pause(); } catch (e) { /* 忽略 */ } }
+        const a = stinger = new Audio(L[Math.floor(Math.random() * L.length)]); a.volume = target();
+        if (cur) fadeTo(cur, target() * C().duck, 0.3);
+        const back = () => { if (stinger === a) { stinger = null; if (cur) fadeTo(cur, target(), C().fade); } };
+        a.onended = back; a.onerror = back;
+        const p = a.play(); if (p && p.catch) p.catch(back);
+      });
+    },
+    set(o) { // { on, vol }:设置里改了
+      if (o.on != null) on = !!o.on; if (o.vol != null) vol = +o.vol;
+      if (cur) { if (on && cur.paused) cur.play().catch(() => { waiting = true; }); fadeTo(cur, target() * (stinger ? C().duck : 1), 0.4); }
+      if (stinger) stinger.volume = target();
+    },
+    get on() { return on; }, get vol() { return vol; },
+    get state() { return { scene: curScene, src: cur ? cur.src : null, paused: cur ? cur.paused : null, volume: cur ? cur.volume : null, waiting, lib }; } // 调试用
+  };
+})();
+
 </script>
 <script>
 // 首领房间的布景(画面层,挂在 ART 上;要排在 art.js 后面加载)。
@@ -9212,6 +9280,14 @@ var FEEL = {
     swipe: 'rgba(0, 0, 0, .62)', // 暗扇形的颜色和浓度:调大透明度 = 转圈更显眼,但图标上的字更难看清
     warn: 3,          // 剩不到这么多秒时图标开始闪,提醒快掉了;0 = 不闪
     blink: 0.5        // 快到期时闪一下用多久(秒,越小闪得越急)
+  },
+
+  // —— 背景音乐(js/audio.js 的 BGM):只放本机 bgm/ 里的文件,文件名约定见 bgm/说明.txt ——
+  bgm: {
+    fade: 1.2,        // 换场景时旧曲淡出、新曲淡入各用几秒(真实秒,不跟战斗倍速走)
+    vol: 0.5,         // 默认音量(设置里能改,0~1)
+    duck: 0.25,       // 放胜利 / 失败短曲时,主曲压到原来的几成
+    fallback: { raidboss: 'boss', raid: 'dungeon', boss: 'dungeon' } // 某个场景没有曲子时借谁的:团本首领 → 首领 → 小怪;团本小怪 → 五人本小怪
   },
 
   // —— 人多不糊:按同屏人数分三档(5 人 / 10 人 / 25 人),下面凡是写成 [a, b, c] 三个数的都按这个顺序取 ——
@@ -10828,7 +10904,7 @@ var SCN = (function () {
   // ================= 公会界面 =================
   function applyVer() { let v = 70; try { v = +localStorage.getItem('raidleader_version') || 70; } catch (e) { /* 读不了就算了 */ } g.setVersion(v); return D.versions[v] ? v : 70; }
   function showHub(t) {
-    applyVer();
+    applyVer(); BGM.scene('hub'); // 背景音乐:公会
     if (t) tab = t;
     if (tab !== 'bank' && bankViewed) { g.bankNew = []; bankViewed = false; } // 「新」的标记:看过仓库再离开就清掉
     phase = 'hub'; running = false; clearTimers(); tipByAttr = false; tip('');
@@ -11540,6 +11616,8 @@ var SCN = (function () {
     ov2.className = 'show';
     ov2.innerHTML = `<div class="card mcard"><h2 style="color:#ffd98a;font-size:36px">设置</h2><div class="mgrid">
       <div class="mrow"><span>音效</span><span class="sw${!SFX.muted ? ' on' : ''}" id="mSnd"><i></i></span></div>
+      <div class="mrow"><span data-tip="只放你自己放在本机 bgm 文件夹里的曲子(文件名怎么起见 bgm/说明.txt)。没有文件就没有音乐">音乐</span><span class="sw${PREF.music ? ' on' : ''}" data-pref="music" data-v="${PREF.music ? 0 : 1}"><i></i></span></div>
+      <div class="mrow"><span>音乐音量</span><div class="vseg">${[[0.8, '大'], [0.5, '中'], [0.25, '小']].map(x => `<span class="hbtn mini${PREF.musicVol === x[0] ? '' : ' sec'}" data-pref="musicVol" data-v="${x[0]}">${x[1]}</span>`).join('')}</div></div>
       <div class="mrow"><span>全屏</span><span class="sw${isFS() ? ' on' : ''}" id="mFs"><i></i></span></div>
       <div class="mrow"><span>分配方式</span><div id="mSeg">${segHTML()}</div></div>
       <div class="mrow"><span>拖整队时带上坦克</span><span class="sw${!grpNoTank ? ' on' : ''}" id="mGrp"><i></i></span></div>
@@ -11961,9 +12039,9 @@ var SCN = (function () {
     paintSpeed();
   }
   // 本机偏好:伤害数字、队员闲话多少、拖小队要按多久
-  const PREF = { dmgNum: 1, chat: 2, hold: 450, dbm: 1, meter: 1, feel: FEEL.intensity.def, swap: 0 };
+  const PREF = { dmgNum: 1, chat: 2, hold: 450, dbm: 1, meter: 1, feel: FEEL.intensity.def, swap: 0, music: 1, musicVol: FEEL.bgm.vol };
   try { Object.assign(PREF, JSON.parse(localStorage.getItem('raidleader_pref') || '{}')); } catch (e) { /* 读不了就算了 */ }
-  const applyPref = () => { stage.classList.toggle('nometer', !PREF.meter); stage.classList.toggle('swaplr', !!PREF.swap); if (g && g.dungeon && btn.loot) refreshMeta(); }; // swap:战斗界面左右两栏对调 // 关掉统计窗口时,团队频道拉长占满右边
+  const applyPref = () => { stage.classList.toggle('nometer', !PREF.meter); stage.classList.toggle('swaplr', !!PREF.swap); if (g && g.dungeon && btn.loot) refreshMeta();  BGM.set({ on: PREF.music, vol: PREF.musicVol });}; // swap:战斗界面左右两栏对调 // 关掉统计窗口时,团队频道拉长占满右边
   applyPref();
   Feel.init({ stage, tok, uf, btn, sim: () => sim, level: () => PREF.feel, snd: (n, o) => SFX.play(n, o) }); // 战斗手感(js/feel.js):参数表和演出都在那边
   const savePref = () => { try { localStorage.setItem('raidleader_pref', JSON.stringify(PREF)); } catch (e) { /* 存不了就算了 */ } };
@@ -12145,6 +12223,7 @@ var SCN = (function () {
     const banter = pre || g.startRoom();
     sim = g.sim; deathPos = []; autoBusy = false; acc = 0; paused = false; stage.classList.remove('paused'); TUT.on('room');
     const room = g.roomDef();
+    BGM.scene(g.inRaid() ? (room.boss ? 'raidboss' : 'raid') : room.boss ? 'boss' : 'dungeon'); // 背景音乐:小怪 / 首领 / 团本(同一种连着放不重来)
     stage.classList.toggle('bossroom', !!room.boss);
     stage.classList.toggle('road', !room.boss); stage.dataset.pal = g.dungeonDef().pal;
     if (!room.boss && room.enemies.length > 1 && runStat && !runStat.ccTold && g.partyHeroes().some(h => cdef(h).cc)) { runStat.ccTold = true; setTimeout(() => log('<span style="color:#9ad0ff">右键点一只小怪(或按住 Shift 点;触屏是按住不放),可以下令把它控住</span>', 'info'), 600); }
@@ -12716,7 +12795,7 @@ var SCN = (function () {
   function onWin() {
     running = false; phase = 'won';
     const room = g.roomDef();
-    snd(room.boss ? 'fanfare' : 'win');
+    snd(room.boss ? 'fanfare' : 'win'); if (room.boss) BGM.sting('win'); // 打倒首领:有胜利短曲就放一遍
     if (room.boss) { warn('首领击杀!'); log(`${sim.enemies[0].def.name}倒下了!`, 'good'); }
     const alive = sim.heroes.filter(h => h.alive);
     if (alive.length && (room.boss || Math.random() < 0.4)) later(() => speak(pick(alive).id, 'win'), 500);
@@ -12747,7 +12826,7 @@ var SCN = (function () {
   function onWipe() {
     running = false; phase = 'wiped'; if (runStat) runStat.wipes++;
     tk('room_end', roomStat('wipe', null));
-    g.fightEnd('wipe').revealed.forEach(x => announce(x.uid, x.trait)); flushNews(); refreshMeta(); save(); snd('wipe');
+    g.fightEnd('wipe').revealed.forEach(x => announce(x.uid, x.trait)); flushNews(); refreshMeta(); save(); snd('wipe'); BGM.sting('lose');
     log(`灭团了。全员装备耐久额外 -${E.deathWear}%。`, 'bad');
     g.partyHeroes().slice().sort(() => Math.random() - .5).slice(0, 2).forEach((h, i) => later(() => speak(h.uid, 'wipe'), 500 + i * 900));
     if (g.auto) {

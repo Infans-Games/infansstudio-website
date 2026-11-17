@@ -1783,7 +1783,7 @@ kbd { display: inline-block; min-width: 22px; padding: 0 6px; text-align: center
 .partyBox .ph { justify-content: flex-start; align-items: center; gap: 12px; padding-top: 6px; padding-bottom: 5px; }
 .partyBox .ph .wn { color: #ff9a7a; cursor: help; letter-spacing: 0; }
 .phr { margin-left: auto; display: flex; align-items: center; gap: 12px; }
-.tswitch { display: flex; gap: 4px; } .tswitch i { font: 700 12px/20px var(--ui); font-style: normal; width: 22px; text-align: center; letter-spacing: 0; border-radius: 4px; border: 1px solid #5d4320; color: var(--muted); cursor: pointer; }
+.tswitch { display: flex; gap: 3px; } .tswitch i { font: 700 12px/20px var(--ui); font-style: normal; width: 20px; text-align: center; letter-spacing: 0; border-radius: 4px; border: 1px solid #5d4320; color: var(--muted); cursor: pointer; }
 .tswitch i.on { color: #1c110a; background: linear-gradient(#ffe9b0, #d8a94a); border-color: #ffe6a8; }
 .pslot.empty { font-size: 26px; cursor: pointer; } .pslot.empty:hover { border-color: var(--gold); color: var(--gold); }
 .rolec { display: inline-flex; gap: 5px; letter-spacing: 0; } .rolec i { font: 700 12px/20px var(--ui); font-style: normal; padding: 0 7px; border-radius: 10px; background: rgba(0, 0, 0, .4); border: 1px solid; white-space: nowrap; cursor: help; }
@@ -1986,6 +1986,29 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .tsh:hover { opacity: 1; border-color: #c9a25a; }
 .tsh.on { opacity: 1; border-color: #ffe14d; box-shadow: 0 0 8px #ffb347; }
 .tsh i { position: absolute; right: -4px; top: -4px; min-width: 14px; height: 14px; padding: 0 3px; border-radius: 7px; background: #ffd45a; color: #2a1206; font: 700 10px/14px var(--ui); font-style: normal; text-align: center; border: 1px solid #000; }
+/* ===== 公会天赋页(图标格,一页放完)、拾取门槛、10 个编队位 ===== */
+.gtsum { margin-left: 18px; font: 700 13px var(--ui); color: var(--muted); letter-spacing: 0; text-shadow: none; }
+.gtcol { top: 46px; width: 240px; }
+.gtgrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 8px; }
+.gtile { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 2px 5px; border: 2px solid #5d4320; border-radius: 8px; background: rgba(0, 0, 0, .32); cursor: pointer; user-select: none; }
+.gtile .gtic { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 8px; border: 2px solid #8a6a3a; background: radial-gradient(circle at 35% 30%, #6a4a26, #2a1a0c); font: 700 21px var(--disp); color: #ffd98a; text-shadow: 0 2px 0 #000; }
+.gtile .gtnm { font: 700 11.5px var(--ui); color: #e8cf9a; white-space: nowrap; letter-spacing: 0; }
+.gtile .gtrk { font: 700 11px var(--ui); color: #ffd45a; font-variant-numeric: tabular-nums; }
+.gtile.can { border-color: #c99a3a; box-shadow: 0 0 8px rgba(255, 212, 90, .35); }
+.gtile.can:hover { background: rgba(90, 64, 24, .45); }
+.gtile.can .gtic { border-color: #ffd45a; }
+.gtile.max { border-color: #ffe14d; } .gtile.max .gtic { border-color: #ffe14d; background: radial-gradient(circle at 35% 30%, #8a6a26, #3a280c); }
+.gtile.lock { opacity: .45; } .gtile.lock .gtic { filter: grayscale(1); } .gtile.lock .gtrk { color: #b89f78; }
+.lqrow { display: flex; align-items: center; gap: 4px; }
+.lqrow small { font: 700 11px var(--ui); color: var(--muted); margin-right: 2px; }
+.lqrow .lqc { font: 700 12px/18px var(--ui); font-style: normal; width: 26px; text-align: center; border-radius: 9px; border: 1px solid #5d4320; background: #120a06; color: var(--qc); cursor: pointer; opacity: .6; }
+.lqrow .lqc.on { opacity: 1; border-color: var(--qc); box-shadow: 0 0 6px var(--qc); background: #2a1a0c; }
+#mSeg { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+#hudLoot .lqrow small { display: inline; }
+.tswitch i.tlk { opacity: .35; cursor: default; background: repeating-linear-gradient(135deg, transparent 0 3px, rgba(255, 255, 255, .06) 3px 6px); }
+.fmBoxes.nT { width: 940px; grid-template-columns: 1fr 1fr; gap: 5px; }
+.nT .fmBox { display: flex; align-items: center; gap: 6px; padding: 3px 6px; cursor: pointer; } .nT .fmHead { flex-direction: column; width: 124px; height: auto; gap: 2px; flex: none; } .nT .fmHead .rolec { gap: 2px; } .nT .fmHead .rolec i { padding: 0 3px; font-size: 10.5px; } .nT .fmSlots { flex: 1; }
+.nT .fmSlots { grid-template-columns: repeat(5, 1fr); } .nT .fmSlot { height: 40px; flex-direction: row; justify-content: flex-start; gap: 4px; padding: 0 3px; } .nT .fmSlot .mh { width: 28px; height: 28px; border-radius: 4px; } .nT .fmSlot b { font-size: 11px; }
 
 </style>
 </head>
@@ -2053,7 +2076,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1806";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1818";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -2061,7 +2084,10 @@ var GAME_DATA = {
   guildName: '灰烬之手',
   // 公会图章:建会时挑一个(图形在画面层,ART.glyph)
   crests: ['dmg', 'shield', 'skull', 'fire', 'crit', 'party', 'strike', 'hp', 'drums', 'cc', 'bomb', 'rez'],
-  guildNames: ['灰烬之手', '铁砧兄弟会', '月下酒馆', '第七军团', '午夜面包房', '咸鱼突刺', '星辰与深渊', '老年活动中心', '开荒不吃药', '橙装与远方', '一波流', '风暴之眼', '摸鱼同好会', '荣耀王座'],
+  guildNames: ['灰烬之手', '铁砧兄弟会', '月下酒馆', '第七军团', '午夜面包房', '咸鱼突刺', '星辰与深渊', '老年活动中心', '开荒不吃药', '橙装与远方', '一波流', '风暴之眼', '摸鱼同好会', '荣耀王座',
+    '今晚不灭团', '再来一把', '仇恨稳如狗', '奶妈别走', '坦克去哪了', '饭后开荒', '周三下班团', '退休老兵', '萌新友好', '不养闲人', '佛系打本',
+    '分装备靠吼', '团长说得对', '一灭就散', '下个首领再说', '金币永远不够', '修理费真贵', '老板请吃饭', '摸金校尉', '深夜食堂',
+    '银月骑士团', '黑石要塞', '北风守望', '烈焰誓约', '霜狼之牙', '黎明哨兵', '暮色议会', '翡翠之心', '铁拳兄弟', '狮心远征军', '血色黄昏', '永夜卫队', '雷霆之怒', '苍穹之上'],
   // 场地是一个椭圆;start 是五个开场站位(0 坦克位,1 近战位,2/3 远程位,4 治疗位)
   arena: { cx: 640, cy: 392, rx: 362, ry: 196, start: [[640, 470], [560, 492], [470, 506], [810, 506], [640, 566]] },
   // 小怪关是一条从左往右的路(又长又窄);首领关才是上面的圆形场地
@@ -2166,10 +2192,22 @@ var GAME_DATA = {
   slotGlyph: { weapon: '武', offhand: '副', shoulder: '肩', head: '头', armor: '甲', legs: '腿', ring: '戒', trinket: '饰' },
   lootBonus: 0.5, // 装备栏多了,每波怪额外有这么大机会多掉一件
   // ---------- 公会等级与公会天赋 ----------
-  // 公会经验:打怪、做任务、完成副本委托都给。升一级要 等级 × guildLevelNeed 点经验,每升一级得 1 点公会天赋。
-  guildXp: { room: 4, boss: 30, quest: 8, dquest: 40 }, guildLevelBase: 20, guildLevelStep: 20, guildLevelCap: 50, guildPointsPerLevel: 2,
-  // 花名册:开局 rosterBase 人,公会每升一级多 1 个位置,最多 rosterMax 人(不再靠公会天赋「扩编」)
-  rosterBase: 3, rosterMax: 50,
+  // 公会声望:打怪、做任务、完成副本委托都给。公会等级和角色等级一个刻度:上限 = 当前版本开放的角色等级上限(45 / 60 / 70,g.cap())。
+  // 升一级要 guildLevelBase + guildLevelStep × 当前等级 点声望(四舍五入;1→2 级 22 点,44→45 级 86 点),每升一级得 guildPointsPerLevel 点公会天赋。
+  // 量级:一趟五人本给 66–98 点声望(约是角色经验的三分之一)。到 45 / 60 / 70 级累计要约 2370 / 3840 / 5000 点:主力练到版本满级时公会差不多到顶,
+  // 最后几级靠满级后刷团本(一趟 136–204 点)补上。教学本打通一次公会到 3 级。
+  // 到了版本上限声望照样攒着,版本上限提高时一口气补升。
+  // guildOld:2026-11-17 以前的老刻度(升一级要 20 + 20 × 等级,上限 50),只用来给旧存档换算:按攒过的声望总数重新算等级,只升不降。
+  guildXp: { room: 4, boss: 30, quest: 8, dquest: 40 }, guildLevelBase: 20, guildLevelStep: 1.5, guildPointsPerLevel: 2, guildOld: { base: 20, step: 20 },
+  // 花名册:开局 rosterBase 人,公会每升一级多 rosterPerLevel 个位置(向下取整),最多 rosterMax 人(不再靠公会天赋「扩编」)
+  // 量级:公会 3 级 4 人、5 级 5 人、15 级 11 人、45 级 29 人(够二十五人团带替补)、60 级 38 人、70 级 44 人
+  rosterBase: 3, rosterPerLevel: 0.6, rosterMax: 50,
+  // 拾取品质门槛(照魔兽):低于门槛的装备不用团长操心,大家自动按需求 / 贪婪 Roll(照样分护甲梯队);门槛及以上的才按玩家选的分配方式(团长分配 / Roll / DKP)。
+  // quals:能选的门槛;def:新公会和旧存档的默认值(用户 2026-11-17 定:蓝 = 绿装自动 Roll,蓝装及以上按选的方式)
+  // 教学本还没打通过时门槛不生效(所有装备都走选的方式),好让新手引导教"把装备拖给人"
+  lootRule: { quals: ['green', 'rare', 'epic'], def: 'rare' },
+  // 出战队伍的编队位:最多 teamSlots 个;一开始开几个、每级多几个看公会天赋「战术板」(squads)
+  teamSlots: 10,
   // 挂机时有人装备耐久低于 autoRepairAt 就自动修一次(钱够的话)
   autoRepairAt: 25,
   // 装备耐久掉到零(身上有装备的人):造成的伤害、减伤(护甲 / 防御 / 职业自带的)、治疗量都只剩这么多。能用,但很弱。耐久没到零之前不受影响
@@ -3200,43 +3238,55 @@ var GAME_DATA = {
   // 有 base 的是"数量"型(当前值 = base + per × 级数),没有 base 的是百分比加成。
   // 每点一级除了 1 点天赋点,还要花一点金币:base + perReq × 解锁等级 + perRank × 已点级数
   gtCost: { base: 0, perReq: 0, perRank: 0 }, // 用户定的:公会天赋只花天赋点,不花金币(表留着,以后想收钱改这里)
+  // ic:天赋页上图标里的那个字。req 按新的公会等级刻度(和角色等级一样到 45 / 60 / 70):老天赋的 req 是按"攒到同样多声望"从老刻度换过来的(老 1/2/3/4/5/6/7/8 级 → 新 1/2/5/8/11/15/19/23 级)
   gbranches: { guild: '公会大厅', tavern: '酒馆', quest: '任务看板', ah: '拍卖行与仓库', dungeon: '副本后勤' },
   gtree: {
-    thrift: { b: 'guild', name: '精打细算', desc: '修理费用', per: -8, unit: '%', max: 3, req: 1 },
-    unity: { b: 'guild', name: '同舟共济', desc: '分装备、眼红造成的士气损失', per: -10, unit: '%', max: 3, req: 2 },
-    income: { b: 'guild', name: '生财有道', desc: '副本和任务得到的金币', per: 8, unit: '%', max: 4, req: 3 },
-    mentor: { b: 'guild', name: '言传身教', desc: '队员得到的经验', per: 8, unit: '%', max: 4, req: 4 },
-    cellar: { b: 'guild', name: '公会酒窖', desc: '请全团喝酒时多加的士气', base: 0, per: 4, unit: ' 点', sign: '+', max: 3, req: 6 },
-    understudy: { b: 'guild', name: '老带新', desc: '没上场的人也能分到的副本经验', base: 0, per: 10, unit: '%', sign: '+', max: 3, req: 5 },
-    morale: { b: 'dungeon', name: '百折不挠', desc: '灭团造成的士气损失', per: -20, unit: '%', max: 2, req: 8 },
+    thrift: { b: 'guild', ic: '省', name: '精打细算', desc: '修理费用', per: -8, unit: '%', max: 3, req: 1 },
+    unity: { b: 'guild', ic: '和', name: '同舟共济', desc: '分装备、眼红造成的士气损失', per: -10, unit: '%', max: 3, req: 2 },
+    income: { b: 'guild', ic: '财', name: '生财有道', desc: '副本和任务得到的金币', per: 8, unit: '%', max: 6, req: 5 },
+    mentor: { b: 'guild', ic: '教', name: '言传身教', desc: '队员得到的经验', per: 8, unit: '%', max: 4, req: 8 },
+    understudy: { b: 'guild', ic: '带', name: '老带新', desc: '没上场的人也能分到的副本经验', base: 0, per: 10, unit: '%', sign: '+', max: 3, req: 11 },
+    squads: { b: 'guild', ic: '阵', name: '战术板', desc: '出战队伍的编队位(公会大厅「出战队伍」右上的 1 2 3…)', base: 3, per: 1, unit: ' 个', max: 7, req: 12 },
+    cellar: { b: 'guild', ic: '酒', name: '公会酒窖', desc: '请全团喝酒时多加的士气', base: 0, per: 4, unit: ' 点', sign: '+', max: 3, req: 15 },
+    catchup: { b: 'guild', ic: '追', name: '后来居上', desc: '比公会里等级最高的人低 10 级以上的队员,副本经验', per: 15, unit: '%', max: 4, req: 20 },
+    hearth: { b: 'guild', ic: '家', name: '归属感', desc: '士气平时慢慢回到的数值', base: 0, per: 4, unit: ' 点', sign: '+', max: 3, req: 30 },
 
-    recruit: { b: 'tavern', name: '招贤纳士', desc: '招募新人的费用', per: -10, unit: '%', max: 3, req: 1 },
-    seats: { b: 'tavern', name: '酒馆席位', desc: '多包几张桌子,每次来应聘的人数', base: 3, per: 1, unit: ' 位', max: 2, req: 2 },
-    scout: { b: 'tavern', name: '伯乐', desc: '来应聘的人等级更高', base: 0, per: 2, unit: ' 级', sign: '+', max: 3, req: 3 },
-    regular: { b: 'tavern', name: '熟客', desc: '换一批应聘者的费用', per: -25, unit: '%', max: 2, req: 4 },
-    reunion: { b: 'tavern', name: '破镜重圆', desc: '离开公会的人有机会回酒馆应聘', base: 0, per: 12, unit: '%', sign: '+', max: 3, req: 4 },
-    fame: { b: 'tavern', name: '名声在外', desc: '新人入会时的士气', base: 0, per: 8, unit: ' 点', sign: '+', max: 3, req: 5 },
-    insight: { b: 'tavern', name: '识人', desc: '初次见面多看出应聘者的一个性格(本来只看得出两个)', base: 0, per: 1, unit: '', flag: true, max: 1, req: 7 },
+    recruit: { b: 'tavern', ic: '募', name: '招贤纳士', desc: '招募新人的费用', per: -10, unit: '%', max: 4, req: 1 },
+    seats: { b: 'tavern', ic: '席', name: '酒馆席位', desc: '多包几张桌子,每次来应聘的人数', base: 3, per: 1, unit: ' 位', max: 2, req: 2 },
+    scout: { b: 'tavern', ic: '伯', name: '伯乐', desc: '来应聘的人等级更高', base: 0, per: 2, unit: ' 级', sign: '+', max: 5, req: 5 },
+    regular: { b: 'tavern', ic: '熟', name: '熟客', desc: '换一批应聘者的费用', per: -25, unit: '%', max: 2, req: 8 },
+    reunion: { b: 'tavern', ic: '归', name: '破镜重圆', desc: '离开公会的人有机会回酒馆应聘', base: 0, per: 12, unit: '%', sign: '+', max: 3, req: 8 },
+    fame: { b: 'tavern', ic: '名', name: '名声在外', desc: '新人入会时的士气', base: 0, per: 8, unit: ' 点', sign: '+', max: 4, req: 11 },
+    insight: { b: 'tavern', ic: '识', name: '识人', desc: '初次见面多看出应聘者的一个性格(本来只看得出两个)', base: 0, per: 1, unit: '', flag: true, max: 1, req: 19 },
 
-    teams: { b: 'quest', name: '任务小队', desc: '可以同时派出的任务队伍数', base: 1, per: 1, unit: ' 支', max: 3, req: 2 },
-    board: { b: 'quest', name: '看板位置', desc: '看板上同时挂出的任务数', base: 3, per: 1, unit: ' 个', max: 3, req: 2 },
-    reward: { b: 'quest', name: '赏金谈判', desc: '任务的金币和经验', base: 0, per: 15, unit: '%', sign: '+', max: 4, req: 3 },
-    speed: { b: 'quest', name: '轻装行军', desc: '任务花的时间', base: 0, per: 12, unit: '%', sign: '-', max: 3, req: 4 },
-    luck: { b: 'quest', name: '顺手牵羊', desc: '任务带回装备的机会', base: 0, per: 8, unit: '%', sign: '+', max: 3, req: 5 },
-    dqmax: { b: 'quest', name: '委托人脉', desc: '同时挂出的副本委托数', base: 2, per: 1, unit: ' 条', max: 2, req: 6 },
+    teams: { b: 'quest', ic: '队', name: '任务小队', desc: '可以同时派出的任务队伍数', base: 1, per: 1, unit: ' 支', max: 3, req: 2 },
+    board: { b: 'quest', ic: '榜', name: '看板位置', desc: '看板上同时挂出的任务数', base: 3, per: 1, unit: ' 个', max: 3, req: 2 },
+    reward: { b: 'quest', ic: '赏', name: '赏金谈判', desc: '任务的金币和经验', base: 0, per: 15, unit: '%', sign: '+', max: 4, req: 5 },
+    speed: { b: 'quest', ic: '速', name: '轻装行军', desc: '任务花的时间', base: 0, per: 12, unit: '%', sign: '-', max: 3, req: 8 },
+    luck: { b: 'quest', ic: '捡', name: '顺手牵羊', desc: '任务带回装备的机会', base: 0, per: 8, unit: '%', sign: '+', max: 3, req: 11 },
+    dqmax: { b: 'quest', ic: '托', name: '委托人脉', desc: '同时挂出的副本委托数', base: 2, per: 1, unit: ' 条', max: 2, req: 15 },
+    qxp: { b: 'quest', ic: '历', name: '历练', desc: '外派任务给的经验', per: 20, unit: '%', max: 3, req: 24 },
+    dqgold: { b: 'quest', ic: '酬', name: '委托酬金', desc: '完成副本委托得到的金币', per: 20, unit: '%', max: 3, req: 32 },
 
-    bank: { b: 'ah', name: '扩建仓库', desc: '公会仓库的格子数', base: 12, per: 6, unit: ' 格', max: 4, req: 1 },
-    stalls: { b: 'ah', name: '货架', desc: '拍卖行每批上架的装备数', base: 5, per: 1, unit: ' 件', max: 3, req: 2 },
-    supply: { b: 'ah', name: '后勤有方', desc: '合剂和药水的价格', per: -12, unit: '%', max: 3, req: 3 },
-    haggle: { b: 'ah', name: '讨价还价', desc: '在拍卖行买装备的价格', per: -8, unit: '%', max: 3, req: 4 },
-    broker: { b: 'ah', name: '人脉', desc: '拍卖行出好货的机会,以及卖出的价钱', base: 0, per: 8, unit: '%', sign: '+', max: 3, req: 5 },
-    ahfast: { b: 'ah', name: '消息灵通', desc: '拍卖行上新要等的时间', per: -20, unit: '%', max: 2, req: 6 },
+    bank: { b: 'ah', ic: '仓', name: '扩建仓库', desc: '公会仓库的格子数(给替补和小号攒装备)', base: 12, per: 6, unit: ' 格', max: 8, req: 1 },
+    stalls: { b: 'ah', ic: '架', name: '货架', desc: '拍卖行每批上架的装备数', base: 5, per: 1, unit: ' 件', max: 3, req: 2 },
+    supply: { b: 'ah', ic: '药', name: '后勤有方', desc: '合剂和药水的价格', per: -12, unit: '%', max: 3, req: 5 },
+    haggle: { b: 'ah', ic: '价', name: '讨价还价', desc: '在拍卖行买装备的价格', per: -8, unit: '%', max: 3, req: 8 },
+    broker: { b: 'ah', ic: '脉', name: '人脉', desc: '拍卖行出好货的机会,以及卖出的价钱', base: 0, per: 8, unit: '%', sign: '+', max: 3, req: 11 },
+    ahfast: { b: 'ah', ic: '讯', name: '消息灵通', desc: '拍卖行上新要等的时间', per: -20, unit: '%', max: 2, req: 15 },
+    vendor: { b: 'ah', ic: '收', name: '老主顾', desc: '直接卖给商人的价钱(占标价)', base: 0, per: 5, unit: '%', sign: '+', max: 3, req: 18 },
 
-    smith: { b: 'dungeon', name: '随军铁匠', desc: '副本里的装备磨损', base: 0, per: 15, unit: '%', sign: '-', max: 3, req: 2 },
-    finder: { b: 'dungeon', name: '搜刮', desc: '每波怪多掉一件装备的机会', base: 50, per: 10, unit: '%', max: 3, req: 3 },
-    banner: { b: 'dungeon', name: '公会战旗', desc: '副本里全队的伤害', per: 2, unit: '%', max: 3, req: 4 },
-    guardb: { b: 'dungeon', name: '坚固阵型', desc: '副本里全队的生命', per: 3, unit: '%', max: 3, req: 5 },
-    potionb: { b: 'dungeon', name: '药剂师', desc: '治疗药水的回复量(占生命上限)', base: 35, per: 10, unit: '%', max: 2, req: 6 }
+    smith: { b: 'dungeon', ic: '锤', name: '随军铁匠', desc: '副本里的装备磨损', base: 0, per: 15, unit: '%', sign: '-', max: 3, req: 2 },
+    finder: { b: 'dungeon', ic: '搜', name: '搜刮', desc: '每波怪多掉一件装备的机会', base: 50, per: 10, unit: '%', max: 3, req: 5 },
+    banner: { b: 'dungeon', ic: '旗', name: '公会战旗', desc: '副本里全队的伤害', per: 2, unit: '%', max: 5, req: 8 },
+    guardb: { b: 'dungeon', ic: '盾', name: '坚固阵型', desc: '副本里全队的生命', per: 3, unit: '%', max: 5, req: 11 },
+    potionb: { b: 'dungeon', ic: '瓶', name: '药剂师', desc: '治疗药水的回复量(占生命上限)', base: 35, per: 10, unit: '%', max: 2, req: 15 },
+    dkpx: { b: 'dungeon', ic: '分', name: '记分员', desc: '打怪得到的 DKP', per: 15, unit: '%', max: 3, req: 18 },
+    morale: { b: 'dungeon', ic: '韧', name: '百折不挠', desc: '灭团造成的士气损失', per: -20, unit: '%', max: 2, req: 23 },
+    bossbox: { b: 'dungeon', ic: '箱', name: '首领宝箱', desc: '首领多掉一件装备的机会', base: 0, per: 10, unit: '%', sign: '+', max: 4, req: 26 },
+    fitbias: { b: 'dungeon', ic: '量', name: '量体裁衣', desc: '首领的掉落更偏向在场的人用得上的', per: 50, unit: '%', max: 3, req: 35 },
+    pityx: { b: 'dungeon', ic: '保', name: '保底', desc: '首领连着几次没掉谁用得上的,下次必掉——要等的次数', base: 0, per: 1, unit: ' 次', sign: '-', max: 2, req: 40 },
+    badge: { b: 'dungeon', ic: '徽', name: '英雄本色', desc: '英雄难度得到的徽章', per: 25, unit: '%', max: 4, req: 45 }
   },
 
   // ---------- 拍卖行 ----------
@@ -3769,7 +3819,7 @@ GAME_DATA.bossPlus = {
         T('潮汐神龛', ['shaman', 'imp', 'imp', 'shaman'], P4), B('双潮祭台', ['boss5', 'boss5b'], ['_head']),
         E('钟楼底层', ['brute', 'shaman', 'imp'], [[640, 330], [530, 276], [740, 300]]), B('沉钟大殿', ['boss'], ['_armor'], true)
       ] },
-    { id: 'gear1', trashK: 1.4, raid: true, after: 'bell', name: '千机城·上城', desc: '团队副本。一位造物匠把整座城造成了机关。先得过城门、巡城犬、锅炉房和档案馆。', min: 60, max: 60, level: 60, size: 10, pal: 'forge', hpK: 8.36, dmgK: 1.63, goldMult: 8,
+    { id: 'gear1', trashK: 1.4, raid: true, after: 'bell', name: '千机城·上城', desc: '一位造物匠把整座城造成了机关。先得过城门、巡城犬、锅炉房和档案馆。', min: 60, max: 60, level: 60, size: 10, pal: 'forge', hpK: 8.36, dmgK: 1.63, goldMult: 8,
       enemies: {
         imp: { base: 'imp', name: '发条工蜂' }, shaman: { base: 'shaman', name: '校准师' }, brute: { base: 'brute', name: '铆钉卫士' },
         boss1: { base: 'bossGolem', name: '城门机关·百臂', short: '百臂', dmgK: 1.2, hp: 310000, melee: { interval: 1.8, dmg: 570 },
@@ -3862,7 +3912,7 @@ GAME_DATA.bossPlus = {
   var P3 = [[560, 320], [640, 290], [720, 320]], P4 = [[540, 320], [620, 290], [700, 262], [760, 320]], PB = [[530, 276], [640, 330], [750, 276]], PE = [[570, 330], [720, 330], [640, 262]];
   var SUN = { dur: 30, k: 0.3, max: 4, swapAt: 2 };
   D.dungeons.push(
-    { id: 'sky1', trashK: 1.6, raid: true, after: 'emberking', name: '天外回廊·星桥', desc: '团队副本。日冕高台把太阳拉近之后,天上开了一条走廊。桥的那一头有东西在往这边看。', min: 70, max: 70, level: 70, size: 10, pal: 'void', hpK: 9.58, dmgK: 1.62, goldMult: 10,
+    { id: 'sky1', trashK: 1.6, raid: true, after: 'emberking', name: '天外回廊·星桥', desc: '日冕高台把太阳拉近之后,天上开了一条走廊。桥的那一头有东西在往这边看。', min: 70, max: 70, level: 70, size: 10, pal: 'void', hpK: 9.58, dmgK: 1.62, goldMult: 10,
       enemies: {
         imp: { base: 'imp', name: '星屑游魂' }, shaman: { base: 'shaman', name: '观星者' }, brute: { base: 'brute', name: '陨铁守卫' }, whelp: { base: 'imp', name: '星鳞幼龙', hp: 15000 },
         boss1: { base: 'bossGolem', name: '星鳞母龙·薇拉', short: '薇拉', dmgK: 1.15, hp: 205000, melee: { interval: 1.8, dmg: 600 },
@@ -6396,7 +6446,7 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
     const E = D.economy;
     const g = { name: D.guildName, gold: E.startGold, kills: {}, roster: [], party: [], candidates: [],
       dungeon: null, room: 0, runs: 0, auto: false, loot: [], sim: null, lootMode: 'master', raidParty: [], stock: { flask: 0, potion: 0 }, flaskPick: 'flask', flaskOn: null, news: [],
-      faction: null, crest: 'fire', gxp: 0, glevel: 1, gtalents: {}, dquests: [], teams: [null, null, null], teamIdx: 0, raidGroups: {}, badges: 0, hkills: {}, pity: {}, playSec: 0, weekAt: 0, weekN: 1, weekDue: false, raidLock: {}, heroic: false, event: null,
+      faction: null, crest: 'fire', gxp: 0, glevel: 1, gver: 2, gtBonus: 0, rosterKeep: 0, lootQ: D.lootRule.def, gtalents: {}, dquests: [], teams: new Array(D.teamSlots).fill(null), teamIdx: 0, raidGroups: {}, badges: 0, hkills: {}, pity: {}, playSec: 0, weekAt: 0, weekN: 1, weekDue: false, raidLock: {}, heroic: false, event: null,
       bank: [], perks: {}, quests: { board: [], active: [] }, ah: { list: [], next: 0, sells: [] }, alumni: [], blacklist: [], dqOffers: [], scrolls: {}, legend: { frag: false, pick: null, prog: {}, forged: [] } };
     let seq = 0, lootSeq = 0;
     const pick = a => a[Math.floor(rng() * a.length)];
@@ -6442,6 +6492,7 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
       // 五人本英雄装的出处改成带版本上限的("副本_h60"):旧存档里的 "副本_h_…" 按当时的规则换过去(熔渣到学院是 60 级档,裂隙、日冕是 70 级档)
       save = JSON.parse(JSON.stringify(save).replace(/"([a-z0-9]+)_h_/g, (m, id) => { const d = D.dungeons.find(x => x.id === id); return d && !d.raid ? '"' + id + '_h' + (d.min >= 60 ? 70 : 60) + '_' : m; }));
       Object.assign(g, save); // 存档就是 toSave() 的原样,不做旧版本兼容
+      if (!save.gver) g.gver = 0; // 公会等级还是老刻度:下面「公会等级」那一节读档时换算
     } else {
       D.starters.forEach(st => g.roster.push(fromDef(st)));
       g.party = g.roster.map(h => h.uid);
@@ -6462,6 +6513,10 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
     if (g.gtalents.roster) delete g.gtalents.roster; // 「扩编」取消了,点数还给玩家
     for (const k in g.gtalents) { if (!D.gtree[k]) delete g.gtalents[k]; else g.gtalents[k] = Math.min(g.gtalents[k], D.gtree[k].max); } // 天赋表改过级数:多点的退回来
     while (g.candidates.length < seatCount()) g.candidates.push(nextCandidate());
+    if (!Array.isArray(g.teams)) g.teams = [];
+    while (g.teams.length < D.teamSlots) g.teams.push(null); // 编队位从 3 个扩到 teamSlots 个,旧存档补空位
+    g.teams.length = D.teamSlots;
+    if (D.lootRule.quals.indexOf(g.lootQ) < 0) g.lootQ = D.lootRule.def; // 旧存档没有拾取门槛
 
     // ---------- 查询 ----------
     // 装备对不对口:看主属性(专精可以改主属性);匕首、弓这类只有特定职业拿的还要看职业
@@ -6571,7 +6626,7 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
     g.partyHeroes = () => (g.inRaid() ? g.raidParty : g.party).map(hero).filter(Boolean);
     g.rep = () => Object.keys(g.kills).reduce((x, k) => x + g.kills[k], 0);
     g.cleared = () => D.dungeons.filter(d => !d.raid && (g.kills[d.id] || 0) > 0).length;
-    g.rosterCap = () => Math.min(D.rosterMax, D.rosterBase + g.glevel - 1); // 花名册上限是公会天赋「扩编」
+    g.rosterCap = () => Math.min(D.rosterMax, Math.max(g.rosterKeep || 0, D.rosterBase + Math.floor((g.glevel - 1) * D.rosterPerLevel))); // 花名册上限按公会等级;rosterKeep:旧存档换算时原来的上限,只升不降
     g.dungeonDef = () => D.dungeons.find(d => d.id === g.dungeon);
     g.roomDef = () => g.dungeonDef().rooms[g.room];
     g.unlocked = d => { if (g.verLocked(d)) return false; if (d.after) return (g.kills[d.after] || 0) > 0; const i = D.dungeons.indexOf(d); return i === 0 || (g.kills[D.dungeons[i - 1].id] || 0) > 0; };
@@ -6763,7 +6818,7 @@ const K = D.statK;
     g.setPotion = (x, id) => { hero(x).potion = id || null; };
     // 版本:等级上限,以及哪些副本还没开放
     g.cap = () => g.verCap || D.levelCap;
-    g.setVersion = v => { g.verCap = D.versions[v] ? +v : D.levelCap; };
+    g.setVersion = v => { g.verCap = D.versions[v] ? +v : D.levelCap; if (g.guildSync) g.guildSync(); }; // 版本上限提高了:攒着的公会声望马上补升
     g.verLocked = d => d.level > g.cap();
     // ---------- 公会管理 ----------
     g.toggleParty = function (uid) {
@@ -6847,16 +6902,28 @@ const K = D.statK;
     g.perkValue = pv;
     g.perkLevel = id => g.gtalents[id] || 0;
     g.gt = id => (D.gtree[id].per * (g.gtalents[id] || 0)) / 100;
-    g.gxpNeed = () => D.guildLevelBase + D.guildLevelStep * g.glevel;
+    g.pityNeed = () => Math.max(1, D.plusRule.pity - pv('pityx')); // 首领连着几次没掉有用的,下次必掉
+    // 公会等级和角色等级一个刻度:上限就是当前版本开放的角色等级上限(g.cap())
+    g.guildCap = () => g.cap();
+    g.guildMaxed = () => g.glevel >= g.guildCap();
+    g.gxpNeed = () => Math.round(D.guildLevelBase + D.guildLevelStep * g.glevel);
     g.gtSpent = () => Object.keys(g.gtalents).reduce((x, k) => x + g.gtalents[k], 0);
-    g.gtPoints = () => (g.glevel - 1) * D.guildPointsPerLevel - g.gtSpent();
-    g.addGuildXp = function (n) {
+    g.gtPoints = () => (g.glevel - 1) * D.guildPointsPerLevel + (g.gtBonus || 0) - g.gtSpent(); // gtBonus:旧存档换算时补的点(保证已经点的天赋一个不掉)
+    g.guildSync = function () { // 声望够就升级;到了版本上限声望照样攒着,上限提高时补升
       let ups = 0;
-      if (g.glevel >= D.guildLevelCap) return 0;
-      g.gxp += n;
-      while (g.gxp >= g.gxpNeed() && g.glevel < D.guildLevelCap) { g.gxp -= g.gxpNeed(); g.glevel++; ups++; }
+      while (g.glevel < g.guildCap() && g.gxp >= g.gxpNeed()) { g.gxp -= g.gxpNeed(); g.glevel++; ups++; }
       return ups;
     };
+    g.addGuildXp = function (n) { g.gxp += n; return g.guildSync(); };
+    if (!g.gver) { // 旧存档(老刻度:升一级要 20 + 20 × 等级,上限 50):按攒过的声望总数在新刻度上重算等级,只升不降;花名册上限和天赋点也只多不少
+      const O = D.guildOld, oldLv = g.glevel || 1, oldPts = (oldLv - 1) * D.guildPointsPerLevel;
+      let T = g.gxp || 0; for (let l = 1; l < oldLv; l++) T += O.base + O.step * l;
+      g.rosterKeep = Math.min(D.rosterMax, D.rosterBase + oldLv - 1);
+      g.glevel = 1; g.gxp = T; g.guildSync();
+      if (g.glevel < oldLv) { g.glevel = oldLv; g.gxp = 0; }
+      g.gtBonus = Math.max(0, Math.max(oldPts, g.gtSpent()) - (g.glevel - 1) * D.guildPointsPerLevel);
+      g.gver = 2;
+    }
     g.gtCost = id => { const t = D.gtree[id], C = D.gtCost; return C.base + C.perReq * t.req + C.perRank * (g.gtalents[id] || 0); };
     g.spendGt = function (id) {
       const t = D.gtree[id];
@@ -6925,7 +6992,7 @@ const K = D.statK;
       if (q.prog < q.need) return { ok: false, reason: '委托还没完成' };
       g.dquests.splice(i, 1);
       if (q.badges) g.badges += q.badges;
-      const gold = Math.round(q.gold * (1 + g.gt('income')));
+      const gold = Math.round(q.gold * (1 + g.gt('income')) * (1 + g.gt('dqgold')));
       g.gold += gold;
       let item = null;
       if (q.item) { const iid = pick(itemsOf(q.item, q.dungeon)); if (g.toBank(iid)) item = D.items[iid]; }
@@ -7210,7 +7277,7 @@ const K = D.statK;
       mood(h, D.giftMood * gk); befriend(h, D.friend.gift * gk); if (h.mood >= D.quitMood) h.grumble = 0;
       return { ok: true, item: pc, token: tok, old: r.old, kept: r.kept, fit: true, line: g.line(h, 'got'), envy };
     };
-    g.sellRate = () => D.ah.sellRate + g.perkValue('broker') / 100;
+    g.sellRate = () => D.ah.sellRate + g.perkValue('broker') / 100 + g.perkValue('vendor') / 100;
     g.sellPrice = id => Math.round(priceOf(D.items[id]) * g.sellRate());
     // 把团里有人"需求"的装备卖掉或挂出去:想要的人不高兴,说一句(一键出售 / 一键挂出本来就跳过这些)
     const soldNeed = id => {
@@ -7483,7 +7550,7 @@ const K = D.statK;
       return { text, win, failed: !!q.failed };
     };
     // 公会能力会改变任务的奖励和耗时,所以每次看的时候现算
-    g.questView = q => ({ dur: Math.round(q.dur0 * (1 - g.perkValue('speed') / 100)), gold: Math.round(q.gold0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('income'))), xp: Math.round(q.xp0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('mentor'))) });
+    g.questView = q => ({ dur: Math.round(q.dur0 * (1 - g.perkValue('speed') / 100)), gold: Math.round(q.gold0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('income'))), xp: Math.round(q.xp0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('mentor')) * (1 + g.gt('qxp'))) });
     g.questTick = function () { let ch = false; while (g.quests.board.length < g.perkValue('board')) { g.quests.board.push(genQuest()); ch = true; } return ch; };
     g.startQuest = function (qid, uids, now) {
       const i = g.quests.board.findIndex(q => q.id === qid);
@@ -7641,7 +7708,7 @@ const K = D.statK;
         if (h.mood < 35 && h.mood >= D.quitMood && !lootMods(h).mute && rng() < D.rel.grumbleSay) tell(h, 'grumbleLow'); // 征兆第一段:发牢骚
         if (h.mood >= D.quitMood && ph.some(o => o !== h && o.mood < D.quitMood)) mood(h, -D.traitRule.lowMoodDrag); // 团里有人想走,气氛不对
         if (h.hooks) for (const k in h.hooks) if (--h.hooks[k].left <= 0) delete h.hooks[k]; // 由头放久了就凉了
-        const gap = D.moodHome - h.mood; if (gap) h.mood += Math.sign(gap) * Math.min(D.moodDrift, Math.abs(gap)); // 心情是天气:高的会凉,低的会缓
+        const gap = D.moodHome + pv('hearth') - h.mood; if (gap) h.mood += Math.sign(gap) * Math.min(D.moodDrift, Math.abs(gap)); // 心情是天气:高的会凉,低的会缓
         if (h.care && (h.fights || 0) % D.careRecover === 0) for (const k in h.care) h.care[k] = Math.max(0, h.care[k] - 1); // 关照的效果慢慢恢复
       });
       ph.forEach(h => { // 并肩打久了,什么性格都藏不住
@@ -7671,10 +7738,10 @@ const K = D.statK;
       if ((g.wipeRun || 0) >= D.friend.hardWipes) ph.forEach(h => deed(h, 'hard')); // 灭了好几次终于过了:这就是共患难
       g.wipeRun = 0;
       const PR = D.plusRule, big = room.boss && !room.mini; // 小首领:算首领战,但经验、金币、分数都比最终首领少
-      ph.forEach(h => { befriend(h, D.friend.gain[friendTier(h)][big ? 1 : 0]); mood(h, big ? 8 : room.mini ? PR.miniMood : 2); h.dkp = (h.dkp || 0) + (big ? D.dkp.boss : room.mini ? Math.round(D.dkp.boss * PR.miniDkpK) : D.dkp.room); h.benched = 0; });
+      ph.forEach(h => { befriend(h, D.friend.gain[friendTier(h)][big ? 1 : 0]); mood(h, big ? 8 : room.mini ? PR.miniMood : 2); h.dkp = (h.dkp || 0) + Math.round((big ? D.dkp.boss : room.mini ? Math.round(D.dkp.boss * PR.miniDkpK) : D.dkp.room) * (1 + g.gt('dkpx'))); h.benched = 0; });
       const last = g.room === d.rooms.length - 1; // 团队副本有好几个首领,打完最后一个才算通关
       let badges = 0;
-      if (g.heroic) { badges = big ? D.heroic.badgeBoss : room.elite || room.mini ? D.heroic.badgeElite : 0; g.badges += badges; if (last) g.hkills[d.id] = (g.hkills[d.id] || 0) + 1; }
+      if (g.heroic) { badges = Math.round((big ? D.heroic.badgeBoss : room.elite || room.mini ? D.heroic.badgeElite : 0) * (1 + g.gt('badge'))); g.badges += badges; if (last) g.hkills[d.id] = (g.hkills[d.id] || 0) + 1; }
       const benchSay = []; // 团本:替补也拿一部分分,但总坐板凳会不高兴
       if (d.raid && room.boss) g.bench().forEach(h => {
         h.dkp = (h.dkp || 0) + Math.round(D.dkp.boss * D.dkp.standby);
@@ -7724,9 +7791,10 @@ const K = D.statK;
       const baseXp = big ? D.roomXp.boss : room.mini ? D.roomXp.mini : room.elite ? D.roomXp.elite : D.roomXp.trash;
       { const k = pv('understudy') / 100; // 老带新:没上场、也没出任务的人分到一部分经验
         if (k > 0) g.roster.forEach(h => { if (ph.indexOf(h) < 0 && !g.busy(h.uid) && h.level < g.cap()) addXp(h, Math.round(baseXp * k * g.xpMult(h, d)), []); }); } // 替补升级不在战斗里播报
+      const topLv = Math.max.apply(null, g.roster.map(h => h.level)); // 后来居上:比最高的人低 10 级以上的多拿经验
       ph.forEach(h => {
         if (h.level >= g.cap()) return;
-        h.xp += Math.round(baseXp * g.xpMult(h, g.diffXp(d)) * (1 + g.gt('mentor')) * (lootMods(h).xpK || 1) * (1 + mentorOf(h)) * (1 + g.gearFx(h, 'xpK')));
+        h.xp += Math.round(baseXp * g.xpMult(h, g.diffXp(d)) * (1 + g.gt('mentor')) * (topLv - h.level >= 10 ? 1 + g.gt('catchup') : 1) * (lootMods(h).xpK || 1) * (1 + mentorOf(h)) * (1 + g.gearFx(h, 'xpK')));
         while (h.xp >= xpNeed(h) && h.level < g.cap()) { h.xp -= xpNeed(h); h.level++; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: h.level === D.firstSkillLevel ? cls(h).firstSkill.name : null }); }
       });
       if (last && d === D.dungeons[0]) ph.forEach(h => { while (h.level < D.talentFromLevel && h.level < g.cap()) { h.level++; h.xp = 0; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: h.level === D.firstSkillLevel ? cls(h).firstSkill.name : null }); } }); // 教学本保底:打通就到 10 级
@@ -7735,7 +7803,8 @@ const K = D.statK;
       const uniqueOf = () => D.items[g.gearKey(d) + '_legend_trinket'] || D.items[d.id + '_legend_trinket']; // 这个副本的首领专属饰品(当前这一档的)
       const LK = d.raid ? D.sizeRule[g.raidSize(d)].loot || 1 : 1, rolls = []; // 二十五人团掉得多:每一项掉 LK 份(小数部分按概率)
       room.loot.forEach(l => { for (let k = 0, n = Math.floor(LK) + (rng() < LK % 1 ? 1 : 0); k < n; k++) rolls.push(l); });
-      rolls.concat(rng() < g.perkValue('finder') / 100 ? [{ q: room.loot[0].q, p: 1 }] : []).forEach(l => {
+      const boxL = room.boss && room.loot.find(l => l.q !== 'legend'); // 首领宝箱:首领多掉一件
+      rolls.concat(rng() < g.perkValue('finder') / 100 ? [{ q: room.loot[0].q, p: 1 }] : []).concat(boxL && rng() < pv('bossbox') / 100 ? [{ q: boxL.q, keys: boxL.keys, p: 1 }] : []).forEach(l => {
         if (l.q === 'legend') { // 副本表里的橙色掉落项:现在是首领专属饰品
           const ui = uniqueOf(); if (!ui || rng() >= Math.max(l.p, D.uniqueRule.minP)) return;
           const p = positions && positions.length ? positions[drops.length % positions.length] : { x: D.arena.cx, y: D.arena.cy - 60 };
@@ -7756,8 +7825,8 @@ const K = D.statK;
         const keys0 = l.keys || room.drop, keys = keys0 ? keys0.reduce((a, x) => a.concat([x], D.itemGen.dropAlso[x] || []), []) : null, own = pool => { const f = keys ? pool.filter(k => keys.some(x => k.endsWith(x))) : pool; return f.length ? f : pool; }; // 这个首领管哪些部位
         const fitsAny = k => ph.some(h => g.want(h, D.items[k]).fit), useful = k => ph.some(h => { const w = g.want(h, D.items[k]); return w.fit && w.upgrade; });
         const pickW = pool => { // 偏向在场的人;保底到了就只从"有人算提升"的里面出
-          const pk = d.id + ':' + g.room + (g.heroic ? 'h' : ''), must = room.boss && (g.pity[pk] || 0) >= D.plusRule.pity ? pool.filter(useful) : [];
-          const src = must.length ? must : pool, ws = src.map(k => (room.boss && fitsAny(k) ? D.plusRule.fitW : 1)), tot = ws.reduce((x, y) => x + y, 0);
+          const pk = d.id + ':' + g.room + (g.heroic ? 'h' : ''), must = room.boss && (g.pity[pk] || 0) >= g.pityNeed() ? pool.filter(useful) : [];
+          const src = must.length ? must : pool, ws = src.map(k => (room.boss && fitsAny(k) ? D.plusRule.fitW * (1 + g.gt('fitbias')) : 1)), tot = ws.reduce((x, y) => x + y, 0);
           let r = rng() * tot, i = 0; while (i < src.length - 1 && (r -= ws[i]) > 0) i++;
           return src[i];
         };
@@ -7932,6 +8001,10 @@ const K = D.statK;
       g.partyHeroes().forEach(h => { const w = g.want(h, drop.item); if (drop.item.token && w.cant) return; const sc = w.score - (w.tier === 2 ? D.lootTier.autoPick : 0) + rng() * 40 - ((h.dkp || 0) < g.dkpPrice(drop.item) ? 60 : 0); if (sc > bs) { bs = sc; best = h.uid; } });
       return best;
     };
+    // 拾取品质门槛:低于门槛的装备不管选的是什么,一律大家自己 Roll(需求 / 贪婪,照样分护甲梯队)
+    g.lootModeOf = it => { const Q = D.quality, a = it && Q[it.q], b = Q[g.lootQ]; return a && b && a.rank < b.rank && (g.kills[D.dungeons[0].id] || 0) > 0 ? 'roll' : g.lootMode; }; // 教学本打通前门槛不生效(新手引导要教拖装备)
+    g.setLootQ = q => { if (D.lootRule.quals.indexOf(q) < 0) return false; g.lootQ = q; return true; };
+    g.autoLoot = function (lootUid) { const d = g.loot.find(l => l.uid === lootUid); if (!d) return null; return g.lootModeOf(d.item) === 'dkp' ? g.dkpLoot(lootUid) : g.rollLoot(lootUid); }; // 不归团长分的那件:按它该走的方式分掉
     g.dkpShort = (lootUid, uid) => { const d = g.loot.find(l => l.uid === lootUid); return d ? Math.max(0, g.dkpPrice(d.item) - (hero(uid).dkp || 0)) : 0; };
     // ---------- 就位确认 ----------
     // 开首领前问一圈。返回每个人:ready 准备好没有;why 没好的原因;wait 再等几秒他就好;warn 提醒团长的事(不拦着开怪)
@@ -8010,8 +8083,11 @@ const K = D.statK;
     // 按职责重排:坦克、治疗、输出各自凑队
     g.groupsByRole = (uids, size) => { const ord = { tank: 0, heal: 1, dps: 2 }; const out = autoGroups(uids.slice().sort((a, b) => ord[roleOf(hero(a))] - ord[roleOf(hero(b))]), size).slice(0, D.formation.groups[size]); while (out.length < D.formation.groups[size]) out.push([]); return out; };
     // ---------- 预设队伍 ----------
-    g.saveTeam = (i, uids) => { g.teams[i] = uids.slice(0, 5); };
-    g.useTeam = i => { g.teamIdx = i; g.party = g.teamHeroes(i).map(h => h.uid); };
+    // 编队位:最多 D.teamSlots 个,开了几个看公会天赋「战术板」
+    g.teamCap = () => Math.min(D.teamSlots, pv('squads'));
+    g.teamOpen = i => i >= 0 && i < g.teamCap();
+    g.saveTeam = (i, uids) => { if (!g.teamOpen(i)) return false; g.teams[i] = uids.slice(0, 5); return true; };
+    g.useTeam = i => { if (!g.teamOpen(i)) return false; g.teamIdx = i; g.party = g.teamHeroes(i).map(h => h.uid); return true; };
     g.teamHeroes = i => (g.teams[i] || []).map(hero).filter(Boolean);
     // ---------- 徽章兑换(英雄难度) ----------
     g.badgeShop = function () {
@@ -8096,7 +8172,7 @@ const K = D.statK;
       return { text, left };
     };
     g.retreat = function () { g.room = g.inRaid() ? segStart(g.dungeonDef(), g.room) : 0; g.loot = []; };
-    g.toSave = () => ({ name: g.name, gold: g.gold, kills: g.kills, roster: g.roster, party: g.party, candidates: g.candidates, seq, bank: g.bank, perks: g.perks, quests: g.quests, ah: g.ah, faction: g.faction, crest: g.crest, lootMode: g.lootMode, raidParty: g.raidParty, stock: g.stock, flaskPick: g.flaskPick, gxp: g.gxp, glevel: g.glevel, gtalents: g.gtalents, dquests: g.dquests, teams: g.teams, teamIdx: g.teamIdx, groupNames: g.groupNames || {}, autoSell: !!g.autoSell, alumni: g.alumni, blacklist: g.blacklist, dqOffers: g.dqOffers, scrolls: g.scrolls || {}, badges: g.badges, hkills: g.hkills, pity: g.pity, bankNew: g.bankNew || [], sigilPity: g.sigilPity || {}, raidGroups: g.raidGroups || {}, legend: g.legend, sizePick: g.sizePick || 10, playSec: g.playSec, weekAt: g.weekAt, weekN: g.weekN, weekDue: g.weekDue, raidLock: g.raidLock });
+    g.toSave = () => ({ name: g.name, gold: g.gold, kills: g.kills, roster: g.roster, party: g.party, candidates: g.candidates, seq, bank: g.bank, perks: g.perks, quests: g.quests, ah: g.ah, faction: g.faction, crest: g.crest, lootMode: g.lootMode, lootQ: g.lootQ, gver: g.gver, gtBonus: g.gtBonus || 0, rosterKeep: g.rosterKeep || 0, raidParty: g.raidParty, stock: g.stock, flaskPick: g.flaskPick, gxp: g.gxp, glevel: g.glevel, gtalents: g.gtalents, dquests: g.dquests, teams: g.teams, teamIdx: g.teamIdx, groupNames: g.groupNames || {}, autoSell: !!g.autoSell, alumni: g.alumni, blacklist: g.blacklist, dqOffers: g.dqOffers, scrolls: g.scrolls || {}, badges: g.badges, hkills: g.hkills, pity: g.pity, bankNew: g.bankNew || [], sigilPity: g.sigilPity || {}, raidGroups: g.raidGroups || {}, legend: g.legend, sizePick: g.sizePick || 10, playSec: g.playSec, weekAt: g.weekAt, weekN: g.weekN, weekDue: g.weekDue, raidLock: g.raidLock });
     return g;
   }
 
@@ -10758,9 +10834,10 @@ var SCN = (function () {
     $('#gId .crest').innerHTML = ART.glyph(g.crest);
     $('#gName').textContent = g.name;
     $('#gName').onclick = e => { e.stopPropagation(); snd('click'); askName('公会改名', g.name, D.guildNames, v => { g.name = v; save(); showHub(); }); };
-    const gcap = g.glevel >= D.guildLevelCap, gp = g.gtPoints();
+    const gcap = g.guildMaxed(), gp = g.gtPoints();
     $('#gLv').textContent = g.glevel + '级';
-    $('#gRep').textContent = gcap ? '声望已满' : '声望 ' + g.gxp + ' / ' + g.gxpNeed();
+    $('#gLv').dataset.tip = '公会等级 ' + g.glevel + ' / ' + g.guildCap() + '<br>上限和当前版本的角色等级上限一样;每升一级得 ' + D.guildPointsPerLevel + ' 点公会天赋';
+    $('#gRep').textContent = gcap ? '公会已满级 · 声望照攒' : '声望 ' + g.gxp + ' / ' + g.gxpNeed();
     $('#gXpFill').style.width = (gcap ? 100 : g.gxp / g.gxpNeed() * 100) + '%';
     $('#gId').classList.toggle('alert', gp > 0);
     $('#gId').onclick = () => { if (TUT.tabLock('build')) { snd('deny'); return; } snd('click'); showHub('build'); };
@@ -10809,7 +10886,7 @@ var SCN = (function () {
     $('#page').innerHTML = `
       <div class="panel rosterBox" data-drop="roster"><div class="ph"><span>花名册</span>${legendStrip()}<small>${g.roster.length} / ${g.rosterCap()}</small></div><div class="rgrid">${cards}</div>${g.roster.length > 10 ? '<div class="rmore" id="rMore" data-tip="往下还有人">▾</div>' : ''}</div>
       <div class="panel partyBox" data-drop="party"><div class="ph"><span>出战队伍</span>${roleChips(g.party, 5)}${warn2.length ? `<span class="wn" data-tip="${warn2.join('<br>')}">⚠</span>` : ''}
-        <span class="phr"><span class="tswitch">${g.teams.map((t, i) => `<i class="${i === (g.teamIdx || 0) ? 'on' : ''}" data-team="${i}" data-tip="${i + 1} 队${i === (g.teamIdx || 0) ? '(正在出战)' : ':' + (g.teamHeroes(i).map(h => h.name).join('、') || '还没编')}">${i + 1}</i>`).join('')}</span><small>${ph.length} / 5</small><span class="hbtn mini sec" id="toDungeon">配置队伍</span></span></div><div class="pslots">${slots}</div></div>
+        <span class="phr"><span class="tswitch">${g.teams.map((t, i) => (g.teamOpen(i) ? `<i class="${i === (g.teamIdx || 0) ? 'on' : ''}" data-team="${i}" data-tip="${i + 1} 队${i === (g.teamIdx || 0) ? '(正在出战)' : ':' + (g.teamHeroes(i).map(h => h.name).join('、') || '还没编')}">${i + 1}</i>` : `<i class="tlk" data-tip="${i + 1} 队:还没解锁<br>公会天赋「${D.gtree.squads.name}」每点一级多开一个编队位">${i + 1}</i>`)).join('')}</span><small>${ph.length} / 5</small><span class="hbtn mini sec" id="toDungeon">配置队伍</span></span></div><div class="pslots">${slots}</div></div>
       <div class="panel detail">
         <div class="dhead">${figure(sel)}<div class="dh2"><h2 style="color:${c.color}">${sel.name}<span class="pen" id="bRename" data-tip="改名">✎</span><span class="dkptag" data-tip="DKP:队员自己攒的分。打本挣分,拿装备花分。分不够还硬给他装备,别人会不服。">DKP <b>${sel.dkp || 0}</b></span></h2><div class="cl">${sel.level} 级 ${specName(sel)} · ${c.role}${sel.gear.mount && D.items[sel.gear.mount] ? ` · <span data-item="${sel.gear.mount}" style="color:#ff9a2a;cursor:help">骑着${D.items[sel.gear.mount].name}</span>` : ''}</div>
           <div class="xpbar"><i style="width:${sel.level >= g.cap() ? 100 : sel.xp / g.xpNeed(sel) * 100}%"></i><b>${sel.level >= g.cap() ? (g.cap() < D.levelCap ? '已到本版本上限' : '已满级') : '经验 ' + sel.xp + ' / ' + g.xpNeed(sel)}</b></div>
@@ -10851,7 +10928,7 @@ var SCN = (function () {
     $('#page .rgrid').scrollTop = rsc;
     if ($('#rMore')) $('#rMore').onclick = () => { const b = $('#page .rgrid'); b.scrollTop = b.scrollTop + b.clientHeight >= b.scrollHeight - 4 ? 0 : b.scrollTop + 388; };
     $('#page').querySelectorAll('.pslot.empty').forEach(c2 => { c2.onclick = () => showTeamSetup(null); });
-    $('#page').querySelectorAll('[data-team]').forEach(b => { b.onclick = () => { g.teams[g.teamIdx || 0] = g.party.slice(); g.useTeam(+b.dataset.team); g.party = g.party.filter(x => !g.busy(x)); snd('click'); save(); showHub(); }; });
+    $('#page').querySelectorAll('[data-team]').forEach(b => { b.onclick = () => { if (!g.teamOpen(+b.dataset.team)) return; g.teams[g.teamIdx || 0] = g.party.slice(); g.useTeam(+b.dataset.team); g.party = g.party.filter(x => !g.busy(x)); snd('click'); save(); showHub(); }; });
     // 拖动:花名册的人拖到出战栏 = 上阵(拖到某个人身上 = 顶替他);出战栏里互相拖 = 换位置;拖回花名册 = 下阵
     dragKit($('#page'), (src, over) => {
       const uid = src.dataset.drag, at = g.party.indexOf(uid), box = over && over.closest('[data-drop="party"],[data-drop="roster"]');
@@ -11107,9 +11184,9 @@ var SCN = (function () {
       return core.concat(by('dps'), m).filter((x, i, a) => a.indexOf(x) === i).slice(0, n);
     };
     if (d) C = g.groupsOf(lineup(g.raidParty.filter(ok)), SZ());
-    else C = g.teams.map(t => (t || []).filter(x => g.hero(x)).slice(0, CAP));
+    else C = g.teams.slice(0, g.teamCap()).map(t => (t || []).filter(x => g.hero(x)).slice(0, CAP)); // 只摆已经解锁的编队位
     const deny = t => { snd('deny'); const b = $('#fmSay'); if (b) { b.textContent = t; b.classList.add('show'); clearTimeout(deny.t); deny.t = setTimeout(() => b.classList.remove('show'), 1600); } };
-    const keep = () => { if (d) { g.raidParty = flat(); g.setGroups(SZ(), C); } else { g.teams = C.map(x => x.slice()); g.useTeam(act); g.party = g.party.filter(x => !g.busy(x)); } save(); };
+    const keep = () => { if (d) { g.raidParty = flat(); g.setGroups(SZ(), C); } else { C.forEach((x, i) => { g.teams[i] = x.slice(); }); g.useTeam(act); g.party = g.party.filter(x => !g.busy(x)); } save(); };
     const add = x => { // 点一下上阵
       if (!ok(x)) return deny('他正忙着');
       if (!d) { if (C[act].length >= CAP) return deny('这一队满了'); C[act].push(x); return; }
@@ -11141,7 +11218,7 @@ var SCN = (function () {
       ov2.className = 'show';
       ov2.innerHTML = `<div class="card rcard2 tsetup${first ? '' : ' still'}"><h2 style="color:#ffd98a;font-size:28px">${d ? '组建团队 · ' + d.name : '配置出战队伍'}</h2>
         ${d ? `<div class="szpick">${[10, 25].map(n => `<span class="hbtn mini${size === n ? '' : ' sec'}${g.sizeOpen(n) && (!g.raidSizeLocked(d) || size === n) ? '' : ' dis'}" data-sz="${n}" data-tip="${!g.sizeOpen(n) ? '二十五人团要到 ' + D.versions[D.sizeRule[25].fromCap].short + '才开放' : g.raidSizeLocked(d) ? '这一周已经开打了,规模要等重置才能换' : n === 25 ? '同一批首领、同一套技能:血更厚,点名的人更多,掉得也更多' : '十人团'}">${n === 10 ? '十人' : '二十五人'}${g.sizeOpen(n) ? '' : ' 🔒'}</span>`).join('')}</div>` : ''}
-        <div class="fmBoxes n${C.length}">${boxes}</div>
+        <div class="fmBoxes n${C.length}${!d && C.length > 3 ? ' nT' : ''}">${boxes}</div>
         <div class="fmBar"><span class="fmTabs">${['', 'tank', 'heal', 'dps'].map(f => `<i class="${filt === f ? 'on' : ''}" data-f="${f}">${f ? ROLE[f][1] + ' ' + pc[f] : (d ? '替补 ' : '全部 ') + pool.length}</i>`).join('')}</span>
           ${d ? roleChips(cur, size) + `<b class="fmCount${cur.length < size ? ' lack' : ''}">${cur.length} / ${size}</b>` : ''}
           <span class="fmBtns">${d ? g.teams.map((t, i) => (g.teamHeroes(i).length ? `<span class="hbtn mini sec" data-join="${i}" data-tip="把 ${i + 1} 队的人拉进团:${g.teamHeroes(i).map(h => h.name).join('、')}">+${i + 1} 队</span>` : '')).join('') : ''}<span class="hbtn mini" id="fmFill" data-tip="已经选的人不动,缺的坦克、治疗先补上,再拿输出填满(挑等级高、装备好的)">一键补满</span>${d ? '<span class="hbtn mini sec" id="fmRole" data-tip="坦克、治疗、输出各自凑成小队">按职责分队</span>' : ''}<span class="hbtn mini sec" id="fmClear">清空</span></span></div>
@@ -11415,23 +11492,28 @@ var SCN = (function () {
   }
 
   // ================= 公会建设:公会等级、公会天赋、设施 =================
-  function gtValue(id) { // 天赋树里某一项当前的效果,写成人话
-    const t = D.gtree[id], r = g.gtalents[id] || 0;
+  function gtValue(id, rk) { // 天赋树里某一项的效果写成人话;rk 不给就是当前级数
+    const t = D.gtree[id], r = rk == null ? g.gtalents[id] || 0 : rk;
     if (t.flag) return r ? '已学会' : '未学会';
     if (t.vals) return t.vals[r] + t.unit;
     if (t.base != null) return (t.sign || '') + (t.base + t.per * r) + t.unit;
     return (t.per * r > 0 ? '+' : '') + t.per * r + t.unit;
   }
+  // 公会天赋页:五个分支各一列,每项一个图标格(字 + 名字 + 级数),说明全在悬停里;一页放完不滚动
   function pageBuild() {
-    const pts = g.gtPoints();
-    const col = br => Object.keys(D.gtree).filter(id => D.gtree[id].b === br).map(id => {
-      const t = D.gtree[id], r = g.gtalents[id] || 0, locked = g.glevel < t.req, full = r >= t.max;
-      return `<div class="urow${full ? ' max' : ''}${locked ? ' lock' : ''}"><div class="uh"><b>${t.name}</b><em>${gtValue(id)}</em></div><small>${t.desc}</small>
-        <div class="uf2"><span class="pips">${'●'.repeat(r)}${'○'.repeat(t.max - r)}</span>${full ? '<span class="ulock">已点满</span>' : locked ? `<span class="ulock">🔒 公会 ${t.req} 级</span>` : `<span class="hbtn mini${pts > 0 && g.gold >= g.gtCost(id) ? '' : ' dis'}" data-gt="${id}">+1${g.gtCost(id) ? ' · <i class="coin"></i>' + g.gtCost(id) : ''}</span>`}</div></div>`;
-    }).join('');
-    $('#page').innerHTML = `<div class="ghead2">公会天赋 <b>${pts}</b> 点</div>` +
-      Object.keys(D.gbranches).map((br, i) => `<div class="panel ucol" style="left:${16 + i * 250}px"><div class="ph"><span>${D.gbranches[br]}</span></div><div class="ulist">${col(br)}</div></div>`).join('');
-    $('#page').querySelectorAll('[data-gt]').forEach(b => { b.onclick = () => { const r = g.spendGt(b.dataset.gt); if (r.ok) tk('guild_talent', { id: b.dataset.gt, rank: g.perkLevel(b.dataset.gt) }); hubTip(r.ok ? D.gtree[b.dataset.gt].name + ' +1' : r.reason); showHub(); }; });
+    const pts = g.gtPoints(), cap = g.guildCap();
+    const tile = id => {
+      const t = D.gtree[id], r = g.gtalents[id] || 0, locked = g.glevel < t.req, full = r >= t.max, can = !locked && !full && pts > 0;
+      const verLk = t.req > cap; // 这个版本的公会等级上限够不着
+      const tipT = `<b>${t.name}</b> ${r} / ${t.max}<br>${t.desc}<br>现在 <b style='color:#9aff8a'>${gtValue(id)}</b>${full ? '(已点满)' : ` → 下一级 <b style='color:#ffe14d'>${gtValue(id, r + 1)}</b>`}` +
+        (locked ? `<br><span style='color:#ff8a6a'>公会 ${t.req} 级解锁${verLk ? '(这个版本公会最高 ' + cap + ' 级)' : ''}</span>` : '');
+      return `<div class="gtile${full ? ' max' : ''}${locked ? ' lock' : ''}${can ? ' can' : ' dis'}" data-gt="${id}" data-tip="${tipT}"><b class="gtic">${t.ic || t.name[0]}</b><span class="gtnm">${t.name}</span><span class="gtrk">${locked ? '🔒' + t.req : r + '/' + t.max}</span></div>`;
+    };
+    const col = br => Object.keys(D.gtree).filter(id => D.gtree[id].b === br).sort((x, y) => D.gtree[x].req - D.gtree[y].req).map(tile).join('');
+    const spent = g.gtSpent(), all = Object.keys(D.gtree).reduce((x, k) => x + D.gtree[k].max, 0);
+    $('#page').innerHTML = `<div class="ghead2">公会天赋 <b>${pts}</b> 点<span class="gtsum">公会 ${g.glevel} / ${cap} 级 · 已点 ${spent} / ${all} · 每升一级 +${D.guildPointsPerLevel} 点</span></div>` +
+      Object.keys(D.gbranches).map((br, i) => `<div class="panel gtcol" style="left:${16 + i * 250}px"><div class="ph"><span>${D.gbranches[br]}</span></div><div class="gtgrid">${col(br)}</div></div>`).join('');
+    $('#page').querySelectorAll('[data-gt]').forEach(b => { b.onclick = () => { const r = g.spendGt(b.dataset.gt); if (r.ok) { tk('guild_talent', { id: b.dataset.gt, rank: g.perkLevel(b.dataset.gt) }); snd('click'); } else snd('deny'); hubTip(r.ok ? D.gtree[b.dataset.gt].name + ' +1' : r.reason); showHub(); }; });
   }
 
   // ================= 设置菜单(Esc)与全屏 =================
@@ -11995,12 +12077,25 @@ var SCN = (function () {
     btn.loot.querySelector('#segBox').innerHTML = segHTML(); bindSeg(btn.loot);
   }
   const LOOT_ORDER = ['master', 'roll', 'dkp'];
-  const segHTML = () => `<div class="seg" data-tip="装备怎么分:<br><b>团长</b> 你拖给谁就是谁的,没分到的人会不服<br><b>Roll</b> 想要的人掷点,怨气小得多<br><b>DKP</b> 攒分竞拍,几乎没人有怨气"><i style="left:${LOOT_ORDER.indexOf(g.lootMode) * 33.333}%"></i>${LOOT_ORDER.map(m => `<span class="${g.lootMode === m ? 'on' : ''}" data-lm="${m}">${{ master: '团长', roll: 'Roll', dkp: 'DKP' }[m]}</span>`).join('')}</div>`;
-  function bindSeg(root, after) { root.querySelectorAll('[data-lm]').forEach(b => { b.onclick = e => { e.stopPropagation(); setLootMode(b.dataset.lm); if (after) after(); }; }); }
+  const LQ_WORD = { green: '绿', rare: '蓝', epic: '紫' };
+  const segHTML = () => `<div class="seg" data-tip="装备怎么分:<br><b>团长</b> 你拖给谁就是谁的,没分到的人会不服<br><b>Roll</b> 想要的人掷点,怨气小得多<br><b>DKP</b> 攒分竞拍,几乎没人有怨气"><i style="left:${LOOT_ORDER.indexOf(g.lootMode) * 33.333}%"></i>${LOOT_ORDER.map(m => `<span class="${g.lootMode === m ? 'on' : ''}" data-lm="${m}">${{ master: '团长', roll: 'Roll', dkp: 'DKP' }[m]}</span>`).join('')}</div>` +
+    `<div class="lqrow" data-tip="拾取门槛:<b style='color:var(--${g.lootQ})'>${D.quality[g.lootQ].label}</b>及以上按上面选的方式分;更低的装备大家自动按需求 / 贪婪 Roll,不用你操心"><small>门槛</small>${D.lootRule.quals.map(q => `<i class="lqc${g.lootQ === q ? ' on' : ''}" data-lq="${q}" style="--qc:var(--${q})">${LQ_WORD[q] || D.quality[q].label}</i>`).join('')}</div>`;
+  function bindSeg(root, after) {
+    root.querySelectorAll('[data-lm]').forEach(b => { b.onclick = e => { e.stopPropagation(); setLootMode(b.dataset.lm); if (after) after(); }; });
+    root.querySelectorAll('[data-lq]').forEach(b => { b.onclick = e => { e.stopPropagation(); setLootQ(b.dataset.lq); if (after) after(); }; });
+  }
+  function setLootQ(q) {
+    if (g.lootQ === q || !g.setLootQ(q)) return;
+    snd('click'); save();
+    if (g.dungeon) { refreshMeta(); log(`团长:${D.quality[q].label}以下的装备大家自己 Roll。`, 'cmd'); if (phase === 'loot' && !g.auto) lootGo(); }
+  }
+  // 地上的装备怎么走:有不归团长分的(门槛以下,或者选的是 Roll / DKP)先一件件分掉,剩下的等团长拖
+  const notMaster = l => g.auto || g.lootModeOf(l.item) !== 'master';
+  function lootGo() { if (g.loot.some(notMaster)) rollAll(); else if (g.loot.length) showLootBar(); }
   function setLootMode(m) {
     if (g.lootMode === m) return;
     g.lootMode = m; snd('click'); save();
-    if (g.dungeon) { refreshMeta(); log(LOOT_MODE[m][1], 'cmd'); if (phase === 'loot' && !g.auto) { if (m !== 'master') rollAll(); else showLootBar(); } }
+    if (g.dungeon) { refreshMeta(); log(LOOT_MODE[m][1], 'cmd'); if (phase === 'loot' && !g.auto) lootGo(); }
   }
   const LOOT_MODE = { master: ['团长', '团长:以后装备我来分。'], roll: ['Roll', '团长:以后装备大家自己 Roll。'], dkp: ['DKP', '团长:以后按 DKP 来,想要的自己出分。'] };
   function toggleLootMode() { if (phase !== 'hub') setLootMode(LOOT_ORDER[(LOOT_ORDER.indexOf(g.lootMode) + 1) % 3]); }
@@ -12633,7 +12728,7 @@ var SCN = (function () {
       log(`获得 ${r.gold} 金币`, 'good');
       r.revealed.forEach(x => announce(x.uid, x.trait)); flushNews();
       if (r.xp) log(`每人获得 ${r.xp} 点经验`, 'good');
-      if (r.guildUp) { log(`<b style="color:#ffe14d">公会升到了 ${g.glevel} 级</b>,获得 1 点公会天赋`, 'good'); later(() => snd('fanfare'), 900); }
+      if (r.guildUp) { log(`<b style="color:#ffe14d">公会升到了 ${g.glevel} 级</b>,获得 ${r.guildUp * D.guildPointsPerLevel} 点公会天赋`, 'good'); later(() => snd('fanfare'), 900); }
       g.dquests.forEach(q => { if (q.prog >= q.need && !q.told) { q.told = true; log('<b style="color:#8fe07a">副本委托完成</b>,回公会的任务页领奖', 'good'); } });
       r.levelups.forEach((x, i) => later(() => {
         const f = floatText(x.uid, `升级!${x.level} 级`, 'gain'); f.style.setProperty('--qc', '#ffe14d');
@@ -12698,7 +12793,7 @@ var SCN = (function () {
     const shout = {}; // 想要的人先喊
     drops.forEach(d => g.partyHeroes().forEach(h => { const w = g.want(h, d.item); if (!shout[h.uid] && (w.level === 'need' || (w.level === 'greed' && g.hasLine(h, 'greed')))) shout[h.uid] = w.level; }));
     Object.keys(shout).forEach((id, i) => later(() => speak(id, shout[id] === 'need' ? 'need' : 'greed'), 700 + i * 650));
-    if (g.auto || g.lootMode !== 'master') later(rollAll, 1500); else showLootBar();
+    if (drops.some(notMaster)) later(rollAll, 1500); else showLootBar();
   }
   let lootLeft = 0, lootTickId = 0;
   function showLootBar() {
@@ -12709,7 +12804,7 @@ var SCN = (function () {
     lb.querySelector('.go').onclick = all;
     const id = ++lootTickId; // 太久不分,自动入库
     const tick = () => {
-      if (id !== lootTickId || phase !== 'loot' || g.auto || g.lootMode !== 'master') return;
+      if (id !== lootTickId || phase !== 'loot' || g.auto || g.loot.some(notMaster)) return;
       const e = $('#lootT'); if (e) e.textContent = lootLeft + 's';
       if (lootLeft-- <= 0) { log('太久没分,装备自动收进了公会仓库。', 'info'); all(); } else later(tick, 1000);
     };
@@ -12773,15 +12868,17 @@ var SCN = (function () {
   const CH = { need: '🎲 需求', need2: '🎲 副需求', greed: '<i class="coin"></i> 贪婪' }; // 副需求:能穿但不是本甲,本甲职业没人要才轮到
   function rollAll() {
     if (phase !== 'loot' || autoBusy) return;
-    const dkp = g.lootMode === 'dkp';
-    const lb = $('#lootBar'); lb.className = 'show'; lb.innerHTML = dkp ? 'DKP' : 'Roll';
     if (!g.loot.length) { leaveLoot(800); return; }
+    const cur = g.loot.find(notMaster);
+    if (!cur) { showLootBar(); return; } // 剩下的都归团长分
+    const dkp = g.lootModeOf(cur.item) === 'dkp', below = g.lootMode !== 'roll' && g.lootModeOf(cur.item) === 'roll';
+    const lb = $('#lootBar'); lb.className = 'show'; lb.innerHTML = dkp ? 'DKP' : 'Roll';
     autoBusy = true;
-    const uid = g.loot[0].uid, r = dkp ? g.dkpLoot(uid) : g.rollLoot(uid), parts = r.rolls.filter(x => x.choice !== 'pass');
+    const uid = cur.uid, r = dkp ? g.dkpLoot(uid) : g.rollLoot(uid), parts = r.rolls.filter(x => x.choice !== 'pass');
     const word = x => (x.choice === 'bid' ? '出 ' + x.roll + ' 分' : CH[x.choice] + ' ' + x.roll);
     if (r.fallback) log('没人出得起分,这件改成 Roll。', 'info');
     parts.forEach(x => bubble(x.uid, word(x)));
-    log(`🎲 <span style="color:var(--${r.item.q})">【${r.item.name}】</span> ${dkp && !r.fallback ? 'DKP 竞拍' : '开始掷点'}`, 'rollhd');
+    log(`🎲 <span style="color:var(--${r.item.q})">【${r.item.name}】</span> ${dkp && !r.fallback ? 'DKP 竞拍' : below ? '门槛以下,大家自己掷点' : '开始掷点'}`, 'rollhd');
     if (!parts.length) log('没有人要', 'roll');
     parts.slice().sort((a2, b2) => b2.roll - a2.roll).forEach(x => log(x.choice === 'bid' ? `${x.name} 出价 <b>${x.roll}</b> 分` : `${x.name} 掷出 <b>${x.roll}</b> (1-100) <i>${CH[x.choice]}</i>`, 'roll' + (x.uid === r.winner ? ' win' : '')));
     if (r.winner) log(`★ ${g.hero(r.winner).name} 赢得了 <span style="color:var(--${r.item.q})">【${r.item.name}】</span>`, 'rollwin');

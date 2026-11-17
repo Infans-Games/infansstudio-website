@@ -1950,6 +1950,29 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .aur u.rdr.ending { animation: aurEnd var(--aurBlink, .5s) ease-in-out infinite alternate; }
 @keyframes aurEnd { to { filter: brightness(1.7); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35), 0 0 6px var(--c); } }
 
+/* ---------- 第二批界面迭代 ---------- */
+/* 新手:没教到的页签上锁 */
+.tab.tlock { opacity: .5; cursor: not-allowed; }
+/* 分装备时队员散开:滑过去,不是瞬移 */
+#stage.lootspread .token.hero { transition: left .55s ease-out, top .55s ease-out; }
+/* 装备说明里的小提示 */
+.tt-hint { font-size: 11px; color: #8a7a5a; margin-top: 1px; }
+/* 副本卡片:描述最多两行(全文在悬停里);节点多了分上下两行 */
+.dcard p.ddesc { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 0; cursor: help; }
+.nodes2 { display: flex; flex-direction: column; gap: 4px; }
+/* 角色卡:装备格单独一行,士气和耐久一行 */
+.rcard .md.gd { display: flex; justify-content: center; }
+.rcard .chips:empty { display: none; }
+/* 公会大厅右边的角色详情:一页放完不滚动。随身药水挪到「技能」标题行(不再把技能那排挤成两行),各段间距收紧 */
+.detail .dsec h4 .potpick { margin-left: auto; display: inline-flex; align-items: center; gap: 3px; height: 24px; padding: 0 8px 0 3px; border-radius: 12px; border: 1px solid #5d4320; background: #24170e; cursor: pointer; font: 700 12px var(--ui); color: var(--text); letter-spacing: 0; }
+.detail .dsec h4 .potpick .potsvg { width: 18px; height: 18px; }
+.detail .dsec h4 .potpick.none { padding: 0 8px; color: var(--muted); border-style: dashed; }
+.detail .dsec h4 .potpick:hover { border-color: #ffd45a; }
+.detail .dsec h4 .potpick + .hbtn.mini { margin-left: 0; }
+.detail .dsec { margin-bottom: 4px; padding: 4px 10px 5px; }
+.detail .dsec h4 { margin-bottom: 3px; }
+.detail .dsec.mf { gap: 4px; }
+
 </style>
 </head>
 <body>
@@ -2016,7 +2039,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1713";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1801";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -10017,7 +10040,7 @@ var SCN = (function () {
   // v 版本;off 关掉了;done 每一步做没做过;drop 主动提醒被放下了几次(两次就不再提)
   function st() {
     const g = api.g;
-    if (!g.tut) g.tut = { v: 1, off: Object.keys(g.kills || {}).length > 0, done: {}, drop: {} }; // 老存档(已经打过副本)默认不教,设置里能打开
+    if (!g.tut) g.tut = { v: 1, off: Object.keys(g.kills || {}).length > 0, done: {}, drop: {}, fresh: !seenKey() }; // 老存档(已经打过副本)默认不教,设置里能打开;fresh:这台设备第一次玩时建的公会(页签和技能预告教到才开)
     if (!g.tut.done) g.tut.done = {};
     if (!g.tut.drop) g.tut.drop = {};
     return g.tut;
@@ -10025,6 +10048,7 @@ var SCN = (function () {
   const isDone = id => !!st().done[id];
   // 第一次玩不让跳过:这台设备上还没走完过教学本(熔渣裂口打通一次)之前,没有「别教了」,设置里也关不掉。走完过一次(比如再建新公会)就能跳
   const SEEN_KEY = 'raidleader_tut_seen';
+  function seenKey() { try { return localStorage.getItem(SEEN_KEY) === '1'; } catch (e) { return true; } }
   const markSeen = () => { try { localStorage.setItem(SEEN_KEY, '1'); } catch (e) { /* 存不了就算了 */ } };
   const canSkip = () => { if (st().done.slag_clear) { markSeen(); return true; } try { return localStorage.getItem(SEEN_KEY) === '1'; } catch (e) { return true; } };
   // 教学本的那一趟:这个存档第一次打熔渣裂口(没打通过、没关引导、不是英雄、没挂机)。只有这时候才有教学专用的安排
@@ -10234,7 +10258,8 @@ var SCN = (function () {
       after: c => ({ who: c.tank, say: L.dragout_after }) },
 
     // —— 第 4 关(小首领):只看一样,首领技能预告 ——
-    { id: 'dbm', chap: 'later', later: true, scene: 'fight', when: c => c.sim.t >= 2 && !!$('#dbm .dbi'), hold: true,
+    { id: 'dbm', chap: 'later', later: true, scene: 'fight', when: c => { const b = c.boss(); return c.sim.t >= 2 && !!b && !!b.def.script && !!$('#dbm'); }, hold: true,
+      enter: c => c.api.flush && c.api.flush(), // 预告条教到这一步才出现:暂停中也先画出来
       who: 'tank', say: L.dbm, point: () => ['#dbm'], done: { tap: true } },
 
     // —— 第 5 关(小怪):背后冲出来的怪咬后排,让坦克去接(首领叫出来的小怪咬人时也算)——
@@ -10317,13 +10342,13 @@ var SCN = (function () {
       after: c => { const h = c.g.roster[c.g.roster.length - 1]; return c.g.roster.length > c.x.n ? { who: h.uid, say: c.g.party.indexOf(h.uid) >= 0 ? L.tav_in : L.tav_out } : null; } },
 
     // —— 任务:任务板上有活儿、又有人手的时候 ——
-    { id: 'q0', chap: 'quest', scene: 'hub:guild', nudge: true, need: ['tav1'], when: c => c.g.quests.board.length > 0 && c.g.quests.active.length < c.g.questSlots(),
+    { id: 'q0', chap: 'quest', scene: 'hub:guild', nudge: true, need: ['t2'], when: c => c.g.quests.board.length > 0 && c.g.quests.active.length < c.g.questSlots(),
       who: 'dps', say: L.q0, point: () => ['.tab[data-tab="quest"]'], done: { poll: c => c.api.tab === 'quest' }, late: { sec: 45, drop: true } },
     { id: 'q1', chap: 'quest', scene: 'hub:quest', when: c => !!$('.wpin') && { n: c.g.quests.active.length },
       who: 'dps', say: L.q1, point: () => ['.wpin'], done: { tap: true, poll: c => c.g.quests.active.length > c.x.n || !!$('[data-go]') } },
 
     // —— 拍卖行:仓库里攒了东西的时候 ——
-    { id: 'b0', chap: 'bank', scene: 'hub:guild', nudge: true, need: ['q1'], when: c => c.g.bank.length > 0,
+    { id: 'b0', chap: 'bank', scene: 'hub:guild', nudge: true, need: ['t2'], when: c => c.g.bank.length > 0,
       who: 'heal', say: L.b0, point: () => ['.tab[data-tab="bank"]'], done: { poll: c => c.api.tab === 'bank' }, late: { sec: 45, drop: true } },
     { id: 'b1', chap: 'bank', scene: 'hub:bank', at: 'bottom', when: () => !!$('.bankBox') && !!$('.atabs'),
       who: 'heal', say: L.b1, point: () => ['.bankBox .ph', '.atabs'], done: { tap: true } }
@@ -10362,6 +10387,8 @@ var SCN = (function () {
   // ---------- 一步的开始、完成、放下 ----------
   function begin(s, x) {
     cur = { s, c: ctx(x), t0: performance.now(), nagged: false, since: 0 };
+    const tb = Object.keys(TAB_STEP).find(k => TAB_STEP[k][0] === (s.as || s.id)); // 讲到哪个页签就把它解锁(之后没点进去也不再锁上)
+    if (tb) { const S = st(); S.open = S.open || {}; S.open[tb] = 1; api.save(); if (api.tabs) api.tabs(); }
     if (s.scene === 'fight' || s.scene === 'ready') roomSteps++;
     if (s.nudge) stay.chap = s.chap;
     if (s.hold) api.hold(true);
@@ -10582,6 +10609,17 @@ var SCN = (function () {
       api.snd('click'); api.save(); redraw();
     }; });
   };
+  // 新手的公会(fresh,这台设备第一次玩时建的、引导没关):酒馆 / 任务 / 拍卖行 / 公会天赋 讲到之前上锁,技能预告讲到之前不显示
+  const TAB_STEP = { tavern: ['tav0', 'tav1'], quest: ['q0', 'q1'], bank: ['b0', 'b1'], build: ['g0', 'g1'] };
+  const TAB_WHEN = { tavern: '队里有空位、钱也够招人时,队员会带你去酒馆', quest: '任务板上有活儿、又有人手时,队员会带你去', bank: '仓库里攒了装备以后,队员会带你去拍卖行', build: '公会升级、有了天赋点以后,队员会带你去点' };
+  const locksOn = () => { const S = st(); return !!S.fresh && !S.off && api.g.cleared() < 3; }; // 保底:通关三个副本以后全开,免得条件一直不满足被锁死
+  TUT.tabLock = function (t) {
+    if (!api || !api.g || !api.g.faction || !TAB_STEP[t] || !locksOn()) return '';
+    const S = st(), ids = TAB_STEP[t];
+    if ((S.open && S.open[t]) || ids.some(id => S.done[id]) || (cur && ids.indexOf(cur.s.as || cur.s.id) >= 0)) return '';
+    return TAB_WHEN[t];
+  };
+  TUT.taught = id => !api || !api.g || !locksOn() || !!st().done[id] || !!(cur && (cur.s.as || cur.s.id) === id);
   // 调试用:现在在教哪一步
   TUT.now = () => (cur ? cur.s.id : null);
 
@@ -10650,7 +10688,7 @@ var SCN = (function () {
   // 地方小的时候(花名册卡片、战斗里的头像框):只写"手上"那个,另外三个缩成小点,亮的是已经知道的
   // 战斗里的头像框:列出看出来的性格,没看出来的合成一个"?×几"(以前用小圆点,看不懂)
   const chipsShort = h => { const k = h.traits.filter(t => h.known[t]), n = h.traits.length - k.length; return k.map(chipOf).join('') + (n ? `<span class="chip unk" data-tip="还有 ${n} 个性格没看出来,一起多打几场就知道了">?×${n}</span>` : ''); };
-  const chipsMini = h => (h.known[h.traits[0]] ? chipOf(h.traits[0]) : UNK) + h.traits.slice(1).map(t => `<i class="tdot${KCL[D.traits[t].kind]}${h.known[t] ? ' on' : ''}" data-tip="${h.known[t] ? '【' + D.traits[t].name + '】' + D.traits[t].desc : kindName(t) + ':还不了解'}"></i>`).join('');
+  const chipsMini = h => h.traits.filter(t => h.known[t]).map(chipOf).join(''); // 只显示看出来的性格,没看出来的不占位
   // 角色页:四张固定位置的牌(手上 / 眼里 / 嘴上 / 家里),说明放在悬停里;没处出来的是背面朝上
   const traitCards = h => h.traits.map(t => { const k = D.traits[t].kind, kn = h.known[t]; return `<div class="trcard${KCL[k]}${kn ? '' : ' unk'}" data-tip="${kn ? '<b>' + D.traits[t].name + '</b>(' + kindName(t) + ')<br>' + D.traits[t].desc : '<b>' + kindName(t) + '</b>:还不了解。处久了、出了事,自然就知道了。'}"><small>${kindName(t)}</small><b>${kn ? D.traits[t].name : '???'}</b></div>`; }).join('');
   const traitRows = h => h.traits.map(t => (h.known[t] ? `<div class="trow"><small class="tkind">${kindName(t)}</small>${chipOf(t)}${D.traits[t].desc}</div>` : `<div class="trow unk"><small class="tkind">${kindName(t)}</small>${UNK} 还不了解,处久了才知道</div>`)).join('');
@@ -10677,7 +10715,9 @@ var SCN = (function () {
     r.enemies.forEach(k => { const e = D.enemies[k]; if (!e) return; cnt[e.name] = (cnt[e.name] || 0) + 1; Object.keys(e.abilities || {}).forEach(a => { const n = e.abilities[a].name; if (abil.indexOf(n) < 0) abil.push(n); }); });
     return '<b>' + (r.name || '') + '</b><br>' + Object.keys(cnt).map(n => n + (cnt[n] > 1 ? ' ×' + cnt[n] : '')).join('、') + (abil.length ? '<br><span style=&quot;color:#ffb39a&quot;>' + abil.join(' · ') + '</span>' : '') + (r.traps ? '<br>路上有陷阱' : '') + (r.ambush ? '<br>背后会来怪' : '');
   }
-  const trackHTML = (d, cur, bare) => `<div class="nodes${d.rooms.length > 6 ? ' many' : ''}" style="--ndw:${d.rooms.length > 6 ? Math.floor((bare ? 250 : 640) / d.rooms.length) : bare ? 50 : 92}px">${d.rooms.map((r, i) => { const kind = r.boss ? 'boss' : r.elite || r.tag === '精' ? 'elite' : 'trash'; return `<div class="nd ${kind}${r.mini ? ' minib' : r.boss ? ' bossn' : ''}${cur == null ? '' : i < cur ? ' done' : i === cur ? ' cur' : ''}" data-tip="${roomTip(r)}"><b>${SKULL(kind)}</b>${bare ? '' : `<span>${r.name || ''}</span>`}</div>`; }).join('')}</div>`;
+  const trackHTML = (d, cur, bare) => (bare && d.rooms.length > 8 ? trackRows(d) : trackHTML1(d, cur, bare));
+  const trackRows = d => { const k = Math.ceil(d.rooms.length / 2), a = Object.assign({}, d, { rooms: d.rooms.slice(0, k) }), b = Object.assign({}, d, { rooms: d.rooms.slice(k) }); return `<div class="nodes2">${trackHTML1(a, null, true, k)}${trackHTML1(b, null, true, k)}</div>`; }; // 副本卡片上节点太多:分上下两行
+  const trackHTML1 = (d, cur, bare, per) => `<div class="nodes${d.rooms.length > 6 ? ' many' : ''}" style="--ndw:${d.rooms.length > 6 ? Math.floor((bare ? 250 : 640) / d.rooms.length) : bare ? 50 : 92}px">${d.rooms.map((r, i) => { const kind = r.boss ? 'boss' : r.elite || r.tag === '精' ? 'elite' : 'trash'; return `<div class="nd ${kind}${r.mini ? ' minib' : r.boss ? ' bossn' : ''}${cur == null ? '' : i < cur ? ' done' : i === cur ? ' cur' : ''}" data-tip="${roomTip(r)}"><b>${SKULL(kind)}</b>${bare ? '' : `<span>${r.name || ''}</span>`}</div>`; }).join('')}</div>`;
   let tipTimer = null;
   function hubTip(text) { snd(/不够|满|不能|不需要/.test(text) ? 'deny' : 'coin'); const t = $('#hubTip'); t.textContent = text; t.classList.add('show'); clearTimeout(tipTimer); tipTimer = setTimeout(() => t.classList.remove('show'), 1800); }
   function partyWarn() {
@@ -10709,13 +10749,13 @@ var SCN = (function () {
     $('#gRep').textContent = gcap ? '声望已满' : '声望 ' + g.gxp + ' / ' + g.gxpNeed();
     $('#gXpFill').style.width = (gcap ? 100 : g.gxp / g.gxpNeed() * 100) + '%';
     $('#gId').classList.toggle('alert', gp > 0);
-    $('#gId').onclick = () => { snd('click'); showHub('build'); };
+    $('#gId').onclick = () => { if (TUT.tabLock('build')) { snd('deny'); return; } snd('click'); showHub('build'); };
     $('#bMenu').onclick = () => { snd('click'); showMenu(); };
     $('#bSortie').onclick = () => { snd('click'); showHub('dungeon'); };
     $('#bSortie').classList.toggle('on', tab === 'dungeon');
     $('#gGold').textContent = g.gold;
-    $('#tabs').innerHTML = [['tavern', '酒馆'], ['guild', '公会大厅'], ['quest', '任务' + (g.quests.active.some(q => Date.now() >= q.end) || g.dquests.some(q => q.prog >= q.need) ? ' ●' : '')], ['bank', '拍卖行'], ['build', '公会天赋' + (gp > 0 ? ' ●' : '')]].map(x => `<div class="tab${tab === x[0] ? ' on' : ''}" data-tab="${x[0]}">${x[1]}</div>`).join('');
-    $('#tabs').querySelectorAll('.tab').forEach(b => { b.onclick = () => { snd('click'); showHub(b.dataset.tab); }; });
+    $('#tabs').innerHTML = [['tavern', '酒馆'], ['guild', '公会大厅'], ['quest', '任务' + (g.quests.active.some(q => Date.now() >= q.end) || g.dquests.some(q => q.prog >= q.need) ? ' ●' : '')], ['bank', '拍卖行'], ['build', '公会天赋' + (gp > 0 ? ' ●' : '')]].map(x => { const lk = TUT.tabLock(x[0]); return lk ? `<div class="tab tlock" data-tab="${x[0]}" data-tip="${lk}">${x[1].replace(' ●', '')} 🔒</div>` : `<div class="tab${tab === x[0] ? ' on' : ''}" data-tab="${x[0]}">${x[1]}</div>`; }).join(''); // 新手:教到之前上锁
+    $('#tabs').querySelectorAll('.tab').forEach(b => { b.onclick = () => { if (b.classList.contains('tlock')) { snd('deny'); return; } snd('click'); showHub(b.dataset.tab); }; });
 
     g.questTick(); g.dquestTick(); g.ahTick(Date.now());
     const gone = g.processQuits(); // 去意已决的人,回到公会就走了
@@ -10736,7 +10776,7 @@ var SCN = (function () {
     if (!g.hero(selUid)) selUid = g.roster[0].uid;
     const sel = g.hero(selUid), st = g.stats(sel), c = cdef(sel), inParty = g.party.indexOf(sel.uid) >= 0, mw = moodOf(sel), mHide = g.moodHidden(sel), fv = g.friendView(sel), gv = g.guideView(sel);
     let cards = g.roster.map(h => `<div class="rcard${h.uid === selUid ? ' sel' : ''}" data-uid="${h.uid}" data-drag="${h.uid}">${h.mood < D.quitMood && !g.moodHidden(h) ? '<div class="badge r">想退团</div>' : g.busy(h.uid) ? '<div class="badge q">任务中</div>' : g.party.indexOf(h.uid) >= 0 ? '<div class="badge">出战</div>' : ''}${brkIco(h)}${figure(h)}
-      <div class="nm" style="color:${cdef(h).color}">${h.name} <small style="color:#ffd45a">${h.level}级</small>${g.freePoints(h) > 0 ? ' <small class="tp">+' + g.freePoints(h) + '</small>' : ''}</div><div class="cl">${specName(h)} · ${cdef(h).role}</div><div class="chips">${chipsMini(h)}</div><div class="md">${gearDots(h)} ${moodHTML(h)}</div><div class="md" style="margin-top:1px">${durHTML(h)}</div></div>`).join('');
+      <div class="nm" style="color:${cdef(h).color}">${h.name} <small style="color:#ffd45a">${h.level}级</small>${g.freePoints(h) > 0 ? ' <small class="tp">+' + g.freePoints(h) + '</small>' : ''}</div><div class="cl">${specName(h)} · ${cdef(h).role}</div><div class="chips">${chipsMini(h)}</div><div class="md gd">${gearDots(h)}</div><div class="md">${moodHTML(h)}${durHTML(h) ? ' · ' + durHTML(h) : ''}</div></div>`).join(''); // 装备格一行,士气和耐久一行
     const capNow = g.rosterCap(), capMax = Math.min(D.rosterMax, Math.max(10, Math.ceil((capNow + 1) / 5) * 5));
     for (let i = g.roster.length; i < capMax; i++) cards += i < capNow ? `<div class="rcard empty"></div>` : `<div class="rcard empty lockd" data-tip="公会每升一级多一个位置">🔒</div>`;
     const ph = g.partyHeroes(), warn = partyWarn();
@@ -10761,8 +10801,8 @@ var SCN = (function () {
           <div class="xpbar"><i style="width:${sel.level >= g.cap() ? 100 : sel.xp / g.xpNeed(sel) * 100}%"></i><b>${sel.level >= g.cap() ? (g.cap() < D.levelCap ? '已到本版本上限' : '已满级') : '经验 ' + sel.xp + ' / ' + g.xpNeed(sel)}</b></div>
           <div class="sheet">${g.sheet(sel).map(x => `<span>${x[0]}<b>${x[1]}</b></span>`).join('')}</div></div></div>
 
-        <div class="dsec"><h4>技能<span class="hbtn mini${freeP > 0 ? '' : ' sec'}" id="bTalent">天赋与技能${freeP > 0 ? ' · ' + freeP + ' 点可用' : ''}</span></h4>
-          <div class="bsk">${D.auras[sel.cls] ? ico('party', `<b>${D.auras[sel.cls].name}</b><br>光环(对全队生效,同职业不叠加):${D.auras[sel.cls].desc}`, 'aura') : ''}${c.basics.map(b => ico(basicKey(b), `<b>${b.name}</b><br>基础技能(没有冷却,一直在用):${b.desc}`)).join('')}${g.autos(sel).map(a => ico(a.kind, `<b>${a.name}</b><br>他自己看情况放(冷却 ${a.cd} 秒):${a.desc}`, 'tal')).join('')}${bigNow ? ico(bigNow.kind, `<b>${bigNow.name}</b><br>归你喊的技能(冷却 ${bigNow.cd} 秒):${bigNow.desc}`, 'cmd') : ico('none', '还没学会技能。10 级学会第一个', 'none')}${potChip(sel)}</div></div>
+        <div class="dsec"><h4>技能${potChip(sel)}<span class="hbtn mini${freeP > 0 ? '' : ' sec'}" id="bTalent">天赋与技能${freeP > 0 ? ' · ' + freeP + ' 点可用' : ''}</span></h4>
+          <div class="bsk">${D.auras[sel.cls] ? ico('party', `<b>${D.auras[sel.cls].name}</b><br>光环(对全队生效,同职业不叠加):${D.auras[sel.cls].desc}`, 'aura') : ''}${c.basics.map(b => ico(basicKey(b), `<b>${b.name}</b><br>基础技能(没有冷却,一直在用):${b.desc}`)).join('')}${g.autos(sel).map(a => ico(a.kind, `<b>${a.name}</b><br>他自己看情况放(冷却 ${a.cd} 秒):${a.desc}`, 'tal')).join('')}${bigNow ? ico(bigNow.kind, `<b>${bigNow.name}</b><br>归你喊的技能(冷却 ${bigNow.cd} 秒):${bigNow.desc}`, 'cmd') : ico('none', '还没学会技能。10 级学会第一个', 'none')}</div></div>
 
         <div class="dsec"><h4>性格<span class="h4s">并肩 ${sel.fights || 0} 场 · 指上去看说明</span></h4><div class="trgrid">${traitCards(sel)}</div></div>
 
@@ -10882,7 +10922,7 @@ var SCN = (function () {
       const lvTxt = !ph.length ? '' : `<span data-tip="${ph.map(h => h.name + ' ' + h.level + ' 级:经验 ' + xp(g.xpMult(h, d))).join('<br>')}" style="color:${x1 === 0 ? '#8a8a8a' : x0 < 1 ? '#c9b98a' : x1 > 1 ? '#9aff8a' : '#ffe9a0'}">${x1 === 0 ? '没有经验' : '经验 ' + (x0 === x1 ? xp(x0) : xp(x0) + ' ~ ' + xp(x1))}</span>`;
       return `<div class="panel dcard${open ? '' : ' lock'}" style="left:${14 + i * 252}px">
         <div class="ban" style="background:radial-gradient(ellipse at 50% 100%, ${bg[d.pal]})"><div class="fig" style="width:${boss.fig[0] * 0.8}px;height:${boss.fig[1] * 0.8}px">${ART.enemy(boss.art, boss.pal)}</div></div>
-        <h2>${d.name}</h2><div class="lv">${d.min}–${d.max} 级 · ${d.raid ? `<b style="color:#ff9a7a" data-tip="进门时选十人或二十五人,每个首领开打前选普通 / 英雄 / 史诗。<br>团本按周存进度:杀过的首领这一周不再出现,回公会再进来接着打。<br>离重置还有 ${Math.ceil(g.weekLeft() / 60)} 分钟(按游玩时间算)">${g.raidSizeLocked(d) ? g.raidSize(d) + ' 人' : ''}团本 · 本周 ${g.raidKilled(d)} / ${d.bosses.length}</b>` : d.size + ' 人副本'}</div><p>${d.desc}</p>${trackHTML(d, null, true)}
+        <h2>${d.name}</h2><div class="lv">${d.min}–${d.max} 级 · ${d.raid ? `<b style="color:#ff9a7a" data-tip="进门时选十人或二十五人,每个首领开打前选普通 / 英雄 / 史诗。<br>团本按周存进度:杀过的首领这一周不再出现,回公会再进来接着打。<br>离重置还有 ${Math.ceil(g.weekLeft() / 60)} 分钟(按游玩时间算)">${g.raidSizeLocked(d) ? g.raidSize(d) + ' 人' : ''}团本 · 本周 ${g.raidKilled(d)} / ${d.bosses.length}</b>` : d.size + ' 人副本'}</div><p class="ddesc" data-tip="${d.desc}">${d.desc}</p>${trackHTML(d, null, true)}
         ${d.bosses.length > 1 && open ? '' : `<div class="rec"><b>${boss.short}</b>${kills ? ' ×' + kills : ''}</div>`}${open ? coreLoot(d) : ''}
         ${open && d.raid && g.raidDone(d) ? `<div class="lk" style="color:#8fe07a">本周已通关 · ${Math.ceil(g.weekLeft() / 60)} 分钟后重置</div>` : open ? `<span class="hbtn${ph.length ? '' : ' dis'}" data-d="${d.id}">${d.raid && g.raidAt(d) > 0 ? '继续' : '出发'}</span>${g.heroicOpen(d) ? `<span class="hbtn red hero${ph.length ? '' : ' dis'}" data-d="${d.id}" data-h="1" data-tip="英雄难度:怪按 ${g.heroicLv(d)} 级算而且更狠,只有精英和首领掉装备(${g.heroicLv(d)} 级紫装),还掉徽章">英雄${g.hkills[d.id] ? ' ×' + g.hkills[d.id] : ''}</span>` : ''}` : g.verLocked(d) ? `<div class="lk">🔒 ${D.versions[d.level > 60 ? 70 : 60].short}开放</div>` : `<div class="lk">🔒 打通${(d.after ? D.dungeons.find(x => x.id === d.after) : D.dungeons[i - 1]).name}后${d.raid ? '开放' : '解锁'}</div>`}</div>`;
     }).join('') + '</div></div>' +
@@ -11673,7 +11713,15 @@ var SCN = (function () {
   });
   // 装备的悬浮说明。who: 顺带列出哪些人想要
   // 装备信息卡片。who: 顺带列出哪些人想要;h + slot: 这件正穿在谁身上(显示耐久、附魔宝石、套装件数)
+  let tipShift = false, lastItemTip = null; // 按住 Shift:装备说明里展开所有职业的套装效果
+  addEventListener('keydown', e => { if (e.key === 'Shift' && !tipShift) { tipShift = true; reTipItem(); } });
+  addEventListener('keyup', e => { if (e.key === 'Shift') { tipShift = false; reTipItem(); } });
+  addEventListener('blur', () => { tipShift = false; });
+  function reTipItem() { const t = $('#tip'); if (lastItemTip && t.style.display === 'block' && t.innerHTML === lastItemTip.html) tip(itemTip.apply(null, lastItemTip.args)); }
   function itemTip(it, who, h, slot) {
+    const html = itemTip0(it, who, h, slot); lastItemTip = { args: [it, who, h, slot], html }; return html;
+  }
+  function itemTip0(it, who, h, slot) {
     const L = [], w = t => L.push('<div class="tt-w">' + t + '</div>'), gr = t => L.push('<div class="tt-g">' + t + '</div>');
     L.push(`<div class="tt-name" style="color:var(--${it.q})">${it.name}</div><div class="tt-ilv">物品等级 ${it.ilv}</div>`);
     if (it.diff) L.push(`<div class="tt-dif d${it.diff}">${D.gearTier.tag[it.diff]}</div>`);
@@ -11713,8 +11761,11 @@ var SCN = (function () {
       L.push(`<div class="tt-set">${S.name} (${n}/${S.pieces.length})</div>` + S.pieces.map(p => `<div class="tt-pc${worn.indexOf(p) >= 0 ? ' on' : ''}">${D.items[p].name}</div>`).join(''));
       L.push('<div style="height:5px"></div>');
       if (h) g.setLines(h).forEach(b => L.push(`<div class="${n >= b.n ? 'tt-g' : 'tt-gy'}">(${b.n}) 套装:${b.text}。</div>`));
-      else if (S.cls) D.classes[S.cls].trees.forEach(t => D.specSet[t.id].forEach(b => L.push(`<div class="tt-gy">(${b.n}) <span style="color:${D.classes[S.cls].color}">${t.name}</span>:${b.text}。</div>`))); // 职业套:列出这个职业三个专精各自的效果
-      else Object.keys(D.classArmor).filter(cid => D.classArmor[cid] === D.items[S.pieces[0]].type).forEach(cid => D.classSet[cid].forEach(b => L.push(`<div class="tt-gy">(${b.n}) <span style="color:${D.classes[cid].color}">${D.classes[cid].name}</span>:${b.text}。</div>`)));
+      else { // 没有具体的人(仓库、拍卖行):默认只列谁能用,按住 Shift 再展开各自的 2 件 / 4 件效果
+        const rows = S.cls ? D.classes[S.cls].trees.map(t => ({ name: t.name, color: D.classes[S.cls].color, bs: D.specSet[t.id] })) : Object.keys(D.classArmor).filter(cid => D.classArmor[cid] === D.items[S.pieces[0]].type).map(cid => ({ name: D.classes[cid].name, color: D.classes[cid].color, bs: D.classSet[cid] }));
+        if (tipShift) rows.forEach(x => x.bs.forEach(b => L.push(`<div class="tt-gy">(${b.n}) <span style="color:${x.color}">${x.name}</span>:${b.text}。</div>`)));
+        else L.push(`<div class="tt-gy">套装效果看${S.cls ? '专精' : '职业'}:${rows.map(x => `<span style="color:${x.color}">${x.name}</span>`).join(' / ')}</div><div class="tt-hint">按住 Shift 看各自的效果</div>`);
+      }
     }
     if (it.flavor) L.push(`<div class="tt-fl">"${it.flavor}"</div>`);
     w(`出售价格:<i class="coin"></i> ${g.sellPrice(it.id)}`);
@@ -12483,7 +12534,7 @@ var SCN = (function () {
   const dbmPop = e => { e.classList.add('dbpop'); e.removeAttribute('data-tip'); setTimeout(() => e.remove(), 520); }; // 到点:放大闪一下再消失
   function drawDbm() {
     const box = $('#dbm'), boss = sim && sim.enemies.find(e => e.alive && e.def.boss && e.def.script);
-    if (!PREF.dbm || !boss || phase !== 'fight') { if (box.firstChild) { box.innerHTML = ''; dbmEls = {}; } dbmIdx = null; return; }
+    if (!PREF.dbm || !boss || phase !== 'fight' || !TUT.taught('dbm')) { if (box.firstChild) { box.innerHTML = ''; dbmEls = {}; } dbmIdx = null; return; }
     if (!box.firstChild) { box.innerHTML = '<div class="dbline"></div><div class="dbnow"></div><div class="dbtrack"></div>'; dbmEls = {}; }
     const track = box.lastChild, d = boss.def, rate = (d.pace || 1) * (boss.phase === 2 ? d.phase2Speed || 1 : 1), wait = boss.cast ? boss.cast.dur - boss.cast.t : 0, seen = {};
     // 刚放出来的那个技能:首领的技能序号变了,上一个序号就是刚放的。它那个图标先闪掉,下一轮的另起一个从右边进来(不再倒着滑回去)
@@ -12574,6 +12625,22 @@ var SCN = (function () {
     const A = g.dungeon && !g.roomDef().boss ? D.roadArena : D.arena, dx = (x - A.cx) / A.rx, dy = (y - A.cy) / A.ry, d = Math.hypot(dx, dy);
     return d <= 0.9 ? { x, y } : { x: A.cx + dx / d * A.rx * 0.9, y: A.cy + dy / d * A.ry * 0.9 };
   }
+  // 分装备:队员挤成一团就没法把装备拖给"具体的那个人"。只在画面上把活着的人摆开(一排最多 8 个,隔开 110 像素),避开装备落地的位置
+  function lootSpread(pts) {
+    if (!sim) return;
+    const hs = sim.heroes.filter(h => h.alive); if (hs.length < 2) return;
+    const A = g.roomDef().boss ? D.arena : D.roadArena, per = 8, gap = Math.min(120, (A.rx * 1.5) / Math.min(per - 1, hs.length - 1 || 1)), rows = Math.ceil(hs.length / per);
+    const ys = pts.length ? pts.map(p => p.y) : [A.cy - 40], lootY = ys.reduce((a, y) => a + y, 0) / ys.length, below = lootY < A.cy + 20; // 装备在上半边就排到下面,反之排到上面
+    const y0 = below ? Math.max(Math.max.apply(null, ys) + 115, A.cy + 40) : Math.min(Math.min.apply(null, ys) - 40, A.cy - 30), dy = below ? 62 : -62; // 小人的脚在 y 上、身子往上长,所以排在下面要多让一点
+    const order = hs.slice().sort((a, b) => a.pos.x - b.pos.x); // 按原来的左右顺序排,走的路短
+    order.forEach((h, i) => {
+      const r = Math.floor(i / per), inRow = Math.min(per, order.length - r * per), c = i - r * per;
+      const p = clampToArena(A.cx + (c - (inRow - 1) / 2) * gap + (r % 2 ? gap / 2 : 0) * 0, y0 + r * dy);
+      h.pos.x = p.x; h.pos.y = p.y; h.dest = null;
+    });
+    stage.classList.add('lootspread'); setTimeout(() => stage.classList.remove('lootspread'), 700);
+    render();
+  }
   function enterLoot(drops) {
     phase = 'loot'; later(() => snd('loot'), 250);
     // 暗黑式掉落:从怪倒下的地方蹦出来,划一道弧线落地弹一下,落地后升起一道品质色的光柱,脚下挂名牌
@@ -12582,7 +12649,7 @@ var SCN = (function () {
     drops.forEach((d, i) => {
       const p = pts[i];
       const t = el('div', 'loot lq-' + d.item.q + (d.rare ? ' lrare' : ''), `<i class="lbeam"></i><i class="lshadow"></i><div class="lic">${ART.item(d.item)}</div><span class="lname${i % 2 ? ' lo' : ''}">${d.item.name}</span>`);
-      t.dataset.loot = d.uid; t.dataset.item = d.id; t.dataset.who = 'roster'; // 鼠标放上去或手指按住能看装备详情 t.style.setProperty('--qc', `var(--${d.item.q})`);
+      t.dataset.loot = d.uid; t.dataset.item = d.id; t.dataset.who = 'roster'; t.style.setProperty('--qc', `var(--${d.item.q}, #e8e0d0)`); // 鼠标放上去或手指按住能看装备详情;--qc 是品质色(描边、光柱、名牌)
       t.style.setProperty('--fx', (ox - p.x) + 'px'); t.style.setProperty('--fy', (oy - p.y) + 'px'); t.style.setProperty('--dl', (i * 0.14) + 's');
       t.style.left = p.x + 'px'; t.style.top = p.y + 'px';
       t.onmouseenter = () => tip(itemTip(d.item, g.partyHeroes()));
@@ -12590,6 +12657,7 @@ var SCN = (function () {
       $('#lootLayer').appendChild(t);
       log(`${d.world ? '<b style="color:#ff9a2a">世界掉落!</b> ' : d.rare ? '<b style="color:#ff9a2a">稀有掉落!</b> ' : '掉落:'}<span style="color:var(--${d.item.q})">【${d.item.name}】</span>`, d.rare ? 'good' : 'info'); if (d.rare) { snd('fanfare'); flash('gold'); if (d.item.mount) warn('出坐骑了!'); else if (d.world) warn('世界掉落!'); }
     });
+    lootSpread(pts);
     const shout = {}; // 想要的人先喊
     drops.forEach(d => g.partyHeroes().forEach(h => { const w = g.want(h, d.item); if (!shout[h.uid] && (w.level === 'need' || (w.level === 'greed' && g.hasLine(h, 'greed')))) shout[h.uid] = w.level; }));
     Object.keys(shout).forEach((id, i) => later(() => speak(id, shout[id] === 'need' ? 'need' : 'greed'), 700 + i * 650));
@@ -12828,7 +12896,7 @@ var SCN = (function () {
   window.__game = { get sim() { return sim; }, get g() { return g; }, get phase() { return phase; }, useBig, doAssign, toggleAuto, flush, showHub, enterDungeon, showTalents, stash, gotoRoom: i => { g.room = i; beginRoom(); } }; // gotoRoom:调试用,直接跳到第几关
   // 新手引导(js/tutorial.js)要用到的东西都从这儿给它,引导的逻辑不写在这个文件里
   TUT.init({ get g() { return g; }, get sim() { return sim; }, get phase() { return phase; }, get tab() { return tab; }, get selUid() { return selUid; }, stage, tok, uf, btn,
-    hz: id => hzEl[id], def: cdef, head: h => ART.heroHead(h.cls, h.look), save, snd, flush,
+    hz: id => hzEl[id], def: cdef, head: h => ART.heroHead(h.cls, h.look), save, snd, flush, tabs: () => { if (phase === 'hub') showHub(); },
     hold: on => { paused = on; stage.classList.toggle('tuthold', on); if (!on) stage.classList.remove('paused'); },
     selHero: uid => { if (selUid !== uid) { selUid = uid; if (phase === 'hub' && tab === 'guild') showHub(); } },
     lootTime: n => { lootLeft = Math.max(lootLeft, n); } });

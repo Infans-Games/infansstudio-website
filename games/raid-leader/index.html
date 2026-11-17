@@ -1925,6 +1925,31 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .lksw.on, .lkout.on { box-shadow: 0 0 0 3px #ffd45a, 0 0 10px rgba(255, 212, 90, .6); }
 .lkout { width: 62px; height: 80px; border-radius: 8px; overflow: hidden; background: radial-gradient(#6a5038, #2a1b10); box-shadow: 0 0 0 1px #5d4320; cursor: pointer; } .lkout svg { display: block; width: 100%; height: 100%; }
 
+/* ---------- 界面迭代:点队名选整队、左右互换、技能预告到点闪一下 ---------- */
+/* 队名:一个统一样式的小牌子,五人 / 十人 / 二十五人都一样。点一下选中这一队 */
+.grp > u.gtag { display: flex; align-items: center; justify-content: center; gap: 3px; width: max-content; margin: 4px auto 0; padding: 1px 8px; border-radius: 9px; border: 1px solid #7a5622; background: linear-gradient(#3a2819, #22160d); color: #e8cf9a; font: 700 11px var(--ui); letter-spacing: 1px; cursor: pointer; box-shadow: 0 1px 2px rgba(0, 0, 0, .6); user-select: none; }
+.grp > u.gtag:hover { border-color: #ffe14d; color: #ffe14d; }
+.grp > u.gtag em { font-style: normal; font-size: 10px; opacity: .45; padding-left: 2px; } .grp > u.gtag em:hover { opacity: 1; }
+.grp > u.gtag.on { border-color: #7dff7a; color: #d8ffd0; background: linear-gradient(#2f5a26, #183214); box-shadow: 0 0 8px rgba(125, 255, 122, .7); }
+#stage.raid25 .grp > u.gtag { width: auto; margin: 0; padding: 1px 0; border-radius: 4px; font-size: 10px; letter-spacing: 0; overflow: hidden; white-space: nowrap; }
+#stage.raid25 .grp > u.gtag em { display: none; }
+.uf.gsel { outline: 2px solid #7dff7a; outline-offset: -2px; }
+/* 左右互换:队伍框架(连同左下角的挂机 / 分配)放右边,团队频道和伤害统计放左边 */
+#stage.swaplr #raid { left: auto; right: 12px; }
+#stage.swaplr #hudLoot { left: auto; right: 12px; }
+#stage.swaplr #logBox, #stage.swaplr #meter { left: 12px; }
+/* 技能预告:不显示秒数(滚动已经够清楚);位置由脚本逐帧平滑,不用 CSS 过渡(过渡会让到点的图标倒着滑回去) */
+#dbm .dbi { transition: none; }
+#dbm .dbi b { display: none; }
+#dbm .dbi.dbpop { animation: dbPop .5s ease-out forwards; z-index: 3; pointer-events: none; }
+#dbm .dbi.dbpop .ic { box-shadow: 0 0 0 2px #fff3c2, 0 0 16px #ffd45a; }
+@keyframes dbPop { 0% { transform: scale(1.18); filter: brightness(1); } 30% { transform: scale(1.75); filter: brightness(2.2); opacity: 1; } 100% { transform: scale(2.1); filter: brightness(1.4); opacity: 0; } }
+/* 怪身上的减益:魔兽那种雷达转圈(参数在 feel.js 的 FEEL.aura)。--p = 已经过去的比例,从 12 点钟顺时针盖暗色;角上只标层数 */
+.aur u.rdr::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: conic-gradient(var(--aurSwipe, rgba(0, 0, 0, .62)) calc(var(--p, 0) * 360deg), transparent 0); }
+.aur u.rdr s { z-index: 1; }
+.aur u.rdr.ending { animation: aurEnd var(--aurBlink, .5s) ease-in-out infinite alternate; }
+@keyframes aurEnd { to { filter: brightness(1.7); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .35), 0 0 6px var(--c); } }
+
 </style>
 </head>
 <body>
@@ -1991,7 +2016,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1708";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1713";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -9066,6 +9091,13 @@ var FEEL = {
     def: 2                    // 默认档位(中)
   },
 
+  // —— 怪身上的减益图标:魔兽那种"雷达"转圈。从 12 点钟方向顺时针,已经过去的那部分盖一层暗色,转满一圈就到期 ——
+  aura: {
+    swipe: 'rgba(0, 0, 0, .62)', // 暗扇形的颜色和浓度:调大透明度 = 转圈更显眼,但图标上的字更难看清
+    warn: 3,          // 剩不到这么多秒时图标开始闪,提醒快掉了;0 = 不闪
+    blink: 0.5        // 快到期时闪一下用多久(秒,越小闪得越急)
+  },
+
   // —— 人多不糊:按同屏人数分三档(5 人 / 10 人 / 25 人),下面凡是写成 [a, b, c] 三个数的都按这个顺序取 ——
   crowd: {
     sizes: [5, 10],           // 人数 ≤5 算第 0 档,≤10 算第 1 档,再多算第 2 档
@@ -9991,12 +10023,16 @@ var SCN = (function () {
     return g.tut;
   }
   const isDone = id => !!st().done[id];
+  // 第一次玩不让跳过:这台设备上还没走完过教学本(熔渣裂口打通一次)之前,没有「别教了」,设置里也关不掉。走完过一次(比如再建新公会)就能跳
+  const SEEN_KEY = 'raidleader_tut_seen';
+  const markSeen = () => { try { localStorage.setItem(SEEN_KEY, '1'); } catch (e) { /* 存不了就算了 */ } };
+  const canSkip = () => { if (st().done.slag_clear) { markSeen(); return true; } try { return localStorage.getItem(SEEN_KEY) === '1'; } catch (e) { return true; } };
   // 教学本的那一趟:这个存档第一次打熔渣裂口(没打通过、没关引导、不是英雄、没挂机)。只有这时候才有教学专用的安排
   let entryKills = 0;      // 进教学本那一刻它已经被打通过几次(这一趟里一打通,教学安排就停)
   function runActive() {
     const g = api.g, S = st();
     if (!g.dungeon || g.dungeon !== TUT_DUNGEON || g.heroic || S.off || S.done.slag_clear) return false;
-    if ((g.kills[TUT_DUNGEON] || 0) > entryKills) { S.done.slag_clear = 1; return false; } // 打通过一次:以后这个副本和平时完全一样
+    if ((g.kills[TUT_DUNGEON] || 0) > entryKills) { S.done.slag_clear = 1; markSeen(); return false; } // 打通过一次:以后这个副本和平时完全一样
     return true;
   }
 
@@ -10025,6 +10061,38 @@ var SCN = (function () {
       if (!best || v > best.v) best = { x, y, v };
     }
     return best || { x: A.cx, y: A.cy + A.ry * 0.5 };
+  }
+  // 要点选好几只怪的那几步:怪挤在一起不好点,开讲前(战斗已暂停)把它们推开一点,只挪位置
+  function spreadFoes(c) {
+    const fs = c.foes().filter(e => !e.def.boss); if (fs.length < 2) return;
+    const A = c.g.roomDef().boss ? D.arena : D.roadArena, MIN = 160;
+    for (let it = 0; it < 40; it++) {
+      let moved = false;
+      for (let i = 0; i < fs.length; i++) for (let j = i + 1; j < fs.length; j++) {
+        const a = fs[i].pos, b = fs[j].pos; let dx = b.x - a.x, dy = (b.y - a.y) * 1.3, d = Math.hypot(dx, dy);
+        if (d >= MIN) continue;
+        if (d < 1) { dx = j % 2 ? 1 : -1; dy = 0.3; d = Math.hypot(dx, dy); }
+        const k = (MIN - d) / 2 / d; a.x -= dx * k; a.y -= dy * k / 1.3; b.x += dx * k; b.y += dy * k / 1.3; moved = true;
+      }
+      fs.forEach(e => { const ex = (e.pos.x - A.cx) / A.rx, ey = (e.pos.y - A.cy) / A.ry, r = Math.hypot(ex, ey); if (r > 0.88) { e.pos.x = A.cx + (e.pos.x - A.cx) * 0.88 / r; e.pos.y = A.cy + (e.pos.y - A.cy) * 0.88 / r; } });
+      if (!moved) break;
+    }
+    if (c.api.flush) c.api.flush();
+  }
+  // 分装备那一步:装备掉在要给的人脚下,手指从装备拖到人身上就是原地不动。离得太近就把那件装备挪开一点再教
+  const LOOT_GAP = 140;
+  const lootEl = uid => $('.loot[data-loot="' + uid + '"]');
+  function lootGap(c, lootUid, heroUid) {
+    const e = lootEl(lootUid), h = c.unit(heroUid);
+    return e && h ? Math.hypot(parseFloat(e.style.left) - h.pos.x, parseFloat(e.style.top) - h.pos.y) : 999;
+  }
+  function moveLoot(c, lootUid, heroUid) {
+    const e = lootEl(lootUid), h = c.unit(heroUid); if (!e || !h) return;
+    let dx = parseFloat(e.style.left) - h.pos.x, dy = parseFloat(e.style.top) - h.pos.y, d = Math.hypot(dx, dy);
+    if (d < 1) { dx = D.arena.cx - h.pos.x || 1; dy = 0; d = Math.abs(dx); }
+    const x = Math.max(320, Math.min(960, h.pos.x + dx / d * 180)), y = Math.max(300, Math.min(580, h.pos.y + dy / d * 120));
+    e.style.transition = 'left .35s ease-out, top .35s ease-out'; e.style.left = x + 'px'; e.style.top = y + 'px';
+    setTimeout(() => { e.style.transition = ''; }, 400);
   }
   const inHazard = (c, x, y) => !!(c.sim && c.sim.hazards.some(z => !z.shape && !z.share && !z.soak && Math.hypot(z.x - x, z.y - y) < z.r + 12));
 
@@ -10131,10 +10199,10 @@ var SCN = (function () {
       when: c => {
         if (c.g.lootMode !== 'master' || !c.g.loot.length) return null;
         let best = null;
-        c.g.loot.forEach(l => c.g.partyHeroes().forEach(h => { const w = c.g.want(h, l.item), sub = w.level === 'need' && w.tier === 2, v = !c.g.canWear(h, l.item) ? -1 : w.level === 'need' ? (sub ? 3 : 4) : w.level === 'greed' ? 2 : 1; if (!best || v > best.v) best = { v, loot: l.uid, who: h.uid, need: w.level === 'need' && !sub, sub }; })); // 需求 > 副需求(能穿但不对路)> 贪婪
+        c.g.loot.forEach(l => c.g.partyHeroes().forEach(h => { const w = c.g.want(h, l.item), sub = w.level === 'need' && w.tier === 2, v = !c.g.canWear(h, l.item) ? -1 : w.level === 'need' ? (sub ? 3 : 4) : w.level === 'greed' ? 2 : 1, d = lootGap(c, l.uid, h.uid), sc = v * 1000 + Math.min(d, 200); if (!best || sc > best.sc) best = { v, sc, d, loot: l.uid, who: h.uid, need: w.level === 'need' && !sub, sub }; })); // 需求 > 副需求(能穿但不对路)> 贪婪;一样的话挑离那个人远一点的(掉在他脚下的话,拖的动作教不出来)
         return best && best.v > 0 ? best : null;
       },
-      enter: c => c.api.lootTime(600),
+      enter: c => { c.api.lootTime(600); if (c.x.d < LOOT_GAP) moveLoot(c, c.x.loot, c.x.who); },
       who: c => c.x.who, say: c => (c.x.need ? L.loot1_need : c.x.sub ? L.loot1_sub : L.loot1_greed),
       point: c => ['.loot[data-loot="' + c.x.loot + '"]', { hero: c.x.who }], drag: c => ({ from: '.loot[data-loot="' + c.x.loot + '"]', to: { hero: c.x.who } }),
       done: { poll: c => !c.g.loot.some(l => l.uid === c.x.loot) }, late: { sec: 14, say: L.loot1_late },
@@ -10150,7 +10218,7 @@ var SCN = (function () {
 
     // —— 第 3 关(精英):点怪集火;有人晃进火里,拖出来 ——
     { id: 'focus', chap: 'slag', scene: 'fight', room: 4, when: c => c.sim.t >= 1 && c.foes().length >= 2, hold: true,
-      who: 'dps', say: L.focus, point: c => c.foes().map(e => ({ enemy: e.uid })),
+      who: 'dps', say: L.focus, point: c => c.foes().map(e => ({ enemy: e.uid })), enter: spreadFoes,
       done: { ev: ['mark', 'focus'], ok: (c, e) => !!e.uid }, late: { sec: 10, say: L.focus_late } },
     { id: 'dragout', chap: 'slag', scene: 'fight', hold: true,
       when: c => { // 有人(不是坦克)站在一摊里了
@@ -10183,7 +10251,7 @@ var SCN = (function () {
     { id: 'cc', chap: 'later', later: true, scene: 'fight', need: ['skill'], hold: true,
       when: c => { if (c.g.dungeon === TUT_DUNGEON || c.g.cleared() < 1 || c.g.roomDef().boss || c.sim.t < 0.6 || !c.sim.canCC() || c.foes().length < 2) return null; const h = c.sim.heroes.find(x => x.alive && x.def.cc); return h ? { who: h.id, skill: h.def.cc.name } : null; },
       who: c => c.x.who, say: c => (c.touch ? L.cc_touch : L.cc_mouse),
-      point: c => c.foes().map(e => ({ enemy: e.uid })),
+      point: c => c.foes().map(e => ({ enemy: e.uid })), enter: spreadFoes,
       done: { ev: ['ccMark'], ok: (c, e) => !!e.uid }, late: { sec: 12, say: c => (c.touch ? L.cc_late_touch : L.cc_late_mouse) } },
 
     // —— 第 6 关(最终首领):脚下的预警圈、仇恨和 OT ——
@@ -10356,10 +10424,10 @@ var SCN = (function () {
     layer.className = 'on' + (s.hold ? ' hold' : '') + (s.dim === false ? ' nodim' : '');
     layer.innerHTML = `<svg class="tutDim" viewBox="0 0 1280 720" preserveAspectRatio="none"><defs><mask id="tutMask"><rect width="1280" height="720" fill="#fff"/><g id="tutHoles"></g></mask></defs><rect width="1280" height="720" fill="rgba(6,3,2,.66)" mask="url(#tutMask)"/></svg>
       <div id="tutRings"></div><div class="tutPath"></div><div class="tutHand"><i></i></div>
-      <div class="tutSay${cur.nagged ? ' nag' : ''}">${sayHTML(h, text)}<div class="tutBtns">${s.done.tap ? '<span class="tutOk">知道了</span>' : ''}<span class="tutSkip">别教了</span></div></div>`;
+      <div class="tutSay${cur.nagged ? ' nag' : ''}">${sayHTML(h, text)}<div class="tutBtns">${s.done.tap ? '<span class="tutOk">知道了</span>' : ''}${canSkip() ? '<span class="tutSkip">别教了</span>' : ''}</div></div>`;
     const ok = layer.querySelector('.tutOk'), sk = layer.querySelector('.tutSkip');
     if (ok) ok.onclick = e => { e.stopPropagation(); api.snd('click'); finish(); };
-    sk.onclick = e => { // 点两次才真的关,免得手滑
+    if (sk) sk.onclick = e => { // 点两次才真的关,免得手滑
       e.stopPropagation();
       if (sk.dataset.sure !== '1') { sk.dataset.sure = '1'; sk.textContent = '真不教了?再点一次'; sk.classList.add('sure'); return; }
       TUT.skip();
@@ -10493,7 +10561,7 @@ var SCN = (function () {
     else if (name === 'room') { api.g.tutFirstRun = runActive(); if (api.g.room === 0) firstLap = runActive(); roomSteps = 0; lastEndT = -99; arranged = {}; armed = null; if (cur && cur.s.scene === 'fight') end(); }
     else if (name === 'leave') { api.g.tutFirstRun = false; firstLap = false; snapTraits(); stay = { chap: null, dropped: {} }; armed = null; if (cur) drop(); }
     else if (name === 'assign') lastAssign = p;
-    else if (name === 'cleared') { if (p === TUT_DUNGEON && !st().off) { st().done.slag_clear = 1; api.save(); } } // 教学本打通过一次:以后这个副本和平时完全一样
+    else if (name === 'cleared') { if (p === TUT_DUNGEON && !st().off) { st().done.slag_clear = 1; markSeen(); api.save(); } } // 教学本打通过一次:以后这个副本和平时完全一样
   };
   // "别教了":整个关掉。设置里能再打开
   TUT.skip = function () {
@@ -10505,11 +10573,11 @@ var SCN = (function () {
   // 记下现在已经看出来的性格:以后再多看出一个,就是"第一次翻牌"(trait 那一步)
   function snapTraits() { const S = st(); if (S.traitBase || !S.done.slag_clear) return; S.traitBase = {}; api.g.roster.forEach(h => { S.traitBase[h.uid] = h.traits.filter(t => h.known[t]); }); api.save(); }
   // 设置菜单里的一行
-  TUT.menuRow = () => `<div class="mrow"><span>新手引导</span><div class="vseg"><span class="hbtn mini${st().off ? ' sec' : ''}" data-tut="on">开</span><span class="hbtn mini${st().off ? '' : ' sec'}" data-tut="off">关</span><span class="hbtn mini sec" data-tut="redo" data-tip="把学过的全忘掉,从头再教一遍。下次进熔渣裂口会重新按教学本来">从头再教</span></div></div>`;
+  TUT.menuRow = () => `<div class="mrow"><span>新手引导</span><div class="vseg"><span class="hbtn mini${st().off ? ' sec' : ''}" data-tut="on">开</span><span class="hbtn mini${st().off ? '' : ' sec'}${canSkip() ? '' : ' dis'}" data-tut="off"${canSkip() ? '' : ' data-tip="第一次玩要先跟着走完教学本(熔渣裂口),之后才能关"'}>关</span><span class="hbtn mini sec" data-tut="redo" data-tip="把学过的全忘掉,从头再教一遍。下次进熔渣裂口会重新按教学本来">从头再教</span></div></div>`;
   TUT.bindMenu = function (box, redraw) {
     box.querySelectorAll('[data-tut]').forEach(b => { b.onclick = () => {
       const S = st(), k = b.dataset.tut;
-      if (k === 'off') { if (cur) end(); armed = null; S.off = true; }
+      if (k === 'off') { if (!canSkip()) { api.snd('deny'); return; } if (cur) end(); armed = null; S.off = true; }
       else { S.off = false; if (k === 'redo') { S.done = {}; S.drop = {}; delete S.traitBase; stay = { chap: null, dropped: {} }; arranged = {}; } }
       api.snd('click'); api.save(); redraw();
     }; });
@@ -11328,6 +11396,7 @@ var SCN = (function () {
       <div class="mrow"><span>伤害和治疗数字</span><span class="sw${PREF.dmgNum ? ' on' : ''}" data-pref="dmgNum" data-v="${PREF.dmgNum ? 0 : 1}"><i></i></span></div>
       <div class="mrow"><span>震动和闪屏强度</span><div class="vseg">${[[3, '强'], [2, '中'], [1, '弱'], [0, '关']].map(x => `<span class="hbtn mini${PREF.feel === x[0] ? '' : ' sec'}" data-pref="feel" data-v="${x[0]}">${x[1]}</span>`).join('')}</div></div>
       <div class="mrow"><span>首领技能预告</span><span class="sw${PREF.dbm ? ' on' : ''}" data-pref="dbm" data-v="${PREF.dbm ? 0 : 1}"><i></i></span></div>
+      <div class="mrow"><span>队伍框架放右边(和团队频道对调)</span><span class="sw${PREF.swap ? ' on' : ''}" data-pref="swap" data-v="${PREF.swap ? 0 : 1}"><i></i></span></div>
       <div class="mrow"><span>伤害统计窗口</span><span class="sw${PREF.meter ? ' on' : ''}" data-pref="meter" data-v="${PREF.meter ? 0 : 1}"><i></i></span></div>
       <div class="mrow"><span>没人要的装备</span><div class="vseg">${[[0, '进仓库'], [1, '直接卖掉']].map(x => `<span class="hbtn mini${(g.autoSell ? 1 : 0) === x[0] ? '' : ' sec'}" data-asell="${x[0]}">${x[1]}</span>`).join('')}</div></div>
       <div class="mrow"><span>队员闲话</span><div class="vseg">${[[2, '多'], [1, '少'], [0, '关']].map(x => `<span class="hbtn mini${PREF.chat === x[0] ? '' : ' sec'}" data-pref="chat" data-v="${x[0]}">${x[1]}</span>`).join('')}</div></div>
@@ -11555,12 +11624,22 @@ var SCN = (function () {
     setTimeout(() => { if (b.parentNode) { b.remove(); if (!t.querySelector('.bubble')) t.classList.remove('talking'); } }, 2800);
   }
   // 增益 / 减益小图标:[字, 颜色, 剩余秒, 说明]
+  // 图标一排:[字, 颜色, 剩余秒数, 说明, 雷达选项]。带雷达选项({ id, tot 总时长, n 层数 })的画成魔兽那种转圈,角上只标层数;不带的照旧角上标秒数
+  stage.style.setProperty('--aurSwipe', FEEL.aura.swipe); stage.style.setProperty('--aurBlink', FEEL.aura.blink + 's');
   function setAur(box, list) {
     if (!box) return;
-    const key = list.map(a => a[0] + Math.ceil(a[2])).join(',');
-    if (box.dataset.k === key) return;
-    box.dataset.k = key;
-    box.innerHTML = list.map(a => '<u style="--c:' + a[1] + '" data-tip="' + a[3] + '">' + a[0] + (a[2] > 0 ? '<s>' + Math.ceil(a[2]) + '</s>' : '') + '</u>').join('');
+    const key = list.map(a => (a[4] ? a[4].id + '/' + (a[4].n || 1) : a[0] + Math.ceil(a[2]))).join(',');
+    if (box.dataset.k !== key) {
+      box.dataset.k = key;
+      box.innerHTML = list.map(a => (a[4] ? '<u class="rdr" style="--c:' + a[1] + '" data-tip="' + a[3] + '">' + a[0] + (a[4].n > 1 ? '<s>' + a[4].n + '</s>' : '') + '</u>' : '<u style="--c:' + a[1] + '" data-tip="' + a[3] + '">' + a[0] + (a[2] > 0 ? '<s>' + Math.ceil(a[2]) + '</s>' : '') + '</u>')).join('');
+      const m = box._tot || (box._tot = {}), ids = list.map(a => a[4] && a[4].id); for (const k in m) if (ids.indexOf(k) < 0) delete m[k]; // 掉了的就忘掉它的总时长
+    }
+    list.forEach((a, i) => { // 每帧:按"过去了多少"转
+      const o = a[4], u = box.children[i]; if (!o || !u) return;
+      const m = box._tot, tot = o.tot || (m[o.id] = Math.max(m[o.id] || 0, a[2])), p = tot > 0 && a[2] > 0 ? Math.min(1, Math.max(0, 1 - a[2] / tot)) : 0;
+      u.style.setProperty('--p', p.toFixed(3));
+      u.classList.toggle('ending', FEEL.aura.warn > 0 && a[2] > 0 && a[2] < FEEL.aura.warn);
+    });
   }
   document.querySelectorAll('#logBox [data-lt]').forEach(b => { b.onclick = () => { const box = $('#logBox'); box.classList.toggle('t-cb', b.dataset.lt === 'cb'); document.querySelectorAll('#logBox [data-lt]').forEach(x => x.classList.toggle('on', x === b)); snd('click'); $('#log').scrollTop = $('#log').scrollHeight; }; });
   let inHandle = false; // 战斗事件里产生的记录归「战斗记录」那一页;说话、团长下令归「团队频道」
@@ -11709,9 +11788,9 @@ var SCN = (function () {
     paintSpeed();
   }
   // 本机偏好:伤害数字、队员闲话多少、拖小队要按多久
-  const PREF = { dmgNum: 1, chat: 2, hold: 450, dbm: 1, meter: 1, feel: FEEL.intensity.def };
+  const PREF = { dmgNum: 1, chat: 2, hold: 450, dbm: 1, meter: 1, feel: FEEL.intensity.def, swap: 0 };
   try { Object.assign(PREF, JSON.parse(localStorage.getItem('raidleader_pref') || '{}')); } catch (e) { /* 读不了就算了 */ }
-  const applyPref = () => { stage.classList.toggle('nometer', !PREF.meter); }; // 关掉统计窗口时,团队频道拉长占满右边
+  const applyPref = () => { stage.classList.toggle('nometer', !PREF.meter); stage.classList.toggle('swaplr', !!PREF.swap); if (g && g.dungeon && btn.loot) refreshMeta(); }; // swap:战斗界面左右两栏对调 // 关掉统计窗口时,团队频道拉长占满右边
   applyPref();
   Feel.init({ stage, tok, uf, btn, sim: () => sim, level: () => PREF.feel, snd: (n, o) => SFX.play(n, o) }); // 战斗手感(js/feel.js):参数表和演出都在那边
   const savePref = () => { try { localStorage.setItem('raidleader_pref', JSON.stringify(PREF)); } catch (e) { /* 存不了就算了 */ } };
@@ -11727,6 +11806,27 @@ var SCN = (function () {
   try { grpNoTank = localStorage.getItem('raidleader_grp_notank') !== '0'; } catch (e) { /* 读不了就算了 */ }
   // 长按一个人 = 选中他所在的小队一起走。可以设置成不带正在扛怪的坦克(坦克一动全团就乱)
   const groupMembers = id => sim.heroes.filter(h => h.alive && grpOf[h.id] === grpOf[id] && (h.id === id || !(grpNoTank && h.def.isTank && sim.enemies.some(e => e.alive && e.target === h.id)))).map(h => h.id);
+  // 点队名选中一整队(团队框架和队伍框架都一样):之后点地面 = 整队走过去,点怪 = 整队去打,拖队里的人 = 整队跟着走
+  let gsel = null, gselShown = false; // gsel:选中的是第几队
+  const groupIds = gi => { if (!sim) return []; const all = sim.heroes.filter(h => h.alive && grpOf[h.id] === gi), ids = all.filter(h => !(grpNoTank && h.def.isTank && sim.enemies.some(e => e.alive && e.target === h.id))); return (ids.length ? ids : all).map(h => h.id); };
+  function pickGroup(gi) {
+    if (phase !== 'fight' || !sim) { warn('开打以后才能点队名选队'); snd('deny'); return; }
+    gsel = gsel === gi ? null : gi;
+    snd(gsel === null ? 'click' : 'mark'); paintGsel();
+  }
+  function paintGsel() { // 选中的队:地上的小人发绿光,框架亮边,队名变绿
+    const ids = gsel === null ? [] : groupIds(gsel);
+    sim && sim.heroes.forEach(h => { const on = ids.indexOf(h.id) >= 0; if (tok[h.id]) tok[h.id].classList.toggle('grpsel', on); if (uf[h.id]) uf[h.id].classList.toggle('gsel', on); });
+    document.querySelectorAll('#raidList .gtag').forEach(u => u.classList.toggle('on', +u.dataset.gi === gsel));
+    gselShown = gsel !== null;
+  }
+  function groupGo(p) { // 整队走过去:保持队形,队形中心落在点的地方
+    const ids = groupIds(gsel); if (!ids.length) return;
+    const cx = ids.reduce((x, id) => x + sim.byId[id].pos.x, 0) / ids.length, cy = ids.reduce((y, id) => y + sim.byId[id].pos.y, 0) / ids.length;
+    ids.forEach(id => { const q = sim.byId[id].pos; sim.order(id, q.x + p.x - cx, q.y + p.y - cy); });
+    fight.order++; snd('mark'); log('团长:' + groupName(gsel) + ',过去!', 'cmd'); flush();
+  }
+  const groupName = gi => { const u = document.querySelector('#raidList .gtag[data-gi="' + gi + '"] span'); return u ? u.textContent : '这一队'; };
   function buildBattleStatic() {
     stage.appendChild($('#hudSup')); // 补给挂在指令栏左上角,清指令栏之前先摘下来
     $('#raidList').innerHTML = ''; $('#bar').innerHTML = '';
@@ -11736,15 +11836,20 @@ var SCN = (function () {
     // 小队:按团长在"组建团队"里编的来(g.groups();没编过就是默认分法)。空队不画
     const gsz = g.inRaid() ? g.raidSize(g.dungeonDef()) : 5, gAll = g.groups(), gNames = groupLabels(gsz, gAll), gbox = [], bbox = [], many = gAll.filter(gr => gr.length).length > 1;
     for (const k in grpOf) delete grpOf[k];
+    gsel = null;
     btn.loot = $('#hudLoot'); btn.loot.innerHTML = `<div id="sysRow"></div><small>分配方式 · R</small><div id="segBox"></div>`;
     gAll.forEach((gr, gi) => {
       if (!gr.length) return;
       const gkey = gsz + '_' + gi, nm0 = gNames[gi];
       gr.forEach(uid => { grpOf[uid] = gi; });
-      gbox[gi] = el('div', 'grp', many ? `<u>${nm0}</u>` : ''); $('#raidList').appendChild(gbox[gi]);
+      gbox[gi] = el('div', 'grp', `<u class="gtag" data-gi="${gi}"><span>${nm0}</span><em data-tip="给这个小队起名(右键队名也行)">✎</em></u>`); $('#raidList').appendChild(gbox[gi]);
       bbox[gi] = el('div', 'bgrp', many ? `<u>${nm0}</u>` : ''); $('#bar').appendChild(bbox[gi]);
-      const lab = gbox[gi].querySelector('u'); // 点队名改名(比如"治疗队")
-      if (lab) { lab.dataset.tip = '点一下给这个小队起名'; lab.onclick = () => { const was = paused; paused = true; askName('给小队起名', lab.textContent, GROUP_NAMES, v => { g.groupNames = g.groupNames || {}; g.groupNames[gkey] = v; lab.textContent = v; bbox[gi].querySelector('u').textContent = v; save(); }); const t0 = setInterval(() => { if (!$('#overlay').classList.contains('show')) { clearInterval(t0); paused = was; } }, 200); }; }
+      const lab = gbox[gi].querySelector('u'), txt = lab.firstChild, pen = lab.lastChild;
+      lab.dataset.tip = '点队名选中这一队:再点地面整队走过去,点怪整队去打。再点一次队名(或右键地面)取消';
+      const rename = () => { const was = paused; paused = true; askName('给小队起名', txt.textContent, GROUP_NAMES, v => { g.groupNames = g.groupNames || {}; g.groupNames[gkey] = v; txt.textContent = v; const bu = bbox[gi].querySelector('u'); if (bu) bu.textContent = v; save(); }); const t0 = setInterval(() => { if (!$('#overlay').classList.contains('show')) { clearInterval(t0); paused = was; } }, 200); };
+      lab.onclick = e => { if (e.target === pen) return; pickGroup(gi); };
+      pen.onclick = e => { e.stopPropagation(); rename(); };
+      lab.oncontextmenu = e => { e.preventDefault(); rename(); };
     });
     g.partyHeroes().forEach((h, i) => {
       const c = cdef(h);
@@ -12026,6 +12131,7 @@ var SCN = (function () {
   // ---------- 每帧绘制 ----------
   function render() {
     if (!sim) return;
+    if (gsel !== null || gselShown) paintGsel();
     const room = g.roomDef(), es = sim.enemies;
     const hp = es.reduce((x, e) => x + e.hp, 0), mx = es.reduce((x, e) => x + e.maxHp, 0);
     if (room.boss) {
@@ -12049,12 +12155,12 @@ var SCN = (function () {
       const t = tok[e.uid], pp = prevPos[e.uid] || e.pos, tg = sim.byId[e.target];
       t.style.left = e.pos.x + 'px'; t.style.top = e.pos.y + 'px'; t.style.zIndex = Math.round(e.pos.y);
       t.querySelector('.mini i').style.width = (e.hp / e.maxHp * 100) + '%';
-      const ea = Object.keys(e.debuffs).map(k => [e.debuffs[k].def.icon, e.debuffs[k].def.color, e.debuffs[k].t, k + (e.debuffs[k].n > 1 ? ' ' + e.debuffs[k].n + ' 层' : '') + ' · ' + e.debuffs[k].src.name]);
-      if (e.rootT > 0) ea.push(['定', '#7ad0ff', e.rootT, '被定住了:走不了,但够得着的人照打']);
-      if (e.cc > 0) ea.push(['控', '#5ab0ff', e.cc, '被控住了,挨打就醒']);
-      if (e.buffT > 0) ea.push(['血', '#ff4a3a', e.buffT, '嗜血:伤害大涨。可以驱散']); if (e.wardT > 0) ea.push(['盾', '#ffe9a0', e.wardT, '护盾:受到的伤害大减。可以驱散']);
+      const ea = Object.keys(e.debuffs).map(k => { const b = e.debuffs[k]; return [b.def.icon, b.def.color, b.t, (b.def.name || k.split('#')[0]) + (b.n > 1 ? ' ' + b.n + ' 层' : '') + ' · ' + b.src.name + '上的', { id: k, tot: b.def.dur, n: b.n }]; }); // 同一种减益,规则层按人分开存的(持续伤害)就各一个图标
+      if (e.rootT > 0) ea.push(['定', '#7ad0ff', e.rootT, '被定住了:走不了,但够得着的人照打', { id: 'root' }]);
+      if (e.cc > 0) ea.push(['控', '#5ab0ff', e.cc, '被控住了,挨打就醒', { id: 'cc' }]);
+      if (e.buffT > 0) ea.push(['血', '#ff4a3a', e.buffT, '嗜血:伤害大涨。可以驱散', { id: 'buff' }]); if (e.wardT > 0) ea.push(['盾', '#ffe9a0', e.wardT, '护盾:受到的伤害大减。可以驱散', { id: 'ward' }]);
       t.classList.toggle('lust', e.buffT > 0); t.classList.toggle('ward', e.wardT > 0);
-      if (e.tauntT > 0) ea.push(['嘲', '#e0a252', e.tauntT, '被嘲讽']); if (e.enraged) ea.push(['怒', '#ff3b2a', 0, '激怒']);
+      if (e.tauntT > 0) ea.push(['嘲', '#e0a252', e.tauntT, '被嘲讽', { id: 'taunt' }]); if (e.enraged) ea.push(['怒', '#ff3b2a', 0, '激怒']);
       setAur(e.def.boss ? $('#bossAur') : t.querySelector('.aur'), e.alive ? ea : []);
       t.classList.toggle('marked', sim.mark === e.uid); t.classList.toggle('ccmark', sim.ccMark === e.uid); t.classList.toggle('cced', e.cc > 0);
       t.classList.toggle('casting', !!e.cast);
@@ -12236,7 +12342,7 @@ var SCN = (function () {
     return best;
   }
   function markDrop(hid) { for (const id in uf) { const on = id === hid; uf[id].classList.toggle('drop', on); if (tok[id]) tok[id].classList.toggle('drop', on); } }
-  stage.addEventListener('contextmenu', e => { if (e.target.closest('.token')) e.preventDefault(); });
+  stage.addEventListener('contextmenu', e => { if (e.target.closest('.token') || (gsel !== null && !e.target.closest(GROUND_NOT))) e.preventDefault(); });
   stage.addEventListener('pointerdown', e => {
     if ($('#overlay').classList.contains('show') || !sim || phase === 'hub') return;
     const lt = e.target.closest('.loot');
@@ -12247,6 +12353,7 @@ var SCN = (function () {
       const h = sim.byId[ht.dataset.hero]; if (!h.alive) return;
       drag = { kind: 'hero', id: h.id, start: pt(e) }; ht.classList.add('dragging'); e.preventDefault(); Feel.pick();
       const dg = drag;
+      if (gsel !== null && groupIds(gsel).indexOf(h.id) >= 0) { dg.group = groupIds(gsel); return; } // 点队名选中的队:拖队里任何一个人,整队跟着走
       dg.timer = setTimeout(() => { // 按住不动:选中整个小队
         if (drag !== dg || dg.moved || phase !== 'fight') return;
         dg.group = groupMembers(dg.id); dg.group.forEach(id => { if (tok[id]) tok[id].classList.add('grpsel'); });
@@ -12262,13 +12369,24 @@ var SCN = (function () {
       else { snd('mark'); fight.cc++; }
       flush(); return;
     }
+    if (et && gsel !== null) { focusGroup(et.dataset.enemy); return; }
     if (et && e.pointerType === 'touch') { // 触屏:点一下集火,按住不放是控场
       const uid = et.dataset.enemy;
       press = { uid, timer: setTimeout(() => { press = null; if (phase !== 'fight' || !sim) return; if (!sim.canCC()) { warn('队里没有会控场的人'); snd('deny'); } else if (!sim.setCC(uid)) { warn('首领不吃控'); snd('deny'); } else snd('mark'); flush(); }, 450) };
       return;
     }
-    if (et) { sim.setMark(et.dataset.enemy); fight.mark++; snd('mark'); flush(); }
+    if (et) { sim.setMark(et.dataset.enemy); fight.mark++; snd('mark'); flush(); return; }
+    if (gsel !== null && !e.target.closest(GROUND_NOT)) { // 选着一队时点地面:右键取消,左键整队过去
+      if (e.button === 2) { gsel = null; paintGsel(); snd('click'); return; }
+      if (e.button === 0) groupGo(pt(e));
+    }
   });
+  const GROUND_NOT = '.panel, #hudLoot, #hudR, #hudSup, #dbm, #top, #lootBar, #readyBox, #tip, #overlay, #tut, #tutNote';
+  function focusGroup(uid) {
+    const ids = groupIds(gsel), n0 = ids.filter(id => sim.focus(id, uid)).length;
+    if (n0) { fight.mark++; snd('mark'); log('团长:' + groupName(gsel) + ',打' + nm(uid) + '!', 'cmd'); }
+    flush();
+  }
   let press = null;
   addEventListener('pointerup', () => { if (!press) return; clearTimeout(press.timer); const uid = press.uid; press = null; if (phase === 'fight' && sim) { sim.setMark(uid); snd('mark'); flush(); } });
   addEventListener('pointercancel', () => { if (press) { clearTimeout(press.timer); press = null; } });
@@ -12352,27 +12470,44 @@ var SCN = (function () {
   }
   // 首领技能预告:一条时间轴。左端是"现在",技能图标从右往左滑过来,滑到头就是放出来;两端渐隐
   const DBM_W = 12; // 时间轴看多远(秒)
-  let dbmEls = {};
+  let dbmEls = {}, dbmIdx = null;
+  const dbmSeen = {}; // 实际看到过的读条时长(按首领 + 技能记),算不准的技能下一轮就准了
+  function dbmCastOf(boss, id, a) { // 这个技能放出来以后首领要站着读多久(和 sim.js 的 startAbility 对上)
+    const k = boss.def.name + '/' + id;
+    if (dbmSeen[k] != null) return dbmSeen[k];
+    if (a.cast) return a.cast;
+    if (a.kind === 'beam') { const B = Object.assign({}, D.beam, a); return B.delay + B.dur; }
+    if (a.kind === 'cone' || a.kind === 'nova' || a.kind === 'line' || a.kind === 'knock') return a.delay || 0;
+    return 0;
+  }
+  const dbmPop = e => { e.classList.add('dbpop'); e.removeAttribute('data-tip'); setTimeout(() => e.remove(), 520); }; // 到点:放大闪一下再消失
   function drawDbm() {
     const box = $('#dbm'), boss = sim && sim.enemies.find(e => e.alive && e.def.boss && e.def.script);
-    if (!PREF.dbm || !boss || phase !== 'fight') { if (box.firstChild) { box.innerHTML = ''; dbmEls = {}; } return; }
+    if (!PREF.dbm || !boss || phase !== 'fight') { if (box.firstChild) { box.innerHTML = ''; dbmEls = {}; } dbmIdx = null; return; }
     if (!box.firstChild) { box.innerHTML = '<div class="dbline"></div><div class="dbnow"></div><div class="dbtrack"></div>'; dbmEls = {}; }
     const track = box.lastChild, d = boss.def, rate = (d.pace || 1) * (boss.phase === 2 ? d.phase2Speed || 1 : 1), wait = boss.cast ? boss.cast.dur - boss.cast.t : 0, seen = {};
+    // 刚放出来的那个技能:首领的技能序号变了,上一个序号就是刚放的。它那个图标先闪掉,下一轮的另起一个从右边进来(不再倒着滑回去)
+    if (dbmIdx && dbmIdx.uid === boss.uid && dbmIdx.idx !== boss.idx) { const k = boss.uid + '_' + dbmIdx.idx; if (dbmEls[k]) { dbmPop(dbmEls[k]); delete dbmEls[k]; } }
+    dbmIdx = { uid: boss.uid, idx: boss.idx };
+    if (boss.cast && boss.cast.t < 0.2) dbmSeen[d.name + '/' + boss.cast.id] = boss.cast.dur;
     const put = (key, kind, name, t) => { // 一个图标:t 秒后发生
       if (t < 0 || t > DBM_W) return;
       seen[key] = 1;
       let e = dbmEls[key];
-      if (!e) { e = dbmEls[key] = el('div', 'dbi', ART.icon(kind) + '<b></b>'); e.dataset.tip = name; track.appendChild(e); }
-      e.style.left = (t / DBM_W * 100) + '%';
-      e.classList.toggle('hot', t < 3);
-      e.lastChild.textContent = t < 5 ? Math.ceil(t) : '';
+      if (!e) { e = dbmEls[key] = el('div', 'dbi', ART.icon(kind)); e.dataset.tip = name; e._s = t; track.appendChild(e); }
+      // 首领读条时后面的技能整体推迟:不跳,慢慢退到新位置;往前走照常
+      e._s = t > e._s ? e._s + Math.max(0.04, (t - e._s) * 0.12) : t; if (e._s > t) e._s = t;
+      e.style.left = (e._s / DBM_W * 100) + '%';
+      e.classList.toggle('hot', e._s < 3);
     };
-    d.script.forEach((sc, i) => { // 读条时技能循环不走,要把读条剩的时间加上
-      const a0 = d.abilities[sc.id], dt = (i >= boss.idx ? sc.at - boss.clock : d.cycleLen - boss.clock + sc.at) / rate + wait;
+    // 读条时技能循环不走:正在读的剩多久要加上,排在前面、还没放的技能要读多久也提前加上(不然一开读,后面的图标全得往回退)
+    for (let k = 0, n = d.script.length, extra = 0; k < n; k++) {
+      const i = (boss.idx + k) % n, sc = d.script[i], a0 = d.abilities[sc.id], dt = (i >= boss.idx ? sc.at - boss.clock : d.cycleLen - boss.clock + sc.at) / rate + wait + extra;
       put(boss.uid + '_' + i, a0.kind, a0.name, dt);
-    });
+      extra += dbmCastOf(boss, sc.id, a0);
+    }
     if (d.enrageAt && !boss.enraged) put(boss.uid + '_enr', 'enrage', '狂暴', d.enrageAt - sim.t);
-    for (const k in dbmEls) if (!seen[k]) { dbmEls[k].remove(); delete dbmEls[k]; }
+    for (const k in dbmEls) if (!seen[k]) { if (dbmEls[k]._s < 1) dbmPop(dbmEls[k]); else dbmEls[k].remove(); delete dbmEls[k]; }
   }
   function bindMeter() {
     document.querySelectorAll('#meter [data-m]').forEach(b => { b.onclick = () => { meterMode = b.dataset.m; document.querySelectorAll('#meter [data-m]').forEach(x => x.classList.toggle('on', x === b)); snd('click'); drawMeter(true); }; });
@@ -12693,7 +12828,7 @@ var SCN = (function () {
   window.__game = { get sim() { return sim; }, get g() { return g; }, get phase() { return phase; }, useBig, doAssign, toggleAuto, flush, showHub, enterDungeon, showTalents, stash, gotoRoom: i => { g.room = i; beginRoom(); } }; // gotoRoom:调试用,直接跳到第几关
   // 新手引导(js/tutorial.js)要用到的东西都从这儿给它,引导的逻辑不写在这个文件里
   TUT.init({ get g() { return g; }, get sim() { return sim; }, get phase() { return phase; }, get tab() { return tab; }, get selUid() { return selUid; }, stage, tok, uf, btn,
-    hz: id => hzEl[id], def: cdef, head: h => ART.heroHead(h.cls, h.look), save, snd,
+    hz: id => hzEl[id], def: cdef, head: h => ART.heroHead(h.cls, h.look), save, snd, flush,
     hold: on => { paused = on; stage.classList.toggle('tuthold', on); if (!on) stage.classList.remove('paused'); },
     selHero: uid => { if (selUid !== uid) { selUid = uid; if (phase === 'hub' && tab === 'guild') showHub(); } },
     lootTime: n => { lootLeft = Math.max(lootLeft, n); } });

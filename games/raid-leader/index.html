@@ -2012,6 +2012,19 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 /* 技能预告:去掉轨道的遮罩(遮罩会把伸出轨道边的图标切掉——到点那头的图标正好一半在轨道外,放大闪时更多);右端渐隐改由脚本逐个图标设透明度 */
 #dbm .dbtrack { -webkit-mask-image: none; mask-image: none; overflow: visible; }
 #dbm .dbi.hot, #dbm .dbi.dbpop { z-index: 3; }
+/* 角色天赋页一页放下(猎人基础技能多、还有一行宠物是最坏情况):天赋格 34→30、行高 40→36(ui.js 里 RH / NH);
+   基础技能那排小一号、尽量一行;「挑一种」(宠物 / 图腾……)挪到右边「团长喊的技能」框里 */
+.tcard .tgrid .tn { width: 30px; height: 30px; }
+.tcard .tpicks { margin-top: 6px; gap: 10px; }
+.tcard .tpbox { padding: 4px 10px 6px; }
+.tcard .tpbox:first-child { flex: 1.25; }
+.tcard .tpbox h5 { font-size: 15px; margin-bottom: 0; }
+.tcard .tpbox .tfoot { gap: 5px; margin-top: 3px; }
+.tcard .bopt.bbas { padding: 1px 8px 1px 2px; font-size: 12px; gap: 3px; border-width: 1px; }
+.tcard .bopt.bbas .ic { width: 20px; height: 20px; margin-right: 2px; vertical-align: -5px; }
+.tcard .tpbig .tfoot.jpick { margin: 5px 0 0; padding-top: 4px; }
+.tcard .tpbig .jopt { padding: 1px 8px 1px 4px; font-size: 12px; border-width: 1px; }
+.tcard .trees { margin-top: 6px; }
 
 </style>
 </head>
@@ -2079,7 +2092,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1822";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1826";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -11396,7 +11409,7 @@ var SCN = (function () {
   function showTalents(uid) {
     const h = g.hero(uid), c = cdef(h), ov2 = $('#overlay');
     const free = g.freePoints(h), big = g.big(h), opts = g.bigOptions(h);
-    const CW = 70, RH = 40, NH = 34, NC = 5, ROWS = D.talentGate.length; // 格子宽、行高、天赋图标高
+    const CW = 70, RH = 36, NH = 30, NC = 5, ROWS = D.talentGate.length; // 格子宽、行高、天赋图标高
     ov2.className = 'show';
     ov2.innerHTML = `<div class="card tcard">
       <div class="thead"><div class="mh">${ART.heroHead(h.cls, h.look)}</div><div style="flex:1;text-align:left"><h3 style="color:${c.color}">${h.name} · ${h.level} 级 ${specName(h)}</h3>
@@ -11405,9 +11418,9 @@ var SCN = (function () {
         <span class="hbtn red${g.spentPoints(h) ? '' : ' dis'}" id="tReset" style="font-size:13px;padding:5px 12px">重置天赋 <i class="coin"></i>${D.respecCost}</span><span class="hbtn sec" id="tClose" style="font-size:14px;padding:5px 16px">完成</span></div>
       <div class="tpicks">
         <div class="tpbox"><h5>基础技能 <small>他自己一直在用</small></h5><div class="tfoot">${c.basics.map(b => `<span class="bopt bbas" data-tip="<b>${b.name}</b><br>${b.desc}">${ART.icon(basicKey(b))}${b.name}</span>`).join('')}${D.auras[h.cls] ? `<span class="bopt bbas" data-tip="<b>${D.auras[h.cls].name}</b><br>光环:${D.auras[h.cls].desc}">${ART.icon('party')}${D.auras[h.cls].name}</span>` : ''}</div>
-      ${D.loadout[h.cls] ? (L => `<div class="tfoot jpick"><span class="tpl2" data-tip="${L.tip}">${L.label} <small>挑一种</small></span>${Object.keys(D[L.table]).map(k => `<span class="bopt jopt${g.pickOf(h, L.key) === k ? ' on' : ''}" data-j="${k}" data-tip="<b>${D[L.table][k].name}</b><br>${D[L.table][k].desc}"><i style="color:${D[L.table][k].color}">${D[L.table][k].icon}</i> ${D[L.table][k].name}</span>`).join('')}</div>`)(D.loadout[h.cls]) : ''}
         </div>
-      <div class="tpbox"><h5 data-tip="学会的主动技能里,你只能挑一个自己来喊(战斗里按数字键)。<br>其余的他自己看情况放:大招自己放会慢半拍、冷却也长一些。">团长喊的技能 <small>只能挑一个,其余的他自己放</small></h5><div class="tfoot">${opts.length ? opts.map(b => `<span class="bopt${big && b.id === big.id ? ' on' : ''}" data-b="${b.id}" data-tip="${b.desc} · 冷却 ${b.cd} 秒">${ART.icon(b.kind)}${b.name}</span>`).join('') : '<span style="color:#9a8a6a">—</span>'}</div></div>
+      <div class="tpbox tpbig"><h5 data-tip="学会的主动技能里,你只能挑一个自己来喊(战斗里按数字键)。<br>其余的他自己看情况放:大招自己放会慢半拍、冷却也长一些。">团长喊的技能 <small>只能挑一个,其余的他自己放</small></h5><div class="tfoot">${opts.length ? opts.map(b => `<span class="bopt${big && b.id === big.id ? ' on' : ''}" data-b="${b.id}" data-tip="${b.desc} · 冷却 ${b.cd} 秒">${ART.icon(b.kind)}${b.name}</span>`).join('') : '<span style="color:#9a8a6a">—</span>'}</div>
+      ${D.loadout[h.cls] ? (L => `<div class="tfoot jpick"><span class="tpl2" data-tip="${L.tip}">${L.label} <small>挑一种</small></span>${Object.keys(D[L.table]).map(k => `<span class="bopt jopt${g.pickOf(h, L.key) === k ? ' on' : ''}" data-j="${k}" data-tip="<b>${D[L.table][k].name}</b><br>${D[L.table][k].desc}"><i style="color:${D[L.table][k].color}">${D[L.table][k].icon}</i> ${D[L.table][k].name}</span>`).join('')}</div>`)(D.loadout[h.cls]) : ''}</div>
       </div>
       <div class="trees">${c.trees.map(tr => {
         const pts = g.treePoints(h, tr);

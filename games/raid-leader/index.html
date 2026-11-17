@@ -2026,6 +2026,31 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .tcard .tpbig .jopt { padding: 1px 8px 1px 4px; font-size: 12px; border-width: 1px; }
 .tcard .trees { margin-top: 6px; }
 
+/* 外派任务:职责要求、职业专精、疲劳 */
+.qdut { display: inline-flex; align-items: center; gap: 2px; margin-right: 6px; }
+.qdut i { font-style: normal; font-weight: 800; font-size: 12px; }
+.qdut.ok i { color: #8fe07a; } .qdut.cov i { color: #ff8214; } .qdut.miss i { color: #ff6a4a; } .qdut.miss .rtag { opacity: .6; }
+.qpks { display: flex; align-items: center; gap: 3px; flex-wrap: wrap; }
+.qpk { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 5px; border: 1px solid #5d4320; background: #1a120b; color: #6a5a48; font: 700 12px/1 var(--ui); opacity: .55; }
+.qpk.on { opacity: 1; color: #1a0e06; background: var(--pc); border-color: #fff3c8; box-shadow: 0 0 6px var(--pc); }
+.qpk.mini { width: 16px; height: 16px; font-size: 10px; border-radius: 4px; margin-left: -2px; }
+.ftg { display: inline-flex; align-items: center; gap: 1px; margin-left: 4px; font: 700 11px var(--ui); }
+.ftg i { font-style: normal; font-size: 9px; padding: 0 2px; border-radius: 3px; background: rgba(255, 180, 71, .18); }
+/* 派人:头像框 */
+.qpick.qavs { gap: 6px 4px; }
+.qav { width: 58px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+.qavf { position: relative; width: 48px; height: 48px; border-radius: 8px; border: 2px solid #5d4320; background: radial-gradient(#6a5038, #241710); box-shadow: inset 0 -3px 0 var(--cc); }
+.qavf svg { width: 100%; height: 100%; display: block; border-radius: 6px; }
+.qav:hover .qavf { border-color: var(--gold); }
+.qav.on .qavf { border-color: #8fd66a; box-shadow: inset 0 -3px 0 var(--cc), 0 0 8px rgba(143, 214, 106, .7); }
+.qav em { font: normal 700 11px var(--ui); color: var(--text); margin-top: 2px; max-width: 58px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.qav.on em { color: #b8f09a; }
+.qavf .qpk.mini { position: absolute; left: -5px; top: -5px; margin: 0; }
+.qavf u { position: absolute; right: -5px; top: -5px; text-decoration: none; font: 700 9px/13px var(--ui); color: #2a1206; background: #ffb347; border-radius: 5px; padding: 0 3px; }
+.qavf s { position: absolute; left: 1px; bottom: 1px; text-decoration: none; font: 700 9px/12px var(--ui); color: #ffd45a; background: rgba(0, 0, 0, .65); border-radius: 4px; padding: 0 3px; }
+.qavft { position: absolute; right: -5px; bottom: -5px; min-width: 16px; font: 800 9px/14px var(--ui); color: #1a0e06; text-align: center; border-radius: 7px; padding: 0 2px; border: 1px solid #1a0e06; }
+.qpick.inteam .qavf { border-style: dashed; opacity: .8; } .qpick.inteam .qav.on .qavf { opacity: 1; }
+
 </style>
 </head>
 <body>
@@ -2092,7 +2117,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1826";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1843";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -3219,7 +3244,10 @@ var GAME_DATA = {
     // 任务会失败。base/perStar:目标太强打不过的几率;队伍比任务等级每高 1 级 -lvK;带坦克、带治疗各 -role。
     // 任务地点离敌对阵营的哨站近(campNear 以内),路上被蹲的机会乘 campK。
     // 失败:没有金币,经验只剩 failXp,每人掉士气和装备耐久
-    risk: { base: 0.02, perStar: 0.04, lvK: 0.03, role: 0.03, min: 0.02, max: 0.6, campNear: 26, campK: 3, failXp: 0.4, failMood: -5, failDur: 8 },
+    // 职责要求(roleMiss):任务标明要坦克 / 治疗,队里缺一样失败率 +roleMiss(不是不让接)。不要求的职责带上了照样 -role。
+    risk: { base: 0.02, perStar: 0.04, lvK: 0.03, role: 0.03, roleMiss: 0.12, min: 0.02, max: 0.6, campNear: 26, campK: 3, failXp: 0.4, failMood: -5, failDur: 8 },
+    // 职责要求怎么生成:byStar[星级-1] 要几样职责(0 不要求 / 1 坦克或治疗随机一样 / 2 两样都要);任务只有 1 个人时最多要求 1 样
+    duty: { byStar: [0, 1, 2] },
     // 路上的小事。w:出现的权重;choice:要团长拿主意(不管的话队员自己硬上)
     // 选项里 p:'fight' 看队伍打不打得过对面,p:'push' 看任务把握;win / lose 是两种结果
     events: {
@@ -3248,6 +3276,29 @@ var GAME_DATA = {
         camps: [{ name: '联盟哨站', x: 90, y: 44 }, { name: '联盟要塞', x: 30, y: 90 }, { name: '联盟矿营', x: 8, y: 38 }] }
     }
   },
+  // ---------- 外派任务:职业专精 ----------
+  // 队里有这个职业就生效,同一种专精几个人都只算一次。ic 图标字,cls 是职业 id。
+  //   noFatigue 他自己做完任务不涨疲劳;failSafe 任务失败时全队不扣士气和耐久;sizeCut 任务要的人数少几个(最少 1 人);
+  //   anyRole 他一个人顶上所有缺的职责;lootK 带回装备、合剂、卷轴的几率乘这个数;durK 任务时长乘这个数;
+  //   recoverK 这一趟回来的人疲劳恢复速度乘这个数(恢复到 0 为止);winAdd 成功率加这么多;failPay 失败也带回这么多成的金币和经验
+  questPerks: {
+    guard: { ic: '铁', name: '铁打的', noFatigue: true, desc: '他自己做完任务不涨疲劳' },
+    oath: { ic: '护', name: '庇佑', failSafe: true, desc: '任务失败时,全队不掉士气、装备不掉耐久' },
+    ranger: { ic: '独', name: '独行', sizeCut: 1, desc: '这个任务少要 1 个人(最少 1 人),奖励不少' },
+    grove: { ic: '变', name: '百变', anyRole: true, desc: '缺什么职责他都能顶上' },
+    blade: { ic: '摸', name: '顺手牵羊', lootK: 1.5, desc: '带回装备、合剂、附魔卷轴的机会 ×1.5' },
+    ember: { ic: '速', name: '传送门', durK: 0.75, desc: '任务时长 -25%' },
+    dawn: { ic: '憩', name: '抚慰', recoverK: 2, desc: '这一趟回来的人,疲劳恢复速度 ×2' },
+    gale: { ic: '兆', name: '先祖指引', winAdd: 0.08, desc: '任务成功率 +8%' },
+    hex: { ic: '契', name: '代价契约', failPay: 0.5, desc: '任务失败也带回一半金币和经验' }
+  },
+  // ---------- 疲劳 ----------
+  // 疲劳(0–max):身体累不累,只从外派任务来,和士气(心情)是两回事。
+  // 做完一趟外派任务(成败都算)涨 gainBase + gainPerMin × 任务原定分钟数;没在外面的人按游玩时间每分钟回 recoverPerMin。
+  // tiers:疲劳到 at 就进这一档。stat 下副本时伤害和治疗打几折(1 - stat),fail 再派任务时失败率加多少(全队取平均)
+  fatigue: { max: 100, gainBase: 6, gainPerMin: 6, recoverPerMin: 6,
+    tiers: [{ at: 0, name: '精神', color: '#9aff8a', stat: 0, fail: 0 }, { at: 35, name: '有点累', color: '#f1e2c2', stat: 0.03, fail: 0.04 },
+      { at: 65, name: '很累', color: '#ffb347', stat: 0.07, fail: 0.1 }, { at: 90, name: '精疲力竭', color: '#ff6a4a', stat: 0.12, fail: 0.18 }] },
   // ---------- 公会天赋树 ----------
   // 公会的所有升级都在这一棵树里,用公会升级得的点数加点(不花金币)。
   // b: 属于哪个分支;req: 公会几级解锁;max: 最多点几级;per: 每级的效果。
@@ -6823,9 +6874,9 @@ const K = D.statK;
         const ffx = g.flaskOn ? D.supplies[g.flaskOn].fx : {}, fl = ffx.power || 1; // 这一趟用的合剂
         const m2 = Object.assign({}, st.m); // 把光环叠进这个人的加成里
         m2.taken = (m2.taken || 0) + A.partyTaken; m2.crit = (m2.crit || 0) + A.partyCrit; m2.haste = (m2.haste || 0) + A.partyHaste + (ffx.haste || 0); m2.regen = (m2.regen || 0) + (ffx.regen || 0);
-        const sp = g.spec(h);
+        const sp = g.spec(h), tk = 1 - g.fatTier(h).stat; // 疲劳:伤害和治疗打折
         return { id: h.uid, name: h.name, broken: st.broken, procs: g.procsOf(h), def: g.defOf(h), altDef: g.altDefOf(h), debuff: (sp && D.specDebuff[sp.id]) || (h.cls === 'oath' ? null : cls(h).debuff), judge: h.cls === 'oath' ? D.judgements[g.pickOf(h, 'judge')] : null, totem: h.cls === 'gale' ? g.pickOf(h, 'totem') : null, pet: D.loadout[h.cls] && D.loadout[h.cls].key === 'pet' ? D[D.loadout[h.cls].table][g.pickOf(h, 'pet')] : null, ai: aiOf(h), m: m2, autos: g.autos(h), big: g.big(h), potion: pots[h.uid] || null,
-          power: st.power * (1 + pd) * fl * D.numScale, healPower: st.healPower * fl * (1 + A.partyHeal) * D.numScale, maxHp: Math.round(st.maxHp * (1 + phh + (ffx.hp || 0))) };
+          power: st.power * (1 + pd) * fl * D.numScale * tk, healPower: st.healPower * fl * (1 + A.partyHeal) * D.numScale * tk, maxHp: Math.round(st.maxHp * (1 + phh + (ffx.hp || 0))) };
       });
     };
 
@@ -7511,18 +7562,42 @@ const K = D.statK;
     function genQuest() {
       const Q = D.quests, lv = g.roster.length ? Math.round(g.roster.reduce((x, h) => x + h.level, 0) / g.roster.length) : D.startLevel;
       const dur0 = pick(Q.durations), size = 1 + Math.floor(rng() * 3), sr = rng(), star = sr < Q.starW[0] ? 1 : sr < Q.starW[0] + Q.starW[1] ? 2 : 3, sk = Q.starK[star - 1];
-      return { id: 'q' + (++seq), name: pick(Q.names), loc: Math.floor(rng() * 10), size, dur0, lv, star,
+      const nd = Math.min(Q.duty.byStar[star - 1] || 0, size > 1 ? 2 : 1), need = nd >= 2 ? ['坦克', '治疗'] : nd === 1 ? [rng() < 0.5 ? '坦克' : '治疗'] : [];
+      return { id: 'q' + (++seq), name: pick(Q.names), loc: Math.floor(rng() * 10), size, dur0, lv, star, need,
         gold0: dur0 / 60 * Q.goldPerMin * size * sk * (1 + 0.04 * (lv - D.startLevel)), xp0: dur0 / 60 * Q.xpPerMin * sk,
         itemChance: Math.min(0.6, Q.itemChance * size * (dur0 / 90)) };
     }
+    // 外派任务的职业专精(data.js 的 questPerks):队里有这个职业就生效,同一种不叠加。返回 { 职业id: 专精 }
+    g.questPerksOf = uids => { const o = {}; (uids || []).map(hero).filter(Boolean).forEach(h => { if (D.questPerks[h.cls]) o[h.cls] = D.questPerks[h.cls]; }); return o; };
+    const perkVal = (uids, k) => { const o = g.questPerksOf(uids); for (const c in o) if (o[c][k] != null) return o[c][k]; return null; };
+    g.questSize = (q, uids) => Math.max(1, q.size - (perkVal(uids, 'sizeCut') || 0)); // 带上猎人:少要人
+    // 职责够不够:need 任务要求的职责;miss 缺的(德鲁伊顶上的不算缺);covered 德鲁伊顶上的。旧存档的任务没有 need,当不要求
+    g.questDuty = function (q, uids) {
+      const hs = (uids || q.heroes || []).map(hero).filter(Boolean), need = q.need || [];
+      const lack = need.filter(r => !hs.some(h => g.defOf(h).role === r)), any = lack.length && perkVal(hs.map(h => h.uid), 'anyRole');
+      return { need, miss: any ? [] : lack, covered: any ? lack : [] };
+    };
+    // 疲劳:h.fat(旧存档没有,当 0)。fatTier 是 data.js 的 fatigue.tiers 里他现在在哪一档
+    const FT = D.fatigue;
+    g.fatOf = h => Math.max(0, Math.min(FT.max, (hero(h) || {}).fat || 0));
+    g.fatTier = h => { const f = g.fatOf(h); let i = 0; FT.tiers.forEach((t, k) => { if (f >= t.at) i = k; }); return Object.assign({ i }, FT.tiers[i]); };
+    g.fatRecover = function (sec) { // 游玩时间往前走:没在外面做任务的人慢慢缓过来(牧师带回来的人快一些)
+      g.roster.forEach(h => {
+        if (!(h.fat > 0) || g.quests.active.some(q => q.heroes.indexOf(h.uid) >= 0)) return;
+        h.fat = Math.max(0, h.fat - FT.recoverPerMin / 60 * sec * (h.fatK || 1));
+        if (!h.fat) delete h.fatK;
+      });
+    };
     // 这支队伍去做这个任务:win 打得过任务目标的把握,fight 路上打得过敌对阵营的把握,near 是不是挨着对面的哨站
     g.questOdds = function (q, uids) {
-      const R = QK.risk, hs = (uids || q.heroes || []).map(hero).filter(Boolean);
+      const R = QK.risk, us = uids || q.heroes || [], hs = us.map(hero).filter(Boolean);
       const lvd = hs.length ? hs.reduce((x, h) => x + h.level, 0) / hs.length - q.lv : 0;
       const tank = hs.some(h => g.defOf(h).role === '坦克'), heal = hs.some(h => g.defOf(h).role === '治疗');
-      const fail = cl(R.base + R.perStar * ((q.star || 1) - 1) - R.lvK * lvd - (tank ? R.role : 0) - (heal ? R.role : 0) - hs.reduce((x, h) => x + g.gearFx(h, 'questWin'), 0), R.min, R.max);
+      const duty = g.questDuty(q, us), tired = hs.length ? hs.reduce((x, h) => x + g.fatTier(h).fail, 0) / hs.length : 0;
+      const fail = cl(R.base + R.perStar * ((q.star || 1) - 1) - R.lvK * lvd - (tank ? R.role : 0) - (heal ? R.role : 0) + R.roleMiss * duty.miss.length + tired
+        - (perkVal(us, 'winAdd') || 0) - hs.reduce((x, h) => x + g.gearFx(h, 'questWin'), 0), R.min, R.max);
       const fight = cl(0.3 + 0.1 * (hs.length - 1) + R.lvK * lvd + (tank ? 0.08 : 0) + (heal ? 0.08 : 0), 0.15, 0.92);
-      return { win: 1 - fail, fight, push: cl(1 - fail - 0.3, 0.2, 0.85), near: qNear(q) };
+      return { win: 1 - fail, fight, push: cl(1 - fail - 0.3, 0.2, 0.85), near: qNear(q), duty, tired };
     };
     const qText = (q, e, t) => t.replace(/{who}/g, (hero(e.who) || {}).name || '队伍').replace(/{foe}/g, g.foe()).replace(/{loc}/g, g.map().locs[q.loc].name);
     function qOutcome(q, e, o) { // 把一个结果落到任务上
@@ -7566,17 +7641,18 @@ const K = D.statK;
       return { text, win, failed: !!q.failed };
     };
     // 公会能力会改变任务的奖励和耗时,所以每次看的时候现算
-    g.questView = q => ({ dur: Math.round(q.dur0 * (1 - g.perkValue('speed') / 100)), gold: Math.round(q.gold0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('income'))), xp: Math.round(q.xp0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('mentor')) * (1 + g.gt('qxp'))) });
+    g.questView = (q, uids) => ({ dur: Math.round(q.dur0 * (1 - g.perkValue('speed') / 100) * (perkVal(uids, 'durK') || 1)), gold: Math.round(q.gold0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('income'))), xp: Math.round(q.xp0 * (1 + g.perkValue('reward') / 100) * (1 + g.gt('mentor')) * (1 + g.gt('qxp'))) });
     g.questTick = function () { let ch = false; while (g.quests.board.length < g.perkValue('board')) { g.quests.board.push(genQuest()); ch = true; } return ch; };
     g.startQuest = function (qid, uids, now) {
       const i = g.quests.board.findIndex(q => q.id === qid);
       if (i < 0) return { ok: false };
       const q = g.quests.board[i];
       if (g.quests.active.length >= g.questSlots()) return { ok: false, reason: '任务小队都派出去了' };
-      if (uids.length !== q.size) return { ok: false, reason: '这个任务需要 ' + q.size + ' 个人' };
+      const qs = g.questSize(q, uids);
+      if (uids.length < qs || uids.length > q.size) return { ok: false, reason: '这个任务需要 ' + (qs < q.size ? qs + '–' : '') + q.size + ' 个人' };
       if (uids.some(u => g.busy(u))) return { ok: false, reason: '有人已经在外面了' };
       if (q.legend && !uids.some(u => lgCan(hero(u), q.legend))) return { ok: false, reason: '这一趟要派能用【' + LQ.items[q.legend].name + '】的人去' };
-      const v = g.questView(q);
+      const v = g.questView(q, uids);
       g.quests.board.splice(i, 1);
       q.heroes = uids.slice(); q.start = now; q.end = now + v.dur * 1000; q.gold = v.gold; q.xp = v.xp;
       // 这一趟路上会出什么事,出发时就定了
@@ -7603,24 +7679,30 @@ const K = D.statK;
       g.quests.active.splice(i, 1);
       const levelups = [], hs = q.heroes.map(hero).filter(Boolean), bonus = q.bonus || 0;
       if (q.legend && q.failed) lgPostQuests(); // 橙装的备料任务失败了:重新贴出来
-      if (q.failed) { // 失败:白跑一趟,只有路上捡的东西
-        g.gold += bonus;
-        const xp = Math.round(q.xp * QK.risk.failXp);
-        hs.forEach(h => { addXp(h, xp, levelups); mood(h, QK.risk.failMood); h.dur = Math.max(0, h.dur - QK.risk.failDur); });
-        return { ok: true, failed: q.failed, name: q.name, gold: bonus, xp, levelups, item: null, guildUp: 0, log: q.log || [] };
+      const perks = g.questPerksOf(q.heroes), pk = k => { for (const c in perks) if (perks[c][k] != null) return perks[c][k]; return null; };
+      const fat = FT.gainBase + FT.gainPerMin * (q.dur0 || 0) / 60, rk = pk('recoverK'); // 成败都累;战士自己不累,牧师让这一趟的人恢复得快
+      hs.forEach(h => { if (!(D.questPerks[h.cls] || {}).noFatigue) h.fat = Math.min(FT.max, (h.fat || 0) + fat); if (rk && h.fat > 0) h.fatK = Math.max(h.fatK || 1, rk); });
+      const used = Object.keys(perks).map(c => perks[c].name);
+      if (q.failed) { // 失败:白跑一趟,只有路上捡的东西(术士:带回一半报酬;骑士:不掉士气和耐久)
+        const pay = pk('failPay') || 0, gold = bonus + Math.round(q.gold * pay);
+        g.gold += gold;
+        const xp = Math.round(q.xp * Math.max(QK.risk.failXp, pay));
+        hs.forEach(h => { addXp(h, xp, levelups); if (!pk('failSafe')) { mood(h, QK.risk.failMood); h.dur = Math.max(0, h.dur - QK.risk.failDur); } });
+        return { ok: true, failed: q.failed, name: q.name, gold, xp, levelups, item: null, guildUp: 0, log: q.log || [], perks: used, fat: Math.round(fat), saved: !!pk('failSafe'), paid: pay > 0 };
       }
       g.gold += q.gold + bonus + Math.round(q.gold * hs.reduce((x, h) => x + (lootMods(h).questGold || 0), 0)); // 月光:缺钱所以肯干
       hs.forEach(h => { addXp(h, q.xp, levelups); mood(h, 2); });
       let item = null;
-      if (rng() < q.itemChance + pv('luck') / 100) {
+      const lk = pk('lootK') || 1; // 盗贼:带回的东西多
+      if (rng() < (q.itemChance + pv('luck') / 100) * lk) {
         const c = g.cleared(), id = pick(itemsOf(c >= 4 && rng() < 0.2 ? 'epic' : c >= 2 && rng() < 0.5 ? 'rare' : 'green', g.gearTier()));
         if (g.toBank(id)) { item = D.items[id]; g.markNew(id); }
       }
       const extras = [], LT = QK.loot, star = q.star || 1; // 顺手带回来的:合剂、药水、附魔卷轴
       if (q.legend && g.legend.prog[q.legend]) { const lp = g.legend.prog[q.legend]; lp.quests = Math.min(LQ.questN, lp.quests + 1); lgAdvance(q.legend); extras.push('【' + LQ.items[q.legend].name + '】的备料(' + lp.quests + ' / ' + LQ.questN + ')'); }
-      if (rng() < LT.supply * star) { const sid = pick(Object.keys(D.supplies)); g.stock[sid] = (g.stock[sid] || 0) + 1; extras.push('一瓶' + D.supplies[sid].name); }
-      if (rng() < LT.scroll * star) { const es = Object.keys(D.enchants).filter(k => D.enchants[k].tier <= g.cleared() + 2 && (D.enchants[k].ver || 0) <= g.cap() && (!D.enchants[k].scrollOnly || star >= 3)) /* 高级附魔只有三星任务带得回来 */, eid = pick(es); g.scrolls = g.scrolls || {}; g.scrolls[eid] = (g.scrolls[eid] || 0) + 1; extras.push('附魔卷轴「' + D.enchants[eid].name + '」'); }
-      return { ok: true, name: q.name, gold: q.gold + bonus, xp: q.xp, levelups, item, extras, guildUp: g.addGuildXp(D.guildXp.quest), log: q.log || [] };
+      if (rng() < LT.supply * star * lk) { const sid = pick(Object.keys(D.supplies)); g.stock[sid] = (g.stock[sid] || 0) + 1; extras.push('一瓶' + D.supplies[sid].name); }
+      if (rng() < LT.scroll * star * lk) { const es = Object.keys(D.enchants).filter(k => D.enchants[k].tier <= g.cleared() + 2 && (D.enchants[k].ver || 0) <= g.cap() && (!D.enchants[k].scrollOnly || star >= 3)) /* 高级附魔只有三星任务带得回来 */, eid = pick(es); g.scrolls = g.scrolls || {}; g.scrolls[eid] = (g.scrolls[eid] || 0) + 1; extras.push('附魔卷轴「' + D.enchants[eid].name + '」'); }
+      return { ok: true, name: q.name, gold: q.gold + bonus, xp: q.xp, levelups, item, extras, guildUp: g.addGuildXp(D.guildXp.quest), log: q.log || [], perks: used, fat: Math.round(fat) };
     };
 
     // ---------- 副本 ----------
@@ -7663,7 +7745,7 @@ const K = D.statK;
     g.raidBuff = () => { const L = g.dungeon && g.raidLock[g.dungeon]; return L && g.roomDef().boss ? Math.min(D.raidRule.wipeBuffMax, (L.wipes[g.room] || 0) * D.raidRule.wipeBuff) : 0; };
     // 游玩时间往前走(画面层每秒喊一次)。到了一周就重置;人还在团本里就等出来
     g.playTick = function (sec) {
-      g.playSec += sec;
+      g.playSec += sec; g.fatRecover(sec);
       if (g.playSec - g.weekAt < D.raidRule.weekSec) return false;
       g.weekAt = g.playSec; g.weekN++;
       if (g.inRaid()) { g.weekDue = true; return false; }
@@ -10887,6 +10969,8 @@ var SCN = (function () {
   const moodHTML = h => { const w = moodOf(h); return `<span style="color:${w[1]}">${w[0]}${g.moodHidden(h) ? '' : ' ' + Math.round(h.mood)}</span>`; };
   const durColor = d => d <= 0 ? '#ff5a40' : d < 30 ? '#ffb347' : d < 70 ? '#f1e2c2' : '#9aff8a';
   const brkIco = h => g.broken(h) ? `<span class="brk" data-tip="装备坏了:伤害、减伤、治疗只剩 ${Math.round(D.brokenK * 100)}%。修好就恢复">${ART.icon('broken')}</span>` : ''; // 耐久为零:头像上的破损图标
+  const fatTip = h => { const t = g.fatTier(h), F = D.fatigue; return `<b>疲劳</b> —— 身体累不累(士气是心情,这是体力)<br>外派任务回来就涨,不出门的时候慢慢缓过来(每分钟 -${F.recoverPerMin}${h.fatK > 1 ? ',这一趟有牧师照顾 ×' + h.fatK : ''})。<br>${F.tiers.slice(1).map(x => `<span style=&quot;color:${x.color}&quot;>${x.at}+ ${x.name}</span>:下副本伤害治疗 -${Math.round(x.stat * 100)}%,派任务失败率 +${Math.round(x.fail * 100)}%`).join('<br>')}<br>现在 <b style=&quot;color:${t.color}&quot;>${t.name} ${Math.round(g.fatOf(h))}</b>`; };
+  const fatHTML = h => g.fatOf(h) >= 1 ? `<span class="ftg" style="color:${g.fatTier(h).color}" data-tip="${fatTip(h)}"><i>疲</i>${Math.round(g.fatOf(h))}</span>` : '';
   const durHTML = h => g.gearValue(h) ? `<span style="color:${durColor(h.dur)}">耐久 ${Math.round(h.dur)}</span>` : '';
   const gearDots = h => D.slots.map(sl => { const it = D.items[h.gear[sl]]; return `<span class="qd${it ? ' q' : ''}"${it ? ` style="--qc:var(--${it.q})"` : ''}></span>`; }).join('');
   const itemText = it => `<span style="color:var(--${it.q})">【${it.name}】</span> <span style="color:var(--muted)">物品等级 ${it.ilv} · ${SLOT_NAME[it.slot]}${it.typeLabel ? ' · ' + it.typeLabel : ''}</span>`;
@@ -10959,7 +11043,7 @@ var SCN = (function () {
     if (!g.hero(selUid)) selUid = g.roster[0].uid;
     const sel = g.hero(selUid), st = g.stats(sel), c = cdef(sel), inParty = g.party.indexOf(sel.uid) >= 0, mw = moodOf(sel), mHide = g.moodHidden(sel), fv = g.friendView(sel), gv = g.guideView(sel);
     let cards = g.roster.map(h => `<div class="rcard${h.uid === selUid ? ' sel' : ''}" data-uid="${h.uid}" data-drag="${h.uid}">${h.mood < D.quitMood && !g.moodHidden(h) ? '<div class="badge r">想退团</div>' : g.busy(h.uid) ? '<div class="badge q">任务中</div>' : g.party.indexOf(h.uid) >= 0 ? '<div class="badge">出战</div>' : ''}${brkIco(h)}${figure(h)}
-      <div class="nm" style="color:${cdef(h).color}">${h.name} <small style="color:#ffd45a">${h.level}级</small>${g.freePoints(h) > 0 ? ' <small class="tp">+' + g.freePoints(h) + '</small>' : ''}</div><div class="cl">${specName(h)} · ${cdef(h).role}</div><div class="chips">${chipsMini(h)}</div><div class="md gd">${gearDots(h)}</div><div class="md">${moodHTML(h)}${durHTML(h) ? ' · ' + durHTML(h) : ''}</div></div>`).join(''); // 装备格一行,士气和耐久一行
+      <div class="nm" style="color:${cdef(h).color}">${h.name} <small style="color:#ffd45a">${h.level}级</small>${g.freePoints(h) > 0 ? ' <small class="tp">+' + g.freePoints(h) + '</small>' : ''}</div><div class="cl">${specName(h)} · ${cdef(h).role}</div><div class="chips">${chipsMini(h)}</div><div class="md gd">${gearDots(h)}</div><div class="md">${moodHTML(h)}${durHTML(h) ? ' · ' + durHTML(h) : ''}${fatHTML(h)}</div></div>`).join(''); // 装备格一行,士气、耐久、疲劳一行
     const capNow = g.rosterCap(), capMax = Math.min(D.rosterMax, Math.max(10, Math.ceil((capNow + 1) / 5) * 5));
     for (let i = g.roster.length; i < capMax; i++) cards += i < capNow ? `<div class="rcard empty"></div>` : `<div class="rcard empty lockd" data-tip="公会每升一级多一个位置">🔒</div>`;
     const ph = g.partyHeroes(), warn = partyWarn();
@@ -10995,6 +11079,7 @@ var SCN = (function () {
         <div class="dsec mf${unhappy ? ' warn' : ''}">
           <div class="mfrow" data-tip="<b>士气</b> —— 他这阵子的心情<br>高了手热,低了手冷(输出和治疗最多 ±10%,自己放技能也更稳或更飘)。<br>赢了、拿到装备就涨;灭团、被抢装备、坐板凳就跌。来得快,去得也快,不管它也会慢慢回到 ${D.moodHome}。<br>掉到 ${D.quitMood} 以下,他就开始数日子了。"><span class="mfl">士气</span><div class="moodbar"><i style="width:${mHide ? 0 : sel.mood}%;background:${mw[1]}"></i></div><b class="mfv" style="color:${mw[1]}">${mw[0]}${mHide ? '' : ' ' + Math.round(sel.mood)}</b></div>
           <div class="mfrow" data-tip="<b>友谊</b> —— 他跟你这个团长的交情<br>交情深了,你喊他才动,他才肯忍你,别人才挖不走。不加输出。<br>只能一场一场打出来、一件一件事处出来。谈心和喝酒最多处到「熟络」,酒买不来交情。<br>现在「${fv.name}」:喊技能${fv.callRel < 1 ? ' ' + Math.round((1 - fv.callRel) * 100) + '% 会慢半拍' : '立刻就放'}${fv.patience ? ',士气低了多忍 ' + fv.patience + ' 场' : ''}。${fv.needDeed ? '<br><b style=&quot;color:#ffd45a&quot;>分数够了,还差一件事才到「' + fv.next + '」</b>:一起拿首杀、灭了几次终于过、准他的假、吵架时站他这边、被挖角时留住他、给他一件紫装。' : ''}${fv.deeds.length ? '<br>共过的事:' + fv.deeds.join('、') + '。' : ''}"><span class="mfl">友谊</span><div class="moodbar fr"><i style="width:${sel.friend || 0}%"></i></div><b class="mfv" style="color:#ffb0c8">${fv.name}${fv.needDeed ? ' · 差一件事' : ''}</b></div>
+          ${(ft => `<div class="mfrow" data-tip="${fatTip(sel)}"><span class="mfl">疲劳</span><div class="moodbar"><i style="width:${g.fatOf(sel)}%;background:${ft.color}"></i></div><b class="mfv" style="color:${ft.color}">${ft.name}${g.fatOf(sel) >= 1 ? ' ' + Math.round(g.fatOf(sel)) : ''}</b></div>`)(g.fatTier(sel))}
           ${(rv => (rv.good.length || rv.bad.length ? `<div class="relrow" data-tip="合得来的人排在同一个小队里打得更顺(每人 +3%),对方拿到装备也不眼红,但一个走了另一个也会动心思。合不来的人排在同一个小队里别扭(每人 -3%),对方拿到装备加倍不服。吵过架、被甩过锅、被记了仇会结梁子;一顿和事酒、老带新能处成朋友。">${rv.good.length ? '<span class="rg">走得近:' + rv.good.slice(0, 3).join('、') + '</span>' : ''}${rv.bad.length ? '<span class="rb">合不来:' + rv.bad.slice(0, 3).join('、') + '</span>' : ''}</div>` : ''))(g.relView(sel))}
           <div class="mfbtn">${unhappy ? `<span class="quitline">想退团${fv.tier >= 2 ? ' · 还剩 ' + Math.max(1, g.patience(sel) - (sel.grumble || 0)) + ' 场' : ''}</span>` : ''}${sel.vacation > 0 ? `<span class="quitline" style="color:#9ad0e8">请假中 · 还有 ${sel.vacation} 场</span>` : ''}<span class="hbtn mini sec${gv.ok ? ' glow' : ' dim'}" id="bGuide" data-tip="${gv.ok ? '他最近惹了祸,交情也够了:可以借这件事劝一劝,让他的毛病收着点,或者换个活法。不是非做不可。' : gv.why}">说说他</span><span class="hbtn mini sec" id="bTalk" data-tip="私下找他谈心。不花钱,但同一个人谈得越多越不管用。">谈心 +${g.careGain(sel.uid, 'talk')}</span><span class="hbtn mini sec${g.gold < D.care.drink.cost ? ' dis' : ''}" id="bDrink" data-tip="单独请他喝酒。花公会的钱,效果比谈心好,喝多了说不定吐两句真话(看出一个还不了解的性格)。同样越请越不灵,一起多打几场会慢慢恢复。">请他喝酒 <i class="coin"></i>${D.care.drink.cost} +${g.careGain(sel.uid, 'drink')}</span></div></div>
 
@@ -11471,6 +11556,10 @@ var SCN = (function () {
   let questPick = null; // 正在给哪个任务挑人
   const fmtT = sec => (sec >= 60 ? Math.floor(sec / 60) + ' 分' + (sec % 60 ? ' ' + (sec % 60) + ' 秒' : '') : sec + ' 秒');
   const hchip = (h, on, attr) => `<span class="hchip${on ? ' on' : ''}"${attr || ''}>${ART.heroHead(h.cls, h.look)}<em>${h.name} ${h.level}</em></span>`;
+  const roleTag = r => `<b class="rtag rk-${r === '坦克' ? 't' : 'h'}">${r}</b>`;
+  const needTags = q => (q.need || []).map(roleTag).join(' ');
+  // 职业专精的小图标:on 这一趟会生效
+  const qpkIco = (c, on, mini) => { const P = D.questPerks[c]; return `<span class="qpk${on ? ' on' : ''}${mini ? ' mini' : ''}" style="--pc:${D.classes[c].color}" data-tip="<b>${D.classes[c].name} · ${P.name}</b><br>${P.desc}${on ? '' : '<br><span style=&quot;color:#a89878&quot;>队里有' + D.classes[c].name + '就生效,几个人也只算一次</span>'}">${P.ic}</span>`; };
   function teamPos(q) { const l = g.map().locs[q.loc] || g.map().home; return { x: l.x, y: l.y }; } // 外出的队伍就标在任务地点上
   // 野外出事了,等团长拿主意
   function showQuestEvent(qid, ei) {
@@ -11496,7 +11585,7 @@ var SCN = (function () {
     const seen = {};
     const pins = g.quests.board.map(q => {
       const l = Q.locs[q.loc], n = seen[q.loc] = (seen[q.loc] || 0) + 1, on = questPick && questPick.qid === q.id;
-      return `<div class="wpin${on ? ' on' : ''}" data-pick="${q.id}" style="left:${l.x + (n - 1) * 3.2}%;top:${l.y}%" data-tip="${q.name} ${stars(q)} · ${l.name}<br>需要 ${q.size} 人 · ${fmtT(g.questView(q).dur)}${g.questOdds(q, []).near ? '<br><span style=&quot;color:#ff8a7a&quot;>挨着' + foe + '的哨站,容易被蹲</span>' : ''}"><i>!</i></div>`;
+      return `<div class="wpin${on ? ' on' : ''}" data-pick="${q.id}" style="left:${l.x + (n - 1) * 3.2}%;top:${l.y}%" data-tip="${q.name} ${stars(q)} · ${l.name}<br>需要 ${q.size} 人 · ${fmtT(g.questView(q).dur)}${(q.need || []).length ? '<br>要带 ' + q.need.join('、') : ''}${g.questOdds(q, []).near ? '<br><span style=&quot;color:#ff8a7a&quot;>挨着' + foe + '的哨站,容易被蹲</span>' : ''}"><i>!</i></div>`;
     }).join('');
     const teams = g.quests.active.map(q => {
       const done = now >= q.end, p = teamPos(q, now), hs = q.heroes.map(u => g.hero(u)).filter(Boolean);
@@ -11506,22 +11595,29 @@ var SCN = (function () {
     }).join('');
     let side;
     if (questPick) {
-      const q = g.quests.board.find(x => x.id === questPick.qid), v = g.questView(q);
-      const od = g.questOdds(q, questPick.sel);
+      const sel = questPick.sel, q = g.quests.board.find(x => x.id === questPick.qid), v = g.questView(q, sel), qs = g.questSize(q, sel);
+      const od = g.questOdds(q, sel), pk = g.questPerksOf(sel), R = D.quests.risk;
+      const duty = (q.need || []).map(r => { const st = !sel.length ? '' : od.duty.miss.indexOf(r) >= 0 ? 'miss' : od.duty.covered.indexOf(r) >= 0 ? 'cov' : 'ok';
+        return `<span class="qdut ${st}" data-tip="这个任务要带<b>${r}</b>。缺了也能去,失败率 +${Math.round(R.roleMiss * 100)}%。<br>德鲁伊一个人能顶上所有缺的职责。">${roleTag(r)}<i>${{ ok: '✓', cov: '变', miss: '✗' }[st] || ''}</i></span>`; }).join('');
       side = `<div class="ph"><span>${q.name} <em class="qstar">${stars(q)}</em></span><small>${Q.locs[q.loc].name}</small></div><div class="qside">
-        <div class="qr">需要 <b>${q.size}</b> 人 · 来回 <b>${fmtT(v.dur)}</b></div>
-        <div class="qr" data-tip="任务会失败:目标太强打不过,或者路上被${foe}的人打回来。<br>队伍等级高、带上坦克和治疗,把握更大。失败了没有金币,人还会不高兴。">打得过目标 <b style="color:${od.win > 0.85 ? '#8fe07a' : od.win > 0.7 ? '#ffd45a' : '#ff8a7a'}">${questPick.sel.length ? pct(od.win) : '先选人'}</b>${questPick.sel.length ? ' · 遇上' + foe + '打得过 <b>' + pct(od.fight) + '</b>' : ''}</div>
+        <div class="qr">需要 <b${qs < q.size ? ' style="color:#a8d070" data-tip="猎人「独行」:少要 1 个人"' : ''}>${qs < q.size ? qs + '–' + q.size : q.size}</b> 人 · 来回 <b${pk.ember ? ' style="color:#6accf0"' : ''}>${fmtT(v.dur)}</b></div>
+        <div class="qr">职责 ${duty || '<span style="color:var(--muted)" data-tip="这个任务不挑职责。带上坦克、治疗照样更稳">不限</span>'}</div>
+        <div class="qr qpks">专精 ${Object.keys(D.questPerks).map(c => qpkIco(c, !!pk[c])).join('')}</div>
+        <div class="qr" data-tip="任务会失败:目标太强打不过,或者路上被${foe}的人打回来。<br>队伍等级高、带上坦克和治疗,把握更大;缺了任务要的职责、人太累,把握会掉。失败了没有金币,人还会不高兴。">成功率 <b style="color:${od.win > 0.85 ? '#8fe07a' : od.win > 0.7 ? '#ffd45a' : '#ff8a7a'}">${sel.length ? pct(od.win) : '先选人'}</b>${sel.length ? ' · 遇上' + foe + '打得过 <b>' + pct(od.fight) + '</b>' : ''}${sel.length && od.tired > 0 ? ' · <span style="color:#ffb347">太累 -' + pct(od.tired) + '</span>' : ''}</div>
         ${od.near ? '<div class="qr" style="color:#ff8a7a">挨着' + foe + '的哨站,路上容易被蹲</div>' : ''}
         <div class="qr"><i class="coin"></i> ${v.gold} 金币 · 每人 ${v.xp} 经验 · ${Math.round(q.itemChance * 100)}% 机会带回一件装备</div>
         <div class="qsub">派谁去</div>
         ${(() => {
           const teamOf = h => { const i = g.teams.findIndex(t => (t || []).indexOf(h.uid) >= 0); return i >= 0 ? i + 1 : g.party.indexOf(h.uid) >= 0 ? (g.teamIdx || 0) + 1 : g.raidParty.indexOf(h.uid) >= 0 ? '团' : 0; };
-          const chip = h => hchip(h, questPick.sel.indexOf(h.uid) >= 0, ' data-u="' + h.uid + '"' + (teamOf(h) ? ' data-tip="在 ' + (teamOf(h) === '团' ? '团队副本的名单' : teamOf(h) + ' 队') + '里。派出去之后这支队伍下副本会缺人"' : '')).replace('</em>', teamOf(h) ? ' <u>' + teamOf(h) + (teamOf(h) === '团' ? '' : '队') + '</u></em>' : '</em>');
+          const chip = h => { // 头像框:左上专精、右上编队、左下等级、右下疲劳,名字在框下面
+            const tm = teamOf(h), ft = g.fatTier(h), f = Math.round(g.fatOf(h));
+            return `<div class="qav${questPick.sel.indexOf(h.uid) >= 0 ? ' on' : ''}" data-u="${h.uid}"${tm ? ' data-tip="在 ' + (tm === '团' ? '团队副本的名单' : tm + ' 队') + '里。派出去之后这支队伍下副本会缺人"' : ''}>
+              <div class="qavf" style="--cc:${cdef(h).color}">${ART.heroHead(h.cls, h.look)}${D.questPerks[h.cls] ? qpkIco(h.cls, !!pk[h.cls], true) : ''}${tm ? '<u>' + tm + (tm === '团' ? '' : '队') + '</u>' : ''}<s>${h.level}</s>${f >= 1 ? `<b class="qavft" style="background:${ft.color}" data-tip="${fatTip(h)}">${f}</b>` : ''}</div><em>${h.name}</em></div>`; };
           const free = idle.filter(h => !teamOf(h)), inTeam = idle.filter(h => teamOf(h));
           if (!idle.length) return '<div class="qpick">所有人都在外面</div>';
-          return '<div class="qgrp">闲着的人</div><div class="qpick">' + (free.map(chip).join('') || '没有闲人') + '</div>' + (inTeam.length ? '<div class="qgrp warn">编了队的人 · 派出去副本会缺人</div><div class="qpick inteam">' + inTeam.map(chip).join('') + '</div>' : '');
+          return '<div class="qgrp">闲着的人</div><div class="qpick qavs">' + (free.map(chip).join('') || '没有闲人') + '</div>' + (inTeam.length ? '<div class="qgrp warn">编了队的人 · 派出去副本会缺人</div><div class="qpick qavs inteam">' + inTeam.map(chip).join('') + '</div>' : '');
         })()}
-        <div class="qb"><span class="hbtn${questPick.sel.length === q.size ? '' : ' dis'}" data-go="${q.id}">出发(${questPick.sel.length}/${q.size})</span><span class="hbtn sec" data-cancel="1">取消</span></div></div>`;
+        <div class="qb"><span class="hbtn${sel.length >= qs && sel.length <= q.size ? '' : ' dis'}" data-go="${q.id}">出发(${sel.length}/${qs})</span><span class="hbtn sec" data-cancel="1">取消</span></div></div>`;
     } else {
       const act = g.quests.active.map(q => {
         const done = now >= q.end;
@@ -11532,7 +11628,7 @@ var SCN = (function () {
           ${!done && (q.events || []).some(e => e.wait && !e.done) ? `<div class="qb"><span class="hbtn red" data-qev="${q.id},${q.events.findIndex(e => e.wait && !e.done)}">出事了,等你拿主意</span></div>` : ''}
           ${done ? `<div class="qb"><span class="hbtn" data-claim="${q.id}">${q.failed ? '队伍回来了' : '领取奖励 <i class="coin"></i>' + (q.gold + (q.bonus || 0))}</span></div>` : ''}</div>`;
       }).join('');
-      const brd = g.quests.board.map(q => { const v = g.questView(q); return `<div class="qrow" data-pick="${q.id}"><b>!</b><div><span>${q.name} <em class="qstar">${stars(q)}</em></span><small>${Q.locs[q.loc].name} · ${q.size} 人 · ${fmtT(v.dur)} · ${v.gold} 金币</small></div></div>`; }).join('');
+      const brd = g.quests.board.map(q => { const v = g.questView(q); return `<div class="qrow" data-pick="${q.id}"><b>!</b><div><span>${q.name} <em class="qstar">${stars(q)}</em></span><small>${Q.locs[q.loc].name} · ${q.size} 人 · ${fmtT(v.dur)} · ${v.gold} 金币 ${needTags(q)}</small></div></div>`; }).join('');
       side = `<div class="ph"><span>外出的队伍</span><small>${g.quests.active.length} / ${g.questSlots()}</small></div><div class="qside">
         ${act}
         <div class="qsub">任务</div>${brd}
@@ -11570,8 +11666,8 @@ var SCN = (function () {
     const claim = id => {
       const r = g.claimQuest(id, Date.now());
       if (r.ok) tk('quest_claim', { failed: !!r.failed, gold: r.gold, item: r.item ? r.item.q : '', extras: (r.extras || []).length });
-      if (r.ok && r.failed) { snd('deny'); hubTip(`${r.name}失败了:${r.failed}。白跑一趟,每人只有 ${r.xp} 经验${r.gold ? ',路上捡了 ' + r.gold + ' 金币' : ''}`); }
-      else if (r.ok) { hubTip(`${r.name}完成:${r.gold} 金币,每人 ${r.xp} 经验${r.item ? ',带回【' + r.item.name + '】(已入库)' : ''}${(r.extras || []).length ? ',还带回' + r.extras.join('、') : ''}${r.levelups.length ? ' · ' + r.levelups.map(x => x.name + '升到 ' + x.level + ' 级').join(',') : ''}`); if (r.item) snd('loot'); }
+      if (r.ok && r.failed) { snd('deny'); hubTip(`${r.name}失败了:${r.failed}。每人 ${r.xp} 经验${r.gold ? ',带回 ' + r.gold + ' 金币' : ''}${r.paid ? '(术士的契约)' : ''}${r.saved ? ' · 骑士护着,没人掉士气和耐久' : ''}`); }
+      else if (r.ok) { hubTip(`${r.name}完成:${r.gold} 金币,每人 ${r.xp} 经验${r.item ? ',带回【' + r.item.name + '】(已入库)' : ''}${(r.extras || []).length ? ',还带回' + r.extras.join('、') : ''}${r.levelups.length ? ' · ' + r.levelups.map(x => x.name + '升到 ' + x.level + ' 级').join(',') : ''}${r.perks && r.perks.length ? ' · 专精:' + r.perks.join('、') : ''}`); if (r.item) snd('loot'); }
       else hubTip(r.reason);
       showHub();
     };

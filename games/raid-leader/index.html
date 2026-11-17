@@ -1972,6 +1972,20 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .detail .dsec { margin-bottom: 4px; padding: 4px 10px 5px; }
 .detail .dsec h4 { margin-bottom: 3px; }
 .detail .dsec.mf { gap: 4px; }
+/* 装备说明里"点这里展开":这种说明能点(不跟着鼠标跑) */
+#tip.tclick { pointer-events: auto; }
+#tip .tt-setsw { cursor: pointer; color: #9ac8ff; padding: 2px 0; }
+#tip .tt-setsw:hover { color: #cfe6ff; text-decoration: underline; }
+/* 角色天赋页:顶上一排花名册头像换人,◀ ▶ / 键盘左右键按顺序换;角标是没花的天赋点 */
+.tswap { display: flex; align-items: center; gap: 4px; min-width: 0; max-width: 560px; }
+.tsarr { flex: none; width: 26px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 6px; border: 1px solid #7a5622; background: #2a1b10; color: #ffd98a; cursor: pointer; font-size: 13px; }
+.tsarr:hover { border-color: #ffd45a; color: #fff3c2; }
+.tsheads { display: flex; gap: 3px; overflow-x: auto; padding: 3px 2px 5px; scrollbar-width: thin; }
+.tsh { position: relative; flex: none; width: 32px; height: 32px; border-radius: 6px; border: 2px solid #4a3418; background: radial-gradient(#6a5038, #2a1b10); overflow: visible; cursor: pointer; opacity: .7; }
+.tsh svg { width: 100%; height: 100%; display: block; border-radius: 4px; }
+.tsh:hover { opacity: 1; border-color: #c9a25a; }
+.tsh.on { opacity: 1; border-color: #ffe14d; box-shadow: 0 0 8px #ffb347; }
+.tsh i { position: absolute; right: -4px; top: -4px; min-width: 14px; height: 14px; padding: 0 3px; border-radius: 7px; background: #ffd45a; color: #2a1206; font: 700 10px/14px var(--ui); font-style: normal; text-align: center; border: 1px solid #000; }
 
 </style>
 </head>
@@ -2039,7 +2053,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1801";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1806";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -11231,6 +11245,7 @@ var SCN = (function () {
     ov2.innerHTML = `<div class="card tcard">
       <div class="thead"><div class="mh">${ART.heroHead(h.cls, h.look)}</div><div style="flex:1;text-align:left"><h3 style="color:${c.color}">${h.name} · ${h.level} 级 ${specName(h)}</h3>
         <small>天赋点 <b style="color:#ffe14d;font-size:16px">${free}</b> · 已用 ${g.spentPoints(h)}</small></div>
+        <div class="tswap"><span class="tsarr" data-sw="-1" data-tip="上一个(←)">◀</span><div class="tsheads">${g.roster.map(x => `<span class="tsh${x.uid === h.uid ? ' on' : ''}" data-swu="${x.uid}" data-tip="${x.name} · ${x.level} 级${g.freePoints(x) > 0 ? ' · <b style=&quot;color:#ffe14d&quot;>' + g.freePoints(x) + ' 点没花</b>' : ''}">${ART.heroHead(x.cls, x.look)}${g.freePoints(x) > 0 ? '<i>' + g.freePoints(x) + '</i>' : ''}</span>`).join('')}</div><span class="tsarr" data-sw="1" data-tip="下一个(→)">▶</span></div>
         <span class="hbtn red${g.spentPoints(h) ? '' : ' dis'}" id="tReset" style="font-size:13px;padding:5px 12px">重置天赋 <i class="coin"></i>${D.respecCost}</span><span class="hbtn sec" id="tClose" style="font-size:14px;padding:5px 16px">完成</span></div>
       <div class="tpicks">
         <div class="tpbox"><h5>基础技能 <small>他自己一直在用</small></h5><div class="tfoot">${c.basics.map(b => `<span class="bopt bbas" data-tip="<b>${b.name}</b><br>${b.desc}">${ART.icon(basicKey(b))}${b.name}</span>`).join('')}${D.auras[h.cls] ? `<span class="bopt bbas" data-tip="<b>${D.auras[h.cls].name}</b><br>光环:${D.auras[h.cls].desc}">${ART.icon('party')}${D.auras[h.cls].name}</span>` : ''}</div>
@@ -11270,7 +11285,18 @@ var SCN = (function () {
     ov2.querySelectorAll('.jopt').forEach(e => { e.onclick = () => { g.setPick(h, D.loadout[h.cls].key, e.dataset.j); snd('click'); save(); showTalents(uid); }; });
     $('#tReset').onclick = () => { const r = g.respec(h); if (r.ok) { snd('coin'); save(); showTalents(uid); } else { snd('deny'); $('#tInfo').innerHTML = `<span style="color:#ff9a7a">${r.reason}</span>`; } };
     $('#tClose').onclick = () => { ov2.className = ''; ov2.innerHTML = ''; showHub(); };
+    ov2.querySelectorAll('[data-swu]').forEach(e => { e.onclick = () => talentSwap(e.dataset.swu); });
+    ov2.querySelectorAll('[data-sw]').forEach(e => { e.onclick = () => talentSwap(+e.dataset.sw); });
+    const on = ov2.querySelector('.tsh.on'); if (on) on.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   }
+  // 天赋页里换人:点头像直接换,◀ ▶ 或键盘左右键按花名册顺序换(换了以后回公会大厅也选着他)
+  function talentSwap(to) {
+    const cur = $('#overlay .tcard .tsh.on'), i = g.roster.findIndex(x => cur && x.uid === cur.dataset.swu); if (i < 0) return;
+    const uid = typeof to === 'number' ? g.roster[(i + to + g.roster.length) % g.roster.length].uid : to;
+    if (uid === g.roster[i].uid) return;
+    selUid = uid; snd('click'); tip(''); showTalents(uid);
+  }
+  addEventListener('keydown', e => { if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && $('#overlay').classList.contains('show') && $('#overlay .tcard .tswap')) { e.preventDefault(); talentSwap(e.key === 'ArrowLeft' ? -1 : 1); } });
 
   // ================= 任务看板 =================
   let questPick = null; // 正在给哪个任务挑人
@@ -11690,12 +11716,19 @@ var SCN = (function () {
   let mouse = { x: 640, y: 360 }, tipByAttr = false;
   function placeTip() {
     const t = $('#tip'), w = t.offsetWidth, h = t.offsetHeight;
-    let x = mouse.x + 18, y = mouse.y + 20;
+    const off = t.classList.contains('tclick') ? 6 : 18; // 能点的说明贴近一点,鼠标挪过去不会先掉到空地上
+    let x = mouse.x + off, y = mouse.y + off + 2;
     if (x + w > 1272) x = mouse.x - w - 14;
     if (y + h > 712) y = mouse.y - h - 14;
     t.style.left = Math.max(6, x) + 'px'; t.style.top = Math.max(6, y) + 'px';
   }
-  function tip(html) { const t = $('#tip'); if (!html) { t.style.display = 'none'; return; } t.innerHTML = html; t.style.display = 'block'; placeTip(); }
+  function tip(html) {
+    const t = $('#tip'); if (!html) { t.style.display = 'none'; t.classList.remove('tclick'); return; }
+    t.innerHTML = html; t.style.display = 'block';
+    const sw = t.querySelector('.tt-setsw'); t.classList.toggle('tclick', !!sw); // 带"点这里展开"的说明:不跟着鼠标跑,鼠标能移上去点;触屏上本来就停着
+    if (sw) sw.onclick = e => { e.stopPropagation(); setsAll = !setsAll; snd('click'); reTipItem(true); };
+    placeTip();
+  }
   // 说明浮窗不赖着不走:鼠标已经不在任何带说明的东西上了就收掉(重画界面后原来的元素没了,收不到"移出"事件);
   // 触屏上靠"按下"弹出来的按钮说明,松手一会儿自己收掉
   const TIP_SRC = '[data-tip],[data-item],.sk,.uf,.tn,.bopt,.loot,.token,.gs,.bcell,.dbr';
@@ -11703,7 +11736,9 @@ var SCN = (function () {
   addEventListener('pointermove', e => {
     mouse = pt(e);
     if ($('#tip').style.display !== 'block') return;
+    if (e.target.closest && e.target.closest('#tip')) return; // 鼠标在说明上(要点"展开")
     if (e.pointerType === 'mouse' && !drag && !(e.target.closest && e.target.closest(TIP_SRC))) { tipByAttr = false; tip(''); return; }
+    if ($('#tip').classList.contains('tclick')) return; // 能点的说明停在原地
     placeTip();
   });
   addEventListener('pointerup', e => {
@@ -11713,11 +11748,11 @@ var SCN = (function () {
   });
   // 装备的悬浮说明。who: 顺带列出哪些人想要
   // 装备信息卡片。who: 顺带列出哪些人想要;h + slot: 这件正穿在谁身上(显示耐久、附魔宝石、套装件数)
-  let tipShift = false, lastItemTip = null; // 按住 Shift:装备说明里展开所有职业的套装效果
+  let tipShift = false, setsAll = false, lastItemTip = null; // setsAll:点过"展开",之后的装备说明都展开,再点收起 // 按住 Shift:装备说明里展开所有职业的套装效果
   addEventListener('keydown', e => { if (e.key === 'Shift' && !tipShift) { tipShift = true; reTipItem(); } });
   addEventListener('keyup', e => { if (e.key === 'Shift') { tipShift = false; reTipItem(); } });
   addEventListener('blur', () => { tipShift = false; });
-  function reTipItem() { const t = $('#tip'); if (lastItemTip && t.style.display === 'block' && t.innerHTML === lastItemTip.html) tip(itemTip.apply(null, lastItemTip.args)); }
+  function reTipItem(force) { const t = $('#tip'); if (lastItemTip && t.style.display === 'block' && (force || t.innerHTML === lastItemTip.html)) { const keep = [t.style.left, t.style.top]; tip(itemTip.apply(null, lastItemTip.args)); if (force) { t.style.left = keep[0]; t.style.top = keep[1]; } } }
   function itemTip(it, who, h, slot) {
     const html = itemTip0(it, who, h, slot); lastItemTip = { args: [it, who, h, slot], html }; return html;
   }
@@ -11763,8 +11798,8 @@ var SCN = (function () {
       if (h) g.setLines(h).forEach(b => L.push(`<div class="${n >= b.n ? 'tt-g' : 'tt-gy'}">(${b.n}) 套装:${b.text}。</div>`));
       else { // 没有具体的人(仓库、拍卖行):默认只列谁能用,按住 Shift 再展开各自的 2 件 / 4 件效果
         const rows = S.cls ? D.classes[S.cls].trees.map(t => ({ name: t.name, color: D.classes[S.cls].color, bs: D.specSet[t.id] })) : Object.keys(D.classArmor).filter(cid => D.classArmor[cid] === D.items[S.pieces[0]].type).map(cid => ({ name: D.classes[cid].name, color: D.classes[cid].color, bs: D.classSet[cid] }));
-        if (tipShift) rows.forEach(x => x.bs.forEach(b => L.push(`<div class="tt-gy">(${b.n}) <span style="color:${x.color}">${x.name}</span>:${b.text}。</div>`)));
-        else L.push(`<div class="tt-gy">套装效果看${S.cls ? '专精' : '职业'}:${rows.map(x => `<span style="color:${x.color}">${x.name}</span>`).join(' / ')}</div><div class="tt-hint">按住 Shift 看各自的效果</div>`);
+        if (tipShift || setsAll) { rows.forEach(x => x.bs.forEach(b => L.push(`<div class="tt-gy">(${b.n}) <span style="color:${x.color}">${x.name}</span>:${b.text}。</div>`))); L.push(`<div class="tt-hint tt-setsw">▲ 点这里收起</div>`); }
+        else L.push(`<div class="tt-gy">套装效果看${S.cls ? '专精' : '职业'}:${rows.map(x => `<span style="color:${x.color}">${x.name}</span>`).join(' / ')}</div><div class="tt-hint tt-setsw">▼ 点这里展开各自的效果(或按住 Shift)</div>`);
       }
     }
     if (it.flavor) L.push(`<div class="tt-fl">"${it.flavor}"</div>`);
@@ -11778,6 +11813,7 @@ var SCN = (function () {
   // 触屏没有悬停:手指点一下带说明的东西就弹出来,再点别处收起
   document.addEventListener('pointerdown', e => {
     if (e.pointerType !== 'touch' && e.pointerType !== 'pen') return;
+    if (e.target.closest && e.target.closest('#tip')) return; // 点的是说明本身(展开 / 收起)
     const t = e.target.closest ? e.target.closest('[data-item],[data-tip]') : null;
     mouse = pt(e);
     if (t && (t.dataset.item || t.dataset.tip)) { tipByAttr = true; tip(t.dataset.item ? itemTip(D.items[t.dataset.item], t.dataset.who === 'roster' ? g.roster : null, t.dataset.hero ? g.hero(t.dataset.hero) : null, t.dataset.slot) : t.dataset.tip); }
@@ -11785,8 +11821,9 @@ var SCN = (function () {
   }, true);
   // 带 data-item / data-tip 的元素,鼠标移上去自动弹说明
   document.addEventListener('mouseover', e => {
+    if (e.target.closest && e.target.closest('#tip')) return;
     const t = e.target.closest ? e.target.closest('[data-item],[data-tip]') : null;
-    if (t) { tipByAttr = true; tip(t.dataset.item ? itemTip(D.items[t.dataset.item], t.dataset.who === 'roster' ? g.roster : null, t.dataset.hero ? g.hero(t.dataset.hero) : null, t.dataset.slot) : t.dataset.tip); }
+    if (t) { mouse = pt(e); tipByAttr = true; tip(t.dataset.item ? itemTip(D.items[t.dataset.item], t.dataset.who === 'roster' ? g.roster : null, t.dataset.hero ? g.hero(t.dataset.hero) : null, t.dataset.slot) : t.dataset.tip); }
     else if (tipByAttr) { tipByAttr = false; tip(''); }
   });
 

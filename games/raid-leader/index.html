@@ -2012,19 +2012,6 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 /* 技能预告:去掉轨道的遮罩(遮罩会把伸出轨道边的图标切掉——到点那头的图标正好一半在轨道外,放大闪时更多);右端渐隐改由脚本逐个图标设透明度 */
 #dbm .dbtrack { -webkit-mask-image: none; mask-image: none; overflow: visible; }
 #dbm .dbi.hot, #dbm .dbi.dbpop { z-index: 3; }
-/* 角色天赋页一页放下(猎人基础技能多、还有一行宠物是最坏情况):天赋格 34→30、行高 40→36(ui.js 里 RH / NH);
-   基础技能那排小一号、尽量一行;「挑一种」(宠物 / 图腾……)挪到右边「团长喊的技能」框里 */
-.tcard .tgrid .tn { width: 30px; height: 30px; }
-.tcard .tpicks { margin-top: 6px; gap: 10px; }
-.tcard .tpbox { padding: 4px 10px 6px; }
-.tcard .tpbox:first-child { flex: 1.25; }
-.tcard .tpbox h5 { font-size: 15px; margin-bottom: 0; }
-.tcard .tpbox .tfoot { gap: 5px; margin-top: 3px; }
-.tcard .bopt.bbas { padding: 1px 8px 1px 2px; font-size: 12px; gap: 3px; border-width: 1px; }
-.tcard .bopt.bbas .ic { width: 20px; height: 20px; margin-right: 2px; vertical-align: -5px; }
-.tcard .tpbig .tfoot.jpick { margin: 5px 0 0; padding-top: 4px; }
-.tcard .tpbig .jopt { padding: 1px 8px 1px 4px; font-size: 12px; border-width: 1px; }
-.tcard .trees { margin-top: 6px; }
 
 /* 外派任务:职责要求、职业专精、疲劳 */
 .qdut { display: inline-flex; align-items: center; gap: 2px; margin-right: 6px; }
@@ -2050,6 +2037,47 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .qavf s { position: absolute; left: 1px; bottom: 1px; text-decoration: none; font: 700 9px/12px var(--ui); color: #ffd45a; background: rgba(0, 0, 0, .65); border-radius: 4px; padding: 0 3px; }
 .qavft { position: absolute; right: -5px; bottom: -5px; min-width: 16px; font: 800 9px/14px var(--ui); color: #1a0e06; text-align: center; border-radius: 7px; padding: 0 2px; border: 1px solid #1a0e06; }
 .qpick.inteam .qavf { border-style: dashed; opacity: .8; } .qpick.inteam .qav.on .qavf { opacity: 1; }
+/* 角色天赋页一页放下(猎人基础技能多、还有一行宠物是最坏情况):天赋格 34→30、行高 40→36(ui.js 里 RH / NH);
+   基础技能那排小一号、尽量一行;「挑一种」(宠物 / 图腾……)挪到右边「团长喊的技能」框里 */
+.tcard .tgrid .tn { width: 30px; height: 30px; }
+.tcard .tpicks { margin-top: 6px; gap: 10px; }
+.tcard .tpbox { padding: 4px 10px 6px; }
+.tcard .tpbox:first-child { flex: 1.25; }
+.tcard .tpbox h5 { font-size: 15px; margin-bottom: 0; }
+.tcard .tpbox .tfoot { gap: 5px; margin-top: 3px; }
+.tcard .bopt.bbas { padding: 1px 8px 1px 2px; font-size: 12px; gap: 3px; border-width: 1px; }
+.tcard .bopt.bbas .ic { width: 20px; height: 20px; margin-right: 2px; vertical-align: -5px; }
+.tcard .tpbig .tfoot.jpick { margin: 5px 0 0; padding-top: 4px; }
+.tcard .tpbig .jopt { padding: 1px 8px 1px 4px; font-size: 12px; border-width: 1px; }
+.tcard .trees { margin-top: 6px; }
+/* 天赋页:左边一竖栏基础技能(按学会等级),右边团长喊的技能 + 三棵树 */
+.tcard .tlay { display: flex; gap: 12px; align-items: stretch; margin-top: 6px; }
+.tcard .tmain { flex: 1; min-width: 0; }
+.tcard .tmain .tpicks { margin-top: 0; }
+.tcard .tbsk { width: 176px; flex: none; padding: 4px 8px 8px; border: 2px solid #5d4320; border-radius: 8px; background: linear-gradient(rgba(60, 40, 20, .55), rgba(20, 12, 6, .5)); text-align: left; }
+.tcard .tbsk h5 { font: 700 15px var(--disp); letter-spacing: 3px; color: #ffd98a; margin: 0 0 4px; }
+.tbrow { display: flex; align-items: center; gap: 5px; padding: 3px 4px; margin-top: 3px; border-radius: 6px; border: 1px solid #5d4320; background: rgba(0, 0, 0, .25); font-size: 12.5px; }
+.tbrow .ic { width: 22px; height: 22px; flex: none; }
+.tbrow b { font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tbrow .tblv { font: normal 700 10px/16px var(--ui); min-width: 18px; text-align: center; border-radius: 4px; background: #3a2a18; color: #ffd45a; flex: none; }
+.tbrow.off { opacity: .5; filter: grayscale(1); border-style: dashed; }
+.tbrow.off .tblv { background: #5a3a12; color: #ffb347; }
+.tbnone { display: inline-flex; align-items: center; gap: 4px; color: #9a8a6a; font-size: 12px; opacity: .8; } .tbnone .ic { width: 20px; height: 20px; filter: grayscale(1); } .tbnone em { font-style: normal; }
+/* 公会升级页:换回一项一行的列表(列表自己滚动);点满的压成一行、压淡,沉到每列最下面 */
+.ucol { top: 46px; height: 592px; }
+.ulist { height: 548px; overflow-y: auto; }
+.urow .unext { font-size: 11.5px; color: var(--muted); margin: -2px 0 4px; } .urow .unext b { color: #ffe14d; }
+.urow .pips i { font-style: normal; color: #c9b98a; letter-spacing: 0; margin-left: 4px; font-size: 11px; }
+.urow.ufull { padding: 3px 8px; opacity: .6; border-color: #7a6a2a; }
+.urow.ufull .uh { gap: 6px; } .urow.ufull .uh b { font-size: 13.5px; } .urow.ufull .uh em { margin-left: auto; font-size: 12.5px; } .urow.ufull .ulock { color: #ffd45a; font-size: 11px; }
+.urow.lock .unext { display: none; }
+/* 角色详情多了「疲劳」一行:士气 / 友谊 / 疲劳 三行收矮,「走得近 / 合不来」去掉上下留白,最满的情况也一页放完 */
+.detail .dsec.mf { gap: 3px; padding-top: 4px; padding-bottom: 5px; }
+.detail .dsec.mf .mfrow { height: 16px; line-height: 16px; }
+.detail .dsec.mf .mfrow .mfl, .detail .dsec.mf .mfrow .mfv { line-height: 16px; }
+.detail .dsec.mf .moodbar { height: 10px; }
+.detail .dsec.mf .relrow { margin: 0; line-height: 16px; }
+.detail .gslots { gap: 4px; } .detail .gs { padding: 2px; } .detail .gs b { width: 24px; height: 24px; }
 
 </style>
 </head>
@@ -2117,7 +2145,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1843";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1855";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -2377,8 +2405,24 @@ var GAME_DATA = {
   // 不会有人同一帧齐刷刷开跑(显得假),会躲的人零点几秒就动身、技能生效前走得出去;慢半拍的晚一秒多才动,不躲的站着不动,团长一眼看得出该拖谁
   dodge: { jitter: 0.3, floor: 0.3 },
   selfUse: { react: 1.2, cdK: 1.3, wallRel: 0.6, holdThreat: 0.7 },
-  // 职业技能:到 firstSkillLevel 级自动学会,不花天赋点(写法:名字、类型、参数、图标底色)
-  firstSkillLevel: 10,
+  // 基础技能(小技能,队员自己放)按等级学会。键是职业定义里的字段:atk 普通攻击、heal 主力治疗、small 嘲讽 / 打断、dispel 驱散、cc 控场、
+  //   cleave / multi / aimed / finisher 附带效果、moveCast / moveHeal 移动中出手、smite 治疗闲着时打一下、aura 光环、first 下面的职业技能。
+  // 规则(用户定的):开局 8 级,1 级的最基本那几个一开始就会;10、20、30… 级跟着天赋点出「团长喊的技能」(大技能),
+  //   小技能排在 15、25、35、45 级,大小错开。副本机制要用的(嘲讽、打断、驱散、控场)不晚于第一个要它的副本:
+  //   石牢起就有可打断的读条和施法小怪的腐毒、蛇窟有沉眠(魔法)和逃跑叫人、古堡起有残血狂暴和嗜血术、裂隙才有诅咒。
+  //   没列的字段当 1 级。
+  basicLv: {
+    guard: { atk: 1, small: 1, first: 15, cleave: 25, aura: 35 },
+    oath: { atk: 1, heal: 1, small: 1, dispel: 1, first: 15, finisher: 25, moveHeal: 25, smite: 35, aura: 35 },
+    blade: { atk: 1, small: 1, cc: 15, dispel: 15, finisher: 25, first: 35, aura: 45 },
+    ember: { atk: 1, small: 1, cc: 15, moveCast: 25, first: 35, dispel: 45, aura: 45 },
+    ranger: { atk: 1, cc: 15, dispel: 15, first: 25, multi: 35, aimed: 45, aura: 45 },
+    dawn: { heal: 1, atk: 1, dispel: 1, first: 15, moveHeal: 25, moveCast: 25, smite: 35, aura: 45 },
+    gale: { heal: 1, atk: 1, small: 1, dispel: 1, first: 15, moveHeal: 25, moveCast: 25, smite: 35 },
+    hex: { atk: 1, cc: 15, first: 25, moveCast: 35, multi: 35, aura: 45 },
+    grove: { heal: 1, atk: 1, small: 1, dispel: 1, cc: 15, first: 15, moveHeal: 25, moveCast: 25, cleave: 25, smite: 35, aura: 45 }
+  },
+  // 职业技能:按上面 basicLv 的 first 学会,不花天赋点,队员自己放(写法:名字、类型、参数、图标底色)
   firstSkill: {
     guard: ['架盾', 'wall', { cd: 40, dur: 6 }, '#8fa3b8'], oath: ['持誓', 'wall', { cd: 40, dur: 6 }, '#f0c85a'],
     blade: ['掏心', 'strike', { cd: 40, dmg: 2200 }, '#d8b13a'], ember: ['爆燃弹', 'strike', { cd: 40, dmg: 2600 }, '#e0522a'],
@@ -3054,7 +3098,7 @@ var GAME_DATA = {
   // ---------- 副本阶梯 ----------
   // min/max: 适合的等级段(超过 max 经验大减);level: 数值按这个等级算;size: 为几人队设计
   dungeons: [
-    { id: 'slag', extra: ['矿车岔道', '熔岩栈桥'], name: '熔渣裂口', desc: '主城地下的熔岩洞。一群纵火的小鬼把这里当成了家。', min: 8, max: 12, level: 8, size: 3, pal: 'ash', hpK: 0.49, dmgK: 0.65, goldMult: 1,
+    { id: 'slag', extra: ['矿车岔道', '熔岩栈桥'], name: '熔渣裂口', desc: '主城地下的熔岩洞。一群纵火的小鬼把这里当成了家。', min: 8, max: 12, level: 8, size: 3, pal: 'ash', hpK: 0.324, dmgK: 0.6, goldMult: 1,
       enemies: {
         imp: { base: 'imp', name: '灰烬小鬼' }, brute: { base: 'brute', name: '熔渣督工' },
         boss: { base: 'bossBrute', name: '掘火者·巴佐', short: '巴佐', hp: 110000, melee: { interval: 1.8, dmg: 500 },
@@ -3066,7 +3110,7 @@ var GAME_DATA = {
         { name: '督工营地', tag: '精', elite: true, enemies: ['brute', 'imp'], pos: [[620, 330], [730, 300]], loot: [{ q: 'green', p: 1 }] },
         { name: '熔火深处', tag: '王', boss: true, enemies: ['boss'], pos: [[640, 330]], loot: [{ q: 'rare', p: 1 }, { q: 'green', p: 1 }] }
       ] },
-    { id: 'jail', extra: ['牢房走廊', '地下水渠'], name: '石牢暴动', desc: '王城监狱里的囚犯造反了,狱卒早就跑光了。', min: 12, max: 17, level: 13, size: 4, pal: 'iron', hpK: 1, dmgK: 0.87, goldMult: 1.3,
+    { id: 'jail', extra: ['牢房走廊', '地下水渠'], name: '石牢暴动', desc: '王城监狱里的囚犯造反了,狱卒早就跑光了。', min: 12, max: 17, level: 13, size: 4, pal: 'iron', hpK: 0.72, dmgK: 0.81, goldMult: 1.3,
       enemies: {
         imp: { base: 'imp', name: '暴动囚徒' }, shaman: { base: 'shaman', name: '黑牢术士' }, brute: { base: 'brute', name: '打手头目' },
         boss: { base: 'bossGolem', name: '镇狱石像', short: '石像', hp: 200000, melee: { interval: 1.8, dmg: 600 },
@@ -3079,7 +3123,7 @@ var GAME_DATA = {
         { name: '放风场', tag: '精', elite: true, enemies: ['brute', 'shaman'], pos: [[640, 330], [530, 276]], loot: [{ q: 'green', p: 1 }, { q: 'rare', p: 0.35 }] },
         { name: '最深的牢房', tag: '王', boss: true, enemies: ['boss'], pos: [[640, 330]], loot: [{ q: 'rare', p: 1 }, { q: 'rare', p: 1 }] }
       ] },
-    { id: 'serpent', trashK: 0.7, extra: ['孵化池', '梦语回廊'], name: '沉眠蛇窟', desc: '蛇窟深处有位长老一直在做梦。他的梦正在往外漏。', min: 16, max: 22, level: 18, size: 5, pal: 'bog', hpK: 1.93, dmgK: 1.05, goldMult: 1.6,
+    { id: 'serpent', trashK: 0.7, extra: ['孵化池', '梦语回廊'], name: '沉眠蛇窟', desc: '蛇窟深处有位长老一直在做梦。他的梦正在往外漏。', min: 16, max: 22, level: 18, size: 5, pal: 'bog', hpK: 1.521, dmgK: 0.965, goldMult: 1.6,
       enemies: {
         imp: { base: 'imp', name: '窟中蹦跶鬼' }, shaman: { base: 'shaman', name: '沉眠祭司' }, brute: { base: 'brute', name: '泥沼巨怪' },
         boss: { base: 'bossCaster', name: '梦魇长老·纳拉', short: '纳拉', hp: 215000, phase2At: 0.3, phase2Dmg: 1.2, phase2Speed: 1.3,
@@ -3092,7 +3136,7 @@ var GAME_DATA = {
         { name: '巨怪巢穴', tag: '精', elite: true, enemies: ['brute', 'shaman', 'imp'], pos: [[640, 330], [530, 276], [740, 300]], loot: [{ q: 'rare', p: 0.8 }] },
         { name: '长老的梦', tag: '王', boss: true, enemies: ['boss'], pos: [[640, 330]], loot: [{ q: 'rare', p: 1 }, { q: 'epic', p: 0.5 }, { q: 'rare', p: 1 }] }
       ] },
-    { id: 'keep', trashK: 0.85, extra: ['仆人通道', '月光庭院'], name: '狼影古堡', desc: '山顶古堡每到月圆就传出嚎叫。堡主很久没露面了。', min: 21, max: 28, level: 23, size: 5, pal: 'night', hpK: 2.13, dmgK: 1.48, goldMult: 2,
+    { id: 'keep', trashK: 0.85, extra: ['仆人通道', '月光庭院'], name: '狼影古堡', desc: '山顶古堡每到月圆就传出嚎叫。堡主很久没露面了。', min: 21, max: 28, level: 23, size: 5, pal: 'night', hpK: 1.705, dmgK: 1.554, goldMult: 2,
       enemies: {
         imp: { base: 'imp', name: '堡中恶仆' }, shaman: { base: 'shaman', name: '亡魂法师' }, brute: { base: 'brute', name: '狼人屠夫' },
         boss: { base: 'bossGolem', name: '月影石像鬼', short: '石像鬼', hp: 225000, phase2At: 0.35, phase2Dmg: 1.25, phase2Speed: 1.3,
@@ -3105,7 +3149,7 @@ var GAME_DATA = {
         { name: '屠夫厨房', tag: '精', elite: true, enemies: ['brute', 'shaman', 'imp'], pos: [[640, 330], [530, 276], [740, 300]], loot: [{ q: 'rare', p: 0.9 }, { q: 'epic', p: 0.1 }] },
         { name: '塔顶露台', tag: '王', boss: true, enemies: ['boss'], pos: [[640, 330]], loot: [{ q: 'epic', p: 1 }, { q: 'rare', p: 1 }, { q: 'legend', p: 0.08 }] }
       ] },
-    { id: 'abbey', trashK: 1.2, extra: ['忏悔回廊', '钟楼'], name: '绯红修院', desc: '一群狂热的修士占据了山中修院,他们觉得谁都需要被"净化"。', min: 28, max: 36, level: 30, size: 5, pal: 'crimson', hpK: 2.3, dmgK: 1.12, goldMult: 2.6,
+    { id: 'abbey', trashK: 1.2, extra: ['忏悔回廊', '钟楼'], name: '绯红修院', desc: '一群狂热的修士占据了山中修院,他们觉得谁都需要被"净化"。', min: 28, max: 36, level: 30, size: 5, pal: 'crimson', hpK: 2.089, dmgK: 0.983, goldMult: 2.6,
       enemies: {
         imp: { base: 'imp', name: '狂热新兵' }, shaman: { base: 'shaman', name: '修院牧师' }, brute: { base: 'brute', name: '圣殿卫士' },
         boss: { base: 'bossCaster', name: '大审判官·维兰', short: '维兰', hp: 250000, phase2At: 0.4, phase2Dmg: 1.25, phase2Speed: 1.35,
@@ -3185,7 +3229,7 @@ var GAME_DATA = {
       ] },
     // ---------- 10 人团队副本 ----------
     // raid: 团队副本,三个首领,中间夹小怪;after: 打通哪个五人本之后开放
-    { id: 'moon', trashK: 1.2, raid: true, after: 'abbey', name: '血月祭坛', desc: '十人团队副本。山谷深处的祭坛每逢血月就会苏醒,三位祭主轮流坐镇。', min: 32, max: 40, level: 34, size: 10, pal: 'night', hpK: 3.94, dmgK: 1.5, goldMult: 5,
+    { id: 'moon', trashK: 1.2, raid: true, after: 'abbey', name: '血月祭坛', desc: '十人团队副本。山谷深处的祭坛每逢血月就会苏醒,三位祭主轮流坐镇。', min: 32, max: 40, level: 34, size: 10, pal: 'night', hpK: 3.454, dmgK: 1.397, goldMult: 5,
       enemies: {
         imp: { base: 'imp', name: '血月信徒' }, shaman: { base: 'shaman', name: '血祭司' }, brute: { base: 'brute', name: '祭坛守卫' },
         boss1: { base: 'bossBrute', name: '祭坛屠夫·格鲁', short: '格鲁', hp: 300000, melee: { interval: 1.8, dmg: 560 },
@@ -3550,7 +3594,7 @@ GAME_DATA.difficulty = {
   ],
   timewalk: { on: false, every: 2, pick: 1, row: { id: 'timewalk', name: '时光', from: 60, five: true, raid: true, need: 'kill', lv: 'cap', hp: 1, dmg: 1, enrageK: 1, gear: 't' } }
 };
-GAME_DATA.difficulty.tune = { slag: { '5-1': { 45: [11.834, 3.14], 60: [15.555, 5.542], 70: [16.781, 9.451] } }, jail: { '5-1': { 45: [4.488, 1.967], 60: [5.723, 2.422], 70: [6.64, 2.597] } }, serpent: { '5-1': { 45: [1.972, 1.423], 60: [2.608, 1.495], 70: [3.308, 1.588] } }, keep: { '5-1': { 45: [1.564, 1.262], 60: [2.063, 1.279], 70: [2.455, 1.407] } }, abbey: { '5-1': { 45: [1.497, 1.083], 60: [1.951, 1.133], 70: [2.478, 1.232] } }, sand: { '5-1': { 45: [1.128, 0.974], 60: [1.451, 1.055], 70: [1.836, 1.173] } }, forge: { '5-1': { 60: [0.939, 1.109], 70: [1.231, 1.31] } }, bone: { '5-1': { 60: [1.073, 1.137], 70: [1.229, 1.195] } }, rift: { '5-1': { 70: [1.01, 1.175] } }, sun: { '5-1': { 70: [0.945, 1.131] } }, moon: { '10-1': [1, 0.99], '25-0': [0.87, 0.88], '25-1': [0.87, 0.48] }, emberking: { '10-1': [0.87, 0.82], '10-2': [0.87, 0.78], '25-0': [1, 1.15], '25-1': [0.5, 0.5], '25-2': [0.57, 0.53] }, bell: { '10-1': [1, 0.91], '10-2': [1, 0.91], '25-0': [1, 1.12], '25-1': [0.66, 0.57], '25-2': [0.76, 0.53] }, gear1: { '10-1': [1, 1], '10-2': [1, 0.97], '25-0': [1.1, 1.75], '25-1': [0.95, 1.5], '25-2': [0.87, 1.25] }, gear2: { '10-1': [0.76, 1.15], '10-2': [0.87, 1.08], '25-0': [0.76, 1.27], '25-1': [0.66, 1.28], '25-2': [0.76, 1.15] }, sky1: { '10-1': [0.87, 0.88], '10-2': [0.87, 0.79], '25-0': [1, 1.06], '25-1': [0.76, 0.83], '25-2': [0.76, 0.66] }, sky2: { '10-1': [0.87, 1.085], '10-2': [1, 0.93], '25-0': [1, 1.22], '25-1': [0.87, 1.48], '25-2': [1, 1.05] } };
+GAME_DATA.difficulty.tune = { slag: { '5-1': { 45: [17.897, 3.402], 60: [23.525, 6.004], 70: [25.379, 10.239] } }, jail: { '5-1': { 45: [6.233, 2.113], 60: [7.949, 2.601], 70: [9.222, 2.789] } }, serpent: { '5-1': { 45: [2.502, 1.548], 60: [3.309, 1.627], 70: [4.198, 1.728] } }, keep: { '5-1': { 45: [1.954, 1.202], 60: [2.577, 1.218], 70: [3.067, 1.34] } }, abbey: { '5-1': { 45: [1.648, 1.234], 60: [2.148, 1.291], 70: [2.728, 1.404] } }, sand: { '5-1': { 45: [1.128, 0.974], 60: [1.451, 1.055], 70: [1.836, 1.173] } }, forge: { '5-1': { 60: [0.939, 1.109], 70: [1.231, 1.31] } }, bone: { '5-1': { 60: [1.073, 1.137], 70: [1.229, 1.195] } }, rift: { '5-1': { 70: [1.01, 1.175] } }, sun: { '5-1': { 70: [0.945, 1.131] } }, moon: { '10-1': [1.141, 1.063], '25-0': [0.992, 0.945], '25-1': [0.992, 0.515] }, emberking: { '10-1': [0.87, 0.82], '10-2': [0.87, 0.78], '25-0': [1, 1.15], '25-1': [0.5, 0.5], '25-2': [0.57, 0.53] }, bell: { '10-1': [1, 0.91], '10-2': [1, 0.91], '25-0': [1, 1.12], '25-1': [0.66, 0.57], '25-2': [0.76, 0.53] }, gear1: { '10-1': [1, 1], '10-2': [1, 0.97], '25-0': [1.1, 1.75], '25-1': [0.95, 1.5], '25-2': [0.87, 1.25] }, gear2: { '10-1': [0.76, 1.15], '10-2': [0.87, 1.08], '25-0': [0.76, 1.27], '25-1': [0.66, 1.28], '25-2': [0.76, 1.15] }, sky1: { '10-1': [0.87, 0.88], '10-2': [0.87, 0.79], '25-0': [1, 1.06], '25-1': [0.76, 0.83], '25-2': [0.76, 0.66] }, sky2: { '10-1': [0.87, 1.085], '10-2': [1, 0.93], '25-0': [1, 1.22], '25-1': [0.87, 1.48], '25-2': [1, 1.05] } };
 GAME_DATA.diffNames = GAME_DATA.difficulty.modes.map(function (m) { return m.name; });
 // 这个副本属于哪个版本(45 / 60 / 70):它的等级上限落在哪个版本里
 GAME_DATA.verOf = function (d) { return +Object.keys(GAME_DATA.versions).filter(function (v) { return +v >= d.max; })[0] || GAME_DATA.levelCap; };
@@ -4682,7 +4726,7 @@ Object.assign(GAME_DATA.enchants, {
   }
   Object.keys(D.classes).forEach(function (cid) {
     var c = D.classes[cid], f = D.firstSkill[cid], fk;
-    c.firstSkill = { id: cid + '_first', name: f[0], mode: 'cmd', kind: f[1], color: f[3], first: true, desc: skillDesc(f[1], f[2]) };
+    c.firstSkill = { id: cid + '_first', name: f[0], mode: 'auto', kind: f[1], color: f[3], first: true, desc: skillDesc(f[1], f[2]) };
     for (fk in f[2]) c.firstSkill[fk] = f[2][fk];
     c.trees = c.spec.map(function (sp, ti) {
       var pre = cid + '_' + sp.id + '_', cols = COLS[ti];
@@ -4801,6 +4845,13 @@ Object.assign(GAME_DATA.enchants, {
 })(GAME_DATA);
 GAME_DATA.names = GAME_DATA.namePools.zh; // 现在只有中文
 if (typeof module !== 'undefined') module.exports = GAME_DATA;
+
+// 基础技能对上职业定义里的字段(basics 里每一条记下 f),学会等级查 basicLv
+(function (D) {
+  var ORDER = ['atk', 'heal', 'small', 'moveCast', 'moveHeal', 'cleave', 'multi', 'aimed', 'finisher', 'smite', 'dispel', 'cc'];
+  D.basicField = function (def, b) { for (var i = 0; i < ORDER.length; i++) { var v = def[ORDER[i]]; if (v && v.name === b.name) return ORDER[i]; } return null; };
+  D.basicLevel = function (cid, f) { var t = D.basicLv[cid] || {}; return t[f] || 1; };
+})(GAME_DATA);
 
 </script>
 <script>
@@ -6351,7 +6402,7 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
       const h = byId[id];
       if (!h || s.over) return { ok: false, reason: '' };
       const k = h.big;
-      if (!k) return { ok: false, reason: h.name + '还没学会技能(' + D.firstSkillLevel + ' 级学会第一个)' };
+      if (!k) return { ok: false, reason: h.name + '还没有团长喊的技能(在天赋里点出来)' };
       if (!h.alive) return { ok: false, reason: h.name + '已经倒下' };
       if (h.bigCd > 0) return { ok: false, reason: k.name + '还没准备好' };
       if (h.afflict && (h.afflict.stun || h.afflict.charm)) return { ok: false, reason: h.name + '被控住了,喊不动' };
@@ -6560,6 +6611,7 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
       save = JSON.parse(JSON.stringify(save).replace(/"([a-z0-9]+)_h_/g, (m, id) => { const d = D.dungeons.find(x => x.id === id); return d && !d.raid ? '"' + id + '_h' + (d.min >= 60 ? 70 : 60) + '_' : m; }));
       Object.assign(g, save); // 存档就是 toSave() 的原样,不做旧版本兼容
       if (!save.gver) g.gver = 0; // 公会等级还是老刻度:下面「公会等级」那一节读档时换算
+      g.roster.concat(g.candidates || [], g.alumni || []).forEach(h => { if (h.bigChoice && /_first$/.test(h.bigChoice)) h.bigChoice = null; }); // 职业技能不再归团长喊
     } else {
       D.starters.forEach(st => g.roster.push(fromDef(st)));
       g.party = g.roster.map(h => h.uid);
@@ -6784,16 +6836,30 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
       nodesOf(h).forEach(o => { const r = h.talents[o.n.id] || 0; if (r && o.n.fx) for (const k in o.n.fx) m[k] = (m[k] || 0) + o.n.fx[k] * r; });
       return m;
     };
-    // 学会的主动技能:到级自动学会的职业技能 + 天赋里点出来的
-    const skillsOf = h => {
-      const out = [], f = cls(h).firstSkill;
-      if (f && h.level >= D.firstSkillLevel) out.push(f);
-      nodesOf(h).forEach(o => { if (o.n.skill && (h.talents[o.n.id] || 0) > 0) out.push(Object.assign({ id: o.n.id, name: o.n.name }, o.n.skill)); });
-      return out;
+    // 基础技能(小技能):按 data.js 的 basicLv 到级学会,队员自己放。光环、职业技能(firstSkill)也在这一套里
+    const BF = ['small', 'moveCast', 'moveHeal', 'cleave', 'multi', 'aimed', 'finisher', 'smite', 'dispel', 'cc']; // atk / heal 一开始就会
+    const knows = (h, f) => h.level >= D.basicLevel(h.cls, f);
+    // 天赋页左边那一竖栏:这个人(按现在的专精)所有的基础技能,按学会等级排
+    g.basicSkills = function (x) {
+      const h = hero(x), def = g.defOf(h), out = [], seen = {};
+      const add = (b, f) => { const lv = f ? D.basicLevel(h.cls, f) : 1; out.push(Object.assign({}, b, { f, lv, learned: h.level >= lv })); if (f) seen[f] = true; };
+      (def.basics || []).forEach(b => add(b, D.basicField(def, b)));
+      ['small', 'dispel', 'cc'].forEach(f => { if (def[f] && !seen[f]) { const b = cls(h).basics.find(x => x.name === def[f].name); if (b) add(b, f); } }); // 专精自己的 basics 没写驱散、控场
+      if (D.auras[h.cls]) add({ name: D.auras[h.cls].name, desc: '光环(对全队生效,同职业不叠加):' + D.auras[h.cls].desc, key: 'party', aura: true }, 'aura');
+      const fs = cls(h).firstSkill; if (fs) add({ name: fs.name, desc: '职业技能,他自己看时机放(冷却 ' + fs.cd + ' 秒):' + fs.desc, key: fs.kind, skill: fs }, 'first');
+      return out.sort((a, b) => a.lv - b.lv);
     };
-    // 团长只管其中一个(没挑的话,默认是最后学会的那个大招);其余的队员自己看情况放
-    g.bigOptions = x => skillsOf(hero(x));
-    g.big = x => { const h = hero(x), o = skillsOf(h); return o.find(b => b.id === h.bigChoice) || o.filter(b => b.mode === 'cmd').pop() || o[o.length - 1] || null; };
+    g.knowsAura = x => knows(hero(x), 'aura');
+    // 这一级刚学会的基础技能(升级播报用)
+    const learnAt = h => { const n = g.basicSkills(h).filter(b => b.lv === h.level).map(b => b.name); return n.length ? n.join('、') : null; };
+    // 下副本用的定义:还没学会的基础技能拿掉
+    const learnedDef = (h, def) => { if (!def) return def; const d = Object.assign({}, def); BF.forEach(f => { if (d[f] && !knows(h, f)) delete d[f]; }); return d; };
+    // 学会的主动技能:职业技能(到级学会,自己放)+ 天赋里点出来的
+    const talentSkills = h => { const out = []; nodesOf(h).forEach(o => { if (o.n.skill && (h.talents[o.n.id] || 0) > 0) out.push(Object.assign({ id: o.n.id, name: o.n.name }, o.n.skill)); }); return out; };
+    const skillsOf = h => { const f = cls(h).firstSkill; return (f && knows(h, 'first') ? [f] : []).concat(talentSkills(h)); };
+    // 团长喊的技能只从天赋里来:挑过的那个;没挑就是最后点出来的指令技能;一个指令技能都没点出来就没有
+    g.bigOptions = x => talentSkills(hero(x));
+    g.big = x => { const h = hero(x), o = talentSkills(h); return o.find(b => b.id === h.bigChoice) || o.filter(b => b.mode === 'cmd').pop() || null; };
     g.autos = x => { const h = hero(x), b = g.big(h); return skillsOf(h).filter(k => !b || k.id !== b.id); };
     g.setBig = (x, id) => { hero(x).bigChoice = id; };
     // 出发前选一个的东西(这一批只有圣骑的审判):没选过就按专精的默认
@@ -6862,7 +6928,7 @@ const K = D.statK;
       const A = { partyTaken: 0, partyCrit: 0, partyHaste: 0, partyHeal: 0 }, seen = {};
       ph.forEach(h => {
         const au = D.auras[h.cls];
-        if (!au || seen[h.cls]) return;
+        if (!au || seen[h.cls] || !knows(h, 'aura')) return;
         seen[h.cls] = true;
         pd += au.fx.partyDmg || 0; phh += au.fx.partyHp || 0;
         for (const k in A) A[k] += au.fx[k] || 0;
@@ -6875,7 +6941,7 @@ const K = D.statK;
         const m2 = Object.assign({}, st.m); // 把光环叠进这个人的加成里
         m2.taken = (m2.taken || 0) + A.partyTaken; m2.crit = (m2.crit || 0) + A.partyCrit; m2.haste = (m2.haste || 0) + A.partyHaste + (ffx.haste || 0); m2.regen = (m2.regen || 0) + (ffx.regen || 0);
         const sp = g.spec(h), tk = 1 - g.fatTier(h).stat; // 疲劳:伤害和治疗打折
-        return { id: h.uid, name: h.name, broken: st.broken, procs: g.procsOf(h), def: g.defOf(h), altDef: g.altDefOf(h), debuff: (sp && D.specDebuff[sp.id]) || (h.cls === 'oath' ? null : cls(h).debuff), judge: h.cls === 'oath' ? D.judgements[g.pickOf(h, 'judge')] : null, totem: h.cls === 'gale' ? g.pickOf(h, 'totem') : null, pet: D.loadout[h.cls] && D.loadout[h.cls].key === 'pet' ? D[D.loadout[h.cls].table][g.pickOf(h, 'pet')] : null, ai: aiOf(h), m: m2, autos: g.autos(h), big: g.big(h), potion: pots[h.uid] || null,
+        return { id: h.uid, name: h.name, broken: st.broken, procs: g.procsOf(h), def: learnedDef(h, g.defOf(h)), altDef: learnedDef(h, g.altDefOf(h)), debuff: (sp && D.specDebuff[sp.id]) || (h.cls === 'oath' ? null : cls(h).debuff), judge: h.cls === 'oath' ? D.judgements[g.pickOf(h, 'judge')] : null, totem: h.cls === 'gale' ? g.pickOf(h, 'totem') : null, pet: D.loadout[h.cls] && D.loadout[h.cls].key === 'pet' ? D[D.loadout[h.cls].table][g.pickOf(h, 'pet')] : null, ai: aiOf(h), m: m2, autos: g.autos(h), big: g.big(h), potion: pots[h.uid] || null,
           power: st.power * (1 + pd) * fl * D.numScale * tk, healPower: st.healPower * fl * (1 + A.partyHeal) * D.numScale * tk, maxHp: Math.round(st.maxHp * (1 + phh + (ffx.hp || 0))) };
       });
     };
@@ -6961,7 +7027,7 @@ const K = D.statK;
     function addXp(h, amt, levelups) {
       if (h.level >= g.cap()) return;
       h.xp += amt;
-      while (h.xp >= xpNeed(h) && h.level < g.cap()) { h.xp -= xpNeed(h); h.level++; levelups.push({ uid: h.uid, name: h.name, level: h.level, point: h.level >= D.talentFromLevel, learn: h.level === D.firstSkillLevel ? cls(h).firstSkill.name : null }); }
+      while (h.xp >= xpNeed(h) && h.level < g.cap()) { h.xp -= xpNeed(h); h.level++; levelups.push({ uid: h.uid, name: h.name, level: h.level, point: h.level >= D.talentFromLevel, learn: learnAt(h) }); }
     }
 
     // ---------- 公会等级与公会天赋 ----------
@@ -6996,7 +7062,7 @@ const K = D.statK;
       const t = D.gtree[id];
       if (g.glevel < t.req) return { ok: false, reason: '公会升到 ' + t.req + ' 级才解锁' };
       if ((g.gtalents[id] || 0) >= t.max) return { ok: false, reason: '已经点满了' };
-      if (g.gtPoints() <= 0) return { ok: false, reason: '没有公会天赋点' };
+      if (g.gtPoints() <= 0) return { ok: false, reason: '没有升级点' };
       const cost = g.gtCost(id);
       if (g.gold < cost) return { ok: false, reason: '金币不够' };
       g.gold -= cost;
@@ -7893,9 +7959,9 @@ const K = D.statK;
       ph.forEach(h => {
         if (h.level >= g.cap()) return;
         h.xp += Math.round(baseXp * g.xpMult(h, g.diffXp(d)) * (1 + g.gt('mentor')) * (topLv - h.level >= 10 ? 1 + g.gt('catchup') : 1) * (lootMods(h).xpK || 1) * (1 + mentorOf(h)) * (1 + g.gearFx(h, 'xpK')));
-        while (h.xp >= xpNeed(h) && h.level < g.cap()) { h.xp -= xpNeed(h); h.level++; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: h.level === D.firstSkillLevel ? cls(h).firstSkill.name : null }); }
+        while (h.xp >= xpNeed(h) && h.level < g.cap()) { h.xp -= xpNeed(h); h.level++; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: learnAt(h) }); }
       });
-      if (last && d === D.dungeons[0]) ph.forEach(h => { while (h.level < D.talentFromLevel && h.level < g.cap()) { h.level++; h.xp = 0; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: h.level === D.firstSkillLevel ? cls(h).firstSkill.name : null }); } }); // 教学本保底:打通就到 10 级
+      if (last && d === D.dungeons[0]) ph.forEach(h => { while (h.level < D.talentFromLevel && h.level < g.cap()) { h.level++; h.xp = 0; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: learnAt(h) }); } }); // 教学本保底:打通就到 10 级
       const drops = []; let tokN = 0;
       const noSet = pool => (d.raid ? pool.filter(k => !D.items[k].set) : pool); // 团本的套装件只能用纹章换,不直接掉
       const uniqueOf = () => D.items[g.gearKey(d) + '_legend_trinket'] || D.items[d.id + '_legend_trinket']; // 这个副本的首领专属饰品(当前这一档的)
@@ -10283,7 +10349,7 @@ var SCN = (function () {
 // 新手引导:所有引导的逻辑和文案都在这个文件里,挂在全局 TUT 上。
 // 画面层(js/ui.js)只在几个地方调它:进副本、每关开始、战斗事件、每帧、分装备、回公会、设置菜单。
 // 做法:出现情况时暂停战斗 → 把别处压暗、把要看的东西圈出来 → 一个队员说一句短话 → 团长亲手做对了才继续。
-// 分段:教学本里每关只教一两样(同一场里两步之间至少隔 GAP 秒);回公会后每次最多再教一段(天赋 → 公会天赋 → 酒馆 → 任务 → 拍卖行),
+// 分段:教学本里每关只教一两样(同一场里两步之间至少隔 GAP 秒);回公会后每次最多再教一段(天赋 → 公会升级 → 酒馆 → 任务 → 拍卖行),
 //       各自等到用得上才出现;控场和喊技能留到打通教学本以后的战斗里。
 // 说明文档:docs/新手引导说明.md
 (function (root) {
@@ -10431,10 +10497,11 @@ var SCN = (function () {
     skill_tank: '重击来了!要我开【{skill}】的话,按 {key} 就行。', // 坦克 · 喊技能
     skill_any: '我的【{skill}】好了。团长,要放吗?放的话按 {key}。', // 技能好了的人 · 喊技能
     t1: '我 {lv} 级了,有天赋点了!点一下「天赋与技能」吧。', // 有点数的人 · 公会大厅
-    t2: '亮着的都能点,挑一个吧。', // 他 · 天赋面板
+    t2: '亮着的都能点,挑一个吧。', // 他 · 天赋面板(这一层没有带框的技能时)
+    t2s: '亮着的都能点。带框的这个是技能,点了就归你喊,先点它吧。', // 他 · 天赋面板(有能点的带框技能)
     t3: '你看,我这个【{skill}】是归你喊的。下回下本我提醒你,到时候按一下就行。', // 他 · 归你喊的技能
-    g0: '公会升级了,有公会天赋可以点了。点一下会徽吧。', // 坦克 · 提醒公会天赋
-    g1: '这是给整个公会点的,五条线各管一摊。挑眼下最缺的点吧。', // 坦克 · 公会天赋页
+    g0: '公会升级了,有升级点可以点了。点上面的「公会升级」吧。', // 坦克 · 提醒公会升级
+    g1: '这是给整个公会点的,五条线各管一摊。挑眼下最缺的点吧。', // 坦克 · 公会升级页
     tav0: '钱够招人了,花名册也有空位。要不去酒馆看看?', // 坦克 · 提醒酒馆
     tav1: '看职责啊,咱们缺什么就招什么。性格嘛,只看得到一部分,剩下的处久了才知道。', // 输出 · 酒馆页
     tav_in: '新人报到!我已经在出战队伍里啦。', // 新人 · 招到以后(已进队)
@@ -10537,7 +10604,7 @@ var SCN = (function () {
         return e.who !== c.tank ? false : Math.hypot(e.x - en.pos.x, e.y - en.pos.y) < D.threat.addGrab ? true : L.add_near; } }, late: { sec: 10, say: L.add_late } },
 
     // —— 控场:教学本里不教(一次别给太多),到下一个副本第一次碰到一群小怪时再教 ——
-    { id: 'cc', chap: 'later', later: true, scene: 'fight', need: ['skill'], hold: true,
+    { id: 'cc', chap: 'later', later: true, scene: 'fight', need: ['t2'], hold: true, // 控场 15 级才学会(basicLv),不再跟着「喊技能」那一步排
       when: c => { if (c.g.dungeon === TUT_DUNGEON || c.g.cleared() < 1 || c.g.roomDef().boss || c.sim.t < 0.6 || !c.sim.canCC() || c.foes().length < 2) return null; const h = c.sim.heroes.find(x => x.alive && x.def.cc); return h ? { who: h.id, skill: h.def.cc.name } : null; },
       who: c => c.x.who, say: c => (c.touch ? L.cc_touch : L.cc_mouse),
       point: c => c.foes().map(e => ({ enemy: e.uid })), enter: spreadFoes,
@@ -10582,7 +10649,7 @@ var SCN = (function () {
       enter: c => c.api.selHero(c.x.who),
       who: c => c.x.who, say: L.t1, point: () => ['#bTalent'], done: { poll: () => !!$('#overlay.show .tcard') }, late: { sec: 60, drop: true } },
     { id: 't2', chap: 'talent', scene: 'talents', dim: false, at: 'bottom', when: c => { const h = c.g.hero(c.api.selUid); return h && c.g.freePoints(h) > 0 && !!$('.tcard .tn.can') ? { who: h.uid, spent: c.g.spentPoints(h) } : null; },
-      who: c => c.x.who, say: L.t2, point: () => ['.tcard .tn.can'], done: { poll: c => { const h = c.g.hero(c.x.who); return !h || c.g.spentPoints(h) > c.x.spent; } } },
+      who: c => c.x.who, say: () => ($('.tcard .tn.skill.can') ? L.t2s : L.t2), point: () => [$('.tcard .tn.skill.can') ? '.tcard .tn.skill.can' : '.tcard .tn.can'], done: { poll: c => { const h = c.g.hero(c.x.who); return !h || c.g.spentPoints(h) > c.x.spent; } } }, // 团长喊的技能只从天赋来:先指能点的技能
     { id: 't3', chap: 'talent', scene: 'talents', dim: false, at: 'bottom', need: ['t2'], when: c => { const h = c.g.hero(c.api.selUid); const b = h && c.g.big(h); return b && !!$('.tcard .bopt[data-b]') ? { who: h.uid, skill: b.name } : null; },
       who: c => c.x.who, say: L.t3, point: () => ['.tcard .tpicks > .tpbox:last-child'], done: { tap: true } },
     // —— 性格:教学本那一趟不翻牌;以后第一次看出谁的性格,回公会时指一下 ——
@@ -10591,9 +10658,9 @@ var SCN = (function () {
       enter: c => c.api.selHero(c.x.who),
       who: c => c.x.who, say: L.trait, point: () => ['.detail .trgrid'], done: { tap: true }, late: { sec: 60, drop: true } },
 
-    // —— 公会天赋:公会升级、有点数的时候 ——
+    // —— 公会升级:公会升了级、有升级点的时候 ——
     { id: 'g0', chap: 'build', scene: 'hub:guild', nudge: true, need: ['t2'], when: c => c.g.gtPoints() > 0,
-      who: 'tank', say: L.g0, point: () => ['#gId'], done: { poll: c => c.api.tab === 'build' }, late: { sec: 45, drop: true } },
+      who: 'tank', say: L.g0, point: () => ['.tab[data-tab="build"]'], done: { poll: c => c.api.tab === 'build' }, late: { sec: 45, drop: true } },
     { id: 'g1', chap: 'build', scene: 'hub:build', at: 'bottom', when: c => c.g.gtPoints() > 0 && !!$('#page [data-gt]') && { pts: c.g.gtPoints() },
       who: 'tank', say: L.g1, point: () => ($('#page [data-gt]:not(.dis)') ? ['#page [data-gt]:not(.dis)'] : ['.ghead2']), done: { tap: true, poll: c => c.g.gtPoints() < c.x.pts } },
 
@@ -10873,9 +10940,9 @@ var SCN = (function () {
       api.snd('click'); api.save(); redraw();
     }; });
   };
-  // 新手的公会(fresh,这台设备第一次玩时建的、引导没关):酒馆 / 任务 / 拍卖行 / 公会天赋 讲到之前上锁,技能预告讲到之前不显示
+  // 新手的公会(fresh,这台设备第一次玩时建的、引导没关):酒馆 / 公会升级 / 任务 / 拍卖行 讲到之前上锁,技能预告讲到之前不显示
   const TAB_STEP = { tavern: ['tav0', 'tav1'], quest: ['q0', 'q1'], bank: ['b0', 'b1'], build: ['g0', 'g1'] };
-  const TAB_WHEN = { tavern: '队里有空位、钱也够招人时,队员会带你去酒馆', quest: '任务板上有活儿、又有人手时,队员会带你去', bank: '仓库里攒了装备以后,队员会带你去拍卖行', build: '公会升级、有了天赋点以后,队员会带你去点' };
+  const TAB_WHEN = { tavern: '队里有空位、钱也够招人时,队员会带你去酒馆', quest: '任务板上有活儿、又有人手时,队员会带你去', bank: '仓库里攒了装备以后,队员会带你去拍卖行', build: '公会升了级、有了升级点以后,队员会带你去点' };
   const locksOn = () => { const S = st(); return !!S.fresh && !S.off && api.g.cleared() < 3; }; // 保底:通关三个副本以后全开,免得条件一直不满足被锁死
   TUT.tabLock = function (t) {
     if (!api || !api.g || !api.g.faction || !TAB_STEP[t] || !locksOn()) return '';
@@ -11012,7 +11079,7 @@ var SCN = (function () {
     $('#gName').onclick = e => { e.stopPropagation(); snd('click'); askName('公会改名', g.name, D.guildNames, v => { g.name = v; save(); showHub(); }); };
     const gcap = g.guildMaxed(), gp = g.gtPoints();
     $('#gLv').textContent = g.glevel + '级';
-    $('#gLv').dataset.tip = '公会等级 ' + g.glevel + ' / ' + g.guildCap() + '<br>上限和当前版本的角色等级上限一样;每升一级得 ' + D.guildPointsPerLevel + ' 点公会天赋';
+    $('#gLv').dataset.tip = '公会等级 ' + g.glevel + ' / ' + g.guildCap() + '<br>上限和当前版本的角色等级上限一样;每升一级得 ' + D.guildPointsPerLevel + ' 个升级点(在「公会升级」页点)';
     $('#gRep').textContent = gcap ? '公会已满级 · 声望照攒' : '声望 ' + g.gxp + ' / ' + g.gxpNeed();
     $('#gXpFill').style.width = (gcap ? 100 : g.gxp / g.gxpNeed() * 100) + '%';
     $('#gId').classList.toggle('alert', gp > 0);
@@ -11021,7 +11088,7 @@ var SCN = (function () {
     $('#bSortie').onclick = () => { snd('click'); showHub('dungeon'); };
     $('#bSortie').classList.toggle('on', tab === 'dungeon');
     $('#gGold').textContent = g.gold;
-    $('#tabs').innerHTML = [['tavern', '酒馆'], ['guild', '公会大厅'], ['quest', '任务' + (g.quests.active.some(q => Date.now() >= q.end) || g.dquests.some(q => q.prog >= q.need) ? ' ●' : '')], ['bank', '拍卖行'], ['build', '公会天赋' + (gp > 0 ? ' ●' : '')]].map(x => { const lk = TUT.tabLock(x[0]); return lk ? `<div class="tab tlock" data-tab="${x[0]}" data-tip="${lk}">${x[1].replace(' ●', '')} 🔒</div>` : `<div class="tab${tab === x[0] ? ' on' : ''}" data-tab="${x[0]}">${x[1]}</div>`; }).join(''); // 新手:教到之前上锁
+    $('#tabs').innerHTML = [['tavern', '酒馆'], ['guild', '公会大厅'], ['build', '公会升级' + (gp > 0 ? ' ●' : '')], ['quest', '任务' + (g.quests.active.some(q => Date.now() >= q.end) || g.dquests.some(q => q.prog >= q.need) ? ' ●' : '')], ['bank', '拍卖行']].map(x => { const lk = TUT.tabLock(x[0]); return lk ? `<div class="tab tlock" data-tab="${x[0]}" data-tip="${lk}">${x[1].replace(' ●', '')} 🔒</div>` : `<div class="tab${tab === x[0] ? ' on' : ''}" data-tab="${x[0]}">${x[1]}</div>`; }).join(''); // 新手:教到之前上锁
     $('#tabs').querySelectorAll('.tab').forEach(b => { b.onclick = () => { if (b.classList.contains('tlock')) { snd('deny'); return; } snd('click'); showHub(b.dataset.tab); }; });
 
     g.questTick(); g.dquestTick(); g.ahTick(Date.now());
@@ -11062,14 +11129,14 @@ var SCN = (function () {
     $('#page').innerHTML = `
       <div class="panel rosterBox" data-drop="roster"><div class="ph"><span>花名册</span>${legendStrip()}<small>${g.roster.length} / ${g.rosterCap()}</small></div><div class="rgrid">${cards}</div>${g.roster.length > 10 ? '<div class="rmore" id="rMore" data-tip="往下还有人">▾</div>' : ''}</div>
       <div class="panel partyBox" data-drop="party"><div class="ph"><span>出战队伍</span>${roleChips(g.party, 5)}${warn2.length ? `<span class="wn" data-tip="${warn2.join('<br>')}">⚠</span>` : ''}
-        <span class="phr"><span class="tswitch">${g.teams.map((t, i) => (g.teamOpen(i) ? `<i class="${i === (g.teamIdx || 0) ? 'on' : ''}" data-team="${i}" data-tip="${i + 1} 队${i === (g.teamIdx || 0) ? '(正在出战)' : ':' + (g.teamHeroes(i).map(h => h.name).join('、') || '还没编')}">${i + 1}</i>` : `<i class="tlk" data-tip="${i + 1} 队:还没解锁<br>公会天赋「${D.gtree.squads.name}」每点一级多开一个编队位">${i + 1}</i>`)).join('')}</span><small>${ph.length} / 5</small><span class="hbtn mini sec" id="toDungeon">配置队伍</span></span></div><div class="pslots">${slots}</div></div>
+        <span class="phr"><span class="tswitch">${g.teams.map((t, i) => (g.teamOpen(i) ? `<i class="${i === (g.teamIdx || 0) ? 'on' : ''}" data-team="${i}" data-tip="${i + 1} 队${i === (g.teamIdx || 0) ? '(正在出战)' : ':' + (g.teamHeroes(i).map(h => h.name).join('、') || '还没编')}">${i + 1}</i>` : `<i class="tlk" data-tip="${i + 1} 队:还没解锁<br>公会升级「${D.gtree.squads.name}」每点一级多开一个编队位">${i + 1}</i>`)).join('')}</span><small>${ph.length} / 5</small><span class="hbtn mini sec" id="toDungeon">配置队伍</span></span></div><div class="pslots">${slots}</div></div>
       <div class="panel detail">
         <div class="dhead">${figure(sel)}<div class="dh2"><h2 style="color:${c.color}">${sel.name}<span class="pen" id="bRename" data-tip="改名">✎</span><span class="dkptag" data-tip="DKP:队员自己攒的分。打本挣分,拿装备花分。分不够还硬给他装备,别人会不服。">DKP <b>${sel.dkp || 0}</b></span></h2><div class="cl">${sel.level} 级 ${specName(sel)} · ${c.role}${sel.gear.mount && D.items[sel.gear.mount] ? ` · <span data-item="${sel.gear.mount}" style="color:#ff9a2a;cursor:help">骑着${D.items[sel.gear.mount].name}</span>` : ''}</div>
           <div class="xpbar"><i style="width:${sel.level >= g.cap() ? 100 : sel.xp / g.xpNeed(sel) * 100}%"></i><b>${sel.level >= g.cap() ? (g.cap() < D.levelCap ? '已到本版本上限' : '已满级') : '经验 ' + sel.xp + ' / ' + g.xpNeed(sel)}</b></div>
           <div class="sheet">${g.sheet(sel).map(x => `<span>${x[0]}<b>${x[1]}</b></span>`).join('')}</div></div></div>
 
         <div class="dsec"><h4>技能${potChip(sel)}<span class="hbtn mini${freeP > 0 ? '' : ' sec'}" id="bTalent">天赋与技能${freeP > 0 ? ' · ' + freeP + ' 点可用' : ''}</span></h4>
-          <div class="bsk">${D.auras[sel.cls] ? ico('party', `<b>${D.auras[sel.cls].name}</b><br>光环(对全队生效,同职业不叠加):${D.auras[sel.cls].desc}`, 'aura') : ''}${c.basics.map(b => ico(basicKey(b), `<b>${b.name}</b><br>基础技能(没有冷却,一直在用):${b.desc}`)).join('')}${g.autos(sel).map(a => ico(a.kind, `<b>${a.name}</b><br>他自己看情况放(冷却 ${a.cd} 秒):${a.desc}`, 'tal')).join('')}${bigNow ? ico(bigNow.kind, `<b>${bigNow.name}</b><br>归你喊的技能(冷却 ${bigNow.cd} 秒):${bigNow.desc}`, 'cmd') : ico('none', '还没学会技能。10 级学会第一个', 'none')}</div></div>
+          <div class="bsk">${g.basicSkills(sel).filter(b => b.learned).map(b => ico(b.aura ? 'party' : b.skill ? b.skill.kind : basicKey(b), `<b>${b.name}</b><br>${b.aura || b.skill ? b.desc : '基础技能(他自己一直在用):' + b.desc}`, b.aura ? 'aura' : b.skill ? 'tal' : '')).join('')}${g.autos(sel).filter(a => !a.first).map(a => ico(a.kind, `<b>${a.name}</b><br>他自己看情况放(冷却 ${a.cd} 秒):${a.desc}`, 'tal')).join('')}${bigNow ? ico(bigNow.kind, `<b>${bigNow.name}</b><br>归你喊的技能(冷却 ${bigNow.cd} 秒):${bigNow.desc}`, 'cmd') : ico('none', '还没有团长喊的技能:' + D.talentFromLevel + ' 级起在天赋里点出来', 'none')}</div></div>
 
         <div class="dsec"><h4>性格<span class="h4s">并肩 ${sel.fights || 0} 场 · 指上去看说明</span></h4><div class="trgrid">${traitCards(sel)}</div></div>
 
@@ -11142,7 +11209,7 @@ var SCN = (function () {
         return `<div class="panel ccard n${g.candidates.length}" style="left:${tvX(i)}px;width:${tvW}px">${figure(h)}<span class="blk" data-blk="${i}" data-tip="拉黑:以后酒馆里再也不会出现这个人。黑名单里可以取消">拉黑</span><h2 style="color:${c.color}">${h.name}</h2><div class="cl">${h.level} 级 ${specName(h)} · <b class="rtag rk-${c.isTank ? 't' : c.heal ? 'h' : 'd'}">${c.role}</b></div>${h.alum ? `<div class="alumtag" data-tip="以前是你的团员:${{ fired: '被你开除的', quit: '自己退团的', poached: '被别的公会挖走的' }[h.leftWhy] || '离开过'}。性格你都知道,装备还穿着">老团员回来应聘 ${gearDots(h)}</div>` : ''}
           <div class="quote">${(t => (t && D.traits[t].lines.intro ? D.traits[t].lines.intro[0] : '……'))(h.traits.filter(t => !h.known[t])[0] || h.traits[0])}</div>
           <div class="trgrid">${traitCards(h)}</div>
-          <div class="skicons">${c.basics.map(b => `<span class="ski" style="background:${c.color}" data-tip="<b>${b.name}</b><br>基础技能:${b.desc}">${b.name[0]}</span>`).join('')}${D.auras[h.cls] ? `<span class="ski aur" data-tip="<b>${D.auras[h.cls].name}</b><br>光环:${D.auras[h.cls].desc}">◈</span>` : ''}</div>
+          <div class="skicons">${g.basicSkills(h).filter(b => b.learned && !b.aura && !b.skill).map(b => `<span class="ski" style="background:${c.color}" data-tip="<b>${b.name}</b><br>基础技能:${b.desc}">${b.name[0]}</span>`).join('')}${D.auras[h.cls] && g.knowsAura(h) ? `<span class="ski aur" data-tip="<b>${D.auras[h.cls].name}</b><br>光环:${D.auras[h.cls].desc}">◈</span>` : ''}</div>
           <div class="sk2">${c.trees.map(t => (g.spec(h) === t ? '<b style="color:#ffe14d">' + t.name + '(' + t.role + ')</b>' : t.name)).join(' / ')}</div>
           <span class="hbtn${g.gold < g.hireCost(h) || full ? ' dis' : ''}" data-i="${i}" data-tip="招募价看等级,也看他身上的装备">招募 <i class="coin"></i>${g.hireCost(h)}</span></div>`;
       }).join('') +
@@ -11494,17 +11561,16 @@ var SCN = (function () {
   function showTalents(uid) {
     const h = g.hero(uid), c = cdef(h), ov2 = $('#overlay');
     const free = g.freePoints(h), big = g.big(h), opts = g.bigOptions(h);
-    const CW = 70, RH = 36, NH = 30, NC = 5, ROWS = D.talentGate.length; // 格子宽、行高、天赋图标高
+    const CW = 56, RH = 36, NH = 30, NC = 5, ROWS = D.talentGate.length; // 格子宽、行高、天赋图标高(左边让出一竖栏放基础技能)
     ov2.className = 'show';
     ov2.innerHTML = `<div class="card tcard">
       <div class="thead"><div class="mh">${ART.heroHead(h.cls, h.look)}</div><div style="flex:1;text-align:left"><h3 style="color:${c.color}">${h.name} · ${h.level} 级 ${specName(h)}</h3>
         <small>天赋点 <b style="color:#ffe14d;font-size:16px">${free}</b> · 已用 ${g.spentPoints(h)}</small></div>
         <div class="tswap"><span class="tsarr" data-sw="-1" data-tip="上一个(←)">◀</span><div class="tsheads">${g.roster.map(x => `<span class="tsh${x.uid === h.uid ? ' on' : ''}" data-swu="${x.uid}" data-tip="${x.name} · ${x.level} 级${g.freePoints(x) > 0 ? ' · <b style=&quot;color:#ffe14d&quot;>' + g.freePoints(x) + ' 点没花</b>' : ''}">${ART.heroHead(x.cls, x.look)}${g.freePoints(x) > 0 ? '<i>' + g.freePoints(x) + '</i>' : ''}</span>`).join('')}</div><span class="tsarr" data-sw="1" data-tip="下一个(→)">▶</span></div>
         <span class="hbtn red${g.spentPoints(h) ? '' : ' dis'}" id="tReset" style="font-size:13px;padding:5px 12px">重置天赋 <i class="coin"></i>${D.respecCost}</span><span class="hbtn sec" id="tClose" style="font-size:14px;padding:5px 16px">完成</span></div>
+      <div class="tlay"><div class="tbsk"><h5 data-tip="队员自己一直在用的技能,到级自动学会。<br>团长喊的技能在右边,从天赋里来。">基础技能</h5>${g.basicSkills(h).map(b => `<div class="tbrow${b.learned ? '' : ' off'}" data-tip="<b>${b.name}</b>${b.learned ? '' : ' <span style=&quot;color:#ffb347&quot;>' + b.lv + ' 级学会</span>'}<br>${b.desc}"><i class="tblv">${b.lv > 1 ? b.lv : '·'}</i>${ART.icon(b.aura ? 'party' : b.skill ? b.skill.kind : basicKey(b))}<b>${b.name}</b></div>`).join('')}</div><div class="tmain">
       <div class="tpicks">
-        <div class="tpbox"><h5>基础技能 <small>他自己一直在用</small></h5><div class="tfoot">${c.basics.map(b => `<span class="bopt bbas" data-tip="<b>${b.name}</b><br>${b.desc}">${ART.icon(basicKey(b))}${b.name}</span>`).join('')}${D.auras[h.cls] ? `<span class="bopt bbas" data-tip="<b>${D.auras[h.cls].name}</b><br>光环:${D.auras[h.cls].desc}">${ART.icon('party')}${D.auras[h.cls].name}</span>` : ''}</div>
-        </div>
-      <div class="tpbox tpbig"><h5 data-tip="学会的主动技能里,你只能挑一个自己来喊(战斗里按数字键)。<br>其余的他自己看情况放:大招自己放会慢半拍、冷却也长一些。">团长喊的技能 <small>只能挑一个,其余的他自己放</small></h5><div class="tfoot">${opts.length ? opts.map(b => `<span class="bopt${big && b.id === big.id ? ' on' : ''}" data-b="${b.id}" data-tip="${b.desc} · 冷却 ${b.cd} 秒">${ART.icon(b.kind)}${b.name}</span>`).join('') : '<span style="color:#9a8a6a">—</span>'}</div>
+      <div class="tpbox tpbig"><h5 data-tip="学会的主动技能里,你只能挑一个自己来喊(战斗里按数字键)。<br>其余的他自己看情况放:大招自己放会慢半拍、冷却也长一些。">团长喊的技能 <small>只能挑一个,其余的他自己放</small></h5><div class="tfoot">${opts.length ? opts.map(b => `<span class="bopt${big && b.id === big.id ? ' on' : ''}" data-b="${b.id}" data-tip="${b.desc} · 冷却 ${b.cd} 秒">${ART.icon(b.kind)}${b.name}</span>`).join('') : `<span class="tbnone" data-tip="还没有团长喊的技能。${h.level < D.talentFromLevel ? D.talentFromLevel + ' 级起有天赋点,' : ''}点出天赋树里带框的技能,就归你喊">${ART.icon('none')}<em>点天赋解锁</em></span>`}</div>
       ${D.loadout[h.cls] ? (L => `<div class="tfoot jpick"><span class="tpl2" data-tip="${L.tip}">${L.label} <small>挑一种</small></span>${Object.keys(D[L.table]).map(k => `<span class="bopt jopt${g.pickOf(h, L.key) === k ? ' on' : ''}" data-j="${k}" data-tip="<b>${D[L.table][k].name}</b><br>${D[L.table][k].desc}"><i style="color:${D[L.table][k].color}">${D[L.table][k].icon}</i> ${D[L.table][k].name}</span>`).join('')}</div>`)(D.loadout[h.cls]) : ''}</div>
       </div>
       <div class="trees">${c.trees.map(tr => {
@@ -11526,6 +11592,7 @@ var SCN = (function () {
             return `<div class="tn${n.skill ? ' skill' : ''}${big && n.id === big.id ? ' cmd' : ''}${n.perk ? ' perk' : ''}${r >= n.max ? ' max' : ''}${r > 0 ? ' has' : ''}${can ? ' can' : ''}${lock ? ' rowlock' : ''}" data-n="${n.id}" data-tip="<b>${n.name}</b> ${r}/${n.max}<br>${n.skill || n.max < 2 ? '' : '每点:'}${n.text}${h.level < n.lv ? '<br><span style=&quot;color:#ff9a7a&quot;>需要 ' + n.lv + ' 级</span>' : ''}" style="left:${n.col * CW + (CW - NH) / 2}px;top:${n.tier * RH + 3}px">${ART.icon(nodeKey(n))}<i>${r}/${n.max}</i></div>`;
           }).join('')}</div></div>`;
       }).join('')}</div>
+      </div></div>
       <div class="tinfo" id="tInfo"></div>
     </div>`;
     const all = {}; c.trees.forEach(tr => tr.nodes.forEach(n => { all[n.id] = n; }));
@@ -11655,7 +11722,7 @@ var SCN = (function () {
       </div></div>
       <div class="panel wside">${side}</div>`;
     const P = $('#page');
-    P.querySelectorAll('[data-pick]').forEach(b => { b.onclick = () => { if (g.quests.active.length >= g.questSlots()) { hubTip('任务小队都派出去了,在公会天赋里点"任务小队"可以多派'); return; } snd('click'); questPick = { qid: b.dataset.pick, sel: [] }; showHub(); }; });
+    P.querySelectorAll('[data-pick]').forEach(b => { b.onclick = () => { if (g.quests.active.length >= g.questSlots()) { hubTip('任务小队都派出去了,在「公会升级」里点"任务小队"可以多派'); return; } snd('click'); questPick = { qid: b.dataset.pick, sel: [] }; showHub(); }; });
     P.querySelectorAll('[data-cancel]').forEach(b => { b.onclick = () => { questPick = null; showHub(); }; });
     P.querySelectorAll('[data-u]').forEach(b => { b.onclick = () => {
       const q = g.quests.board.find(x => x.id === questPick.qid), i = questPick.sel.indexOf(b.dataset.u);
@@ -11679,7 +11746,7 @@ var SCN = (function () {
     P.querySelectorAll('[data-dclaim]').forEach(b => { b.onclick = () => { const r = g.claimDQuest(b.dataset.dclaim); hubTip(r.ok ? `委托完成:${r.gold} 金币${r.item ? ',得到【' + r.item.name + '】(已入库)' : ''}${r.guildUp ? ' · 公会升级了!' : ''}` : r.reason); if (r.ok && r.item) snd('loot'); showHub(); }; });
   }
 
-  // ================= 公会建设:公会等级、公会天赋、设施 =================
+  // ================= 公会建设:公会等级、公会升级、设施 =================
   function gtValue(id, rk) { // 天赋树里某一项的效果写成人话;rk 不给就是当前级数
     const t = D.gtree[id], r = rk == null ? g.gtalents[id] || 0 : rk;
     if (t.flag) return r ? '已学会' : '未学会';
@@ -11687,21 +11754,28 @@ var SCN = (function () {
     if (t.base != null) return (t.sign || '') + (t.base + t.per * r) + t.unit;
     return (t.per * r > 0 ? '+' : '') + t.per * r + t.unit;
   }
-  // 公会天赋页:五个分支各一列,每项一个图标格(字 + 名字 + 级数),说明全在悬停里;一页放完不滚动
+  // 公会升级页:五个分支各一列,一项一行(名字、现在的效果、说明、级数、下一级、+1);列表太长自己滚动。
+  // 每列里没点满的按解锁等级排在上面,点满的压成一行沉到最下面;没到解锁等级的显示上锁和条件
   function pageBuild() {
     const pts = g.gtPoints(), cap = g.guildCap();
-    const tile = id => {
-      const t = D.gtree[id], r = g.gtalents[id] || 0, locked = g.glevel < t.req, full = r >= t.max, can = !locked && !full && pts > 0;
-      const verLk = t.req > cap; // 这个版本的公会等级上限够不着
-      const tipT = `<b>${t.name}</b> ${r} / ${t.max}<br>${t.desc}<br>现在 <b style='color:#9aff8a'>${gtValue(id)}</b>${full ? '(已点满)' : ` → 下一级 <b style='color:#ffe14d'>${gtValue(id, r + 1)}</b>`}` +
-        (locked ? `<br><span style='color:#ff8a6a'>公会 ${t.req} 级解锁${verLk ? '(这个版本公会最高 ' + cap + ' 级)' : ''}</span>` : '');
-      return `<div class="gtile${full ? ' max' : ''}${locked ? ' lock' : ''}${can ? ' can' : ' dis'}" data-gt="${id}" data-tip="${tipT}"><b class="gtic">${t.ic || t.name[0]}</b><span class="gtnm">${t.name}</span><span class="gtrk">${locked ? '🔒' + t.req : r + '/' + t.max}</span></div>`;
+    const row = id => {
+      const t = D.gtree[id], r = g.gtalents[id] || 0, locked = g.glevel < t.req, full = r >= t.max, cost = g.gtCost(id);
+      if (full) return `<div class="urow max ufull" data-tip="${t.desc}"><div class="uh"><b>${t.name}</b><em>${gtValue(id)}</em><span class="ulock">满 ${r}/${t.max}</span></div></div>`;
+      const pips = t.max <= 8 ? '●'.repeat(r) + '○'.repeat(t.max - r) : '';
+      return `<div class="urow${locked ? ' lock' : ''}"><div class="uh"><b>${t.name}</b><em>${gtValue(id)}</em></div><small>${t.desc}</small>
+        <div class="unext">${locked ? '' : `下一级 <b>${gtValue(id, r + 1)}</b>`}</div>
+        <div class="uf2"><span class="pips">${pips}<i>${r}/${t.max}</i></span>${locked ? `<span class="ulock">🔒 公会 ${t.req} 级${t.req > cap ? '(这个版本最高 ' + cap + ' 级)' : ''}</span>` : `<span class="hbtn mini${pts > 0 && g.gold >= cost ? '' : ' dis'}" data-gt="${id}">+1${cost ? ' · <i class="coin"></i>' + cost : ''}</span>`}</div></div>`;
     };
-    const col = br => Object.keys(D.gtree).filter(id => D.gtree[id].b === br).sort((x, y) => D.gtree[x].req - D.gtree[y].req).map(tile).join('');
+    const col = br => { const ids = Object.keys(D.gtree).filter(id => D.gtree[id].b === br).sort((x, y) => D.gtree[x].req - D.gtree[y].req), full = id => (g.gtalents[id] || 0) >= D.gtree[id].max; return ids.filter(id => !full(id)).concat(ids.filter(full)).map(row).join(''); };
     const spent = g.gtSpent(), all = Object.keys(D.gtree).reduce((x, k) => x + D.gtree[k].max, 0);
-    $('#page').innerHTML = `<div class="ghead2">公会天赋 <b>${pts}</b> 点<span class="gtsum">公会 ${g.glevel} / ${cap} 级 · 已点 ${spent} / ${all} · 每升一级 +${D.guildPointsPerLevel} 点</span></div>` +
-      Object.keys(D.gbranches).map((br, i) => `<div class="panel gtcol" style="left:${16 + i * 250}px"><div class="ph"><span>${D.gbranches[br]}</span></div><div class="gtgrid">${col(br)}</div></div>`).join('');
-    $('#page').querySelectorAll('[data-gt]').forEach(b => { b.onclick = () => { const r = g.spendGt(b.dataset.gt); if (r.ok) { tk('guild_talent', { id: b.dataset.gt, rank: g.perkLevel(b.dataset.gt) }); snd('click'); } else snd('deny'); hubTip(r.ok ? D.gtree[b.dataset.gt].name + ' +1' : r.reason); showHub(); }; });
+    $('#page').innerHTML = `<div class="ghead2">公会升级 <b>${pts}</b> 点<span class="gtsum">公会 ${g.glevel} / ${cap} 级 · 已点 ${spent} / ${all} · 每升一级 +${D.guildPointsPerLevel} 点</span></div>` +
+      Object.keys(D.gbranches).map((br, i) => `<div class="panel ucol" style="left:${16 + i * 250}px"><div class="ph"><span>${D.gbranches[br]}</span></div><div class="ulist">${col(br)}</div></div>`).join('');
+    $('#page').querySelectorAll('[data-gt]').forEach(b => { b.onclick = () => {
+      const lists = [...$('#page').querySelectorAll('.ulist')].map(x => x.scrollTop); // 点完重画,列表别跳回顶上
+      const r = g.spendGt(b.dataset.gt); if (r.ok) { tk('guild_talent', { id: b.dataset.gt, rank: g.perkLevel(b.dataset.gt) }); snd('click'); } else snd('deny');
+      hubTip(r.ok ? D.gtree[b.dataset.gt].name + ' +1' : r.reason); showHub();
+      [...$('#page').querySelectorAll('.ulist')].forEach((x, k) => { x.scrollTop = lists[k] || 0; });
+    }; });
   }
 
   // ================= 设置菜单(Esc)与全屏 =================
@@ -12131,7 +12205,7 @@ var SCN = (function () {
   const KIND_COLOR = { nuke: '#d2603a', aoe: '#b06ae0', buff: '#e08a1a', guard: '#6f8fb8', bigheal: '#8fd66a', groupheal: '#6ad0e0', kick: '#8a8fa8' };
   function paintBig(h) {
     const b = btn[h.uid]; if (!b) return;
-    const k = g.big(h) || { id: '', kind: 'none', name: '未学会', color: '#4a3c2e', desc: D.firstSkillLevel + ' 级学会第一个技能', cd: 0, none: true };
+    const k = g.big(h) || { id: '', kind: 'none', name: '未学会', color: '#4a3c2e', desc: '还没点出团长喊的技能:' + D.talentFromLevel + ' 级起在天赋里点', cd: 0, none: true };
     if (b._k === k.id + k.kind) return;
     b._k = k.id + k.kind;
     b.innerHTML = `<div class="g">${ART.icon(k.kind)}</div><div class="cd"></div><div class="ct"></div><div class="k">${(b._i + 1) % 10}</div><div class="who">${ART.heroHead(h.cls, h.look)}</div><div class="n">${k.name}</div>`;
@@ -12920,7 +12994,7 @@ var SCN = (function () {
       log(`获得 ${r.gold} 金币`, 'good');
       r.revealed.forEach(x => announce(x.uid, x.trait)); flushNews();
       if (r.xp) log(`每人获得 ${r.xp} 点经验`, 'good');
-      if (r.guildUp) { log(`<b style="color:#ffe14d">公会升到了 ${g.glevel} 级</b>,获得 ${r.guildUp * D.guildPointsPerLevel} 点公会天赋`, 'good'); later(() => snd('fanfare'), 900); }
+      if (r.guildUp) { log(`<b style="color:#ffe14d">公会升到了 ${g.glevel} 级</b>,获得 ${r.guildUp * D.guildPointsPerLevel} 个升级点`, 'good'); later(() => snd('fanfare'), 900); }
       g.dquests.forEach(q => { if (q.prog >= q.need && !q.told) { q.told = true; log('<b style="color:#8fe07a">副本委托完成</b>,回公会的任务页领奖', 'good'); } });
       r.levelups.forEach((x, i) => later(() => {
         const f = floatText(x.uid, `升级!${x.level} 级`, 'gain'); f.style.setProperty('--qc', '#ffe14d');

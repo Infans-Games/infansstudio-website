@@ -1991,7 +1991,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1401";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1708";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -2058,13 +2058,10 @@ var GAME_DATA = {
   // standby:团本击杀首领时,没上场的替补也拿这么多比例的分
   dkp: { start: 6, room: 2, boss: 10, price: { green: 3, rare: 8, epic: 20, legend: 50 }, fairK: 0.25, unfairK: 1.8, standby: 0.5 },
   baseMiss: 0.06, // 攻击和法术的基础未命中率,靠装备上的命中等级压下去
-  // 英雄难度:70 级后,打通过的五人本可以开英雄模式——怪按 70 级算,只有精英和首领掉装备(70 级紫装),并掉徽章
-  // tune:每个副本英雄版的 [生命倍数, 伤害倍数](在英雄等级 g.heroicLv 的基础上),逐个按模拟调的。
-  // 熔渣到学院的英雄在 60 级版本开、按 60 级算(diffRule.heroicOldCap),这几项是按 60 级、穿枯骨学院紫装的队伍调的;裂隙、日冕按 70 级、穿日冕紫装调
+  // 英雄难度的徽章:首领 / 精英各掉几枚,徽章商店一件多少枚、摆几件。难度本身(开放规则、怪的强度、各副本的微调)统一在 GAME_DATA.difficulty
   // 单个首领的微调:敌人 id: [生命倍数, 伤害倍数]。副本那一行的 hpK / dmgK 是按最终首领调的;哪个小首领比最终首领还难,就在这里单独压一压(test/tune.js --minis 自动填)
   bossTune: { sand_boss2: [1, 0.56], emberking_boss5: [1, 0.95] },
-  heroic: { badgeBoss: 2, badgeElite: 1, price: 10, shop: 6,
-    tune: { slag: [9.07, 3.35], jail: [6.81, 1.96], serpent: [5.99, 1.46], keep: [5.23, 1.76], abbey: [5.34, 1.18], sand: [5.42, 1.6], forge: [4.84, 1.3], bone: [4.79, 1.29], rift: [5.87, 1.41], sun: [4.26, 1.43] } },
+  heroic: { badgeBoss: 2, badgeElite: 1, price: 10, shop: 6 },
   // 团本里中途下线:每打完一关,每个人有 base 的概率(性格"家里事多"再加)先打招呼,下一关打完就走;走了要从替补里换人
   afk: { base: 0.015 },
   // 替补:团本击杀首领时,等级够却没上场的人士气 -benchMood
@@ -3351,20 +3348,52 @@ GAME_DATA.plusRule = { eliteHpK: 0.6, miniGoldK: 0.4, miniDkpK: 0.5, miniMood: 4
 // 守关(hold):精英关换成一波一波来的怪——enemies 是第一波,waves 是后面几波,隔 waveEvery 秒或者打光了就来下一波
 GAME_DATA.enemyBase.totem = { art: 'totem', fig: [60, 96], hp: 9000, size: 56, speed: 0, reach: 0, melee: { interval: 9, dmg: 0 }, script: [{ at: 3, id: 'pulse' }], cycleLen: 3, abilities: { pulse: { kind: 'pulse', name: '脉冲', heal: 3000 } } };
 GAME_DATA.enemyBase.cage = { art: 'cage', fig: [84, 100], hp: 11000, size: 70, speed: 0, reach: 0, melee: { interval: 9, dmg: 0 } };
-// ---------- 难度和规模 ----------
-// 难度 0 普通 / 1 英雄 / 2 史诗。团本三档都有(每个首领开打前可以换);60 级开始有英雄,70 级开始有史诗。五人本的英雄:更早的副本从 60 级版本(heroicOldCap)起开、按 60 级算;heroic5From 级以后的副本(裂隙、日冕)在 70 级版本开、按 70 级算(campaign.js 的 g.heroicLv);五人本没有史诗。团本英雄从 60 级版本起,史诗要 70 级版本(mythicFromCap)。
-//   英雄和史诗:怪按当前版本上限算,血量和伤害再乘 hp / dmg;首领多技能——机制表里带 diff: 1 的英雄起才有,diff: 2 的史诗才有;史诗的狂暴时间乘 enrageK。
-//   史诗要版本上限到 mythicFromCap 才开(内测没有史诗)。
+// ---------- 难度统一管理(设计文档「难度统一管理」)----------
+// 普通 / 英雄 / 史诗都用同一个副本基座(副本那一行的 hpK / dmgK、首领机制、掉落表),区别全在下面这张表里。
+// modes:一行一个模式,下标就是难度编号 n(0 普通 / 1 英雄 / 2 史诗):
+//   from     版本上限到多少才有这个模式(45 / 60 / 70)
+//   five / raid  五人本、团本各有没有(五人本史诗:five 改成 true 就开,还缺什么见设计文档)
+//   homeFrom 副本自己所属的版本至少是多少才有(血月是 45 级版本的团本,没有史诗)
+//   need     开放条件:'kill' 普通打通过;'hkill' 上一档(英雄)打通过。needCap:队里要有人到版本上限
+//   lv       怪按什么等级算:'dungeon' 副本自己的等级;'cap' 当前版本上限(经验也按这个等级给)
+//   hp / dmg / enrageK  这个模式通用的生命、伤害、狂暴时间倍数(乘在副本基座上)
+//   gear     掉落装备档的后缀:团本 "副本.h" / ".25m",五人本 "副本_h60"(带版本上限——同一个副本在 45 / 60 / 70 版本的英雄掉的是不同等级的装备);
+//            装备等级比普通档高多少在 gearTier.diffLv[n](五人本英雄 = 版本上限 + diffLv)
+// tune:每个副本在每个"人数-难度"下的微调 [生命倍数, 伤害倍数](各副本机制不一样,同一个倍数下有的太容易有的打不动)。
+//   写成 [生命, 伤害] 是各版本通用;写成 { 45: […], 60: […], 70: […] } 是按版本上限分别给(五人本英雄都这么写)。
+//   五人 / 十人普通不在这里——那是副本那一行的 hpK / dmgK。读写只走 GAME_DATA.diffTune / setDiffTune(test/tune.js、test/balance.js 自动填)。
+// timewalk:给以后的"时光模式"留的位置,现在不生效(on: false)。打开要做什么见设计文档「难度统一管理」。
+GAME_DATA.difficulty = {
+  modes: [
+    { id: 'normal', name: '普通', from: 0, five: true, raid: true, need: null, lv: 'dungeon', hp: 1, dmg: 1, enrageK: 1, gear: '' },
+    { id: 'heroic', name: '英雄', from: 45, five: true, raid: true, need: 'kill', needCap: true, lv: 'cap', hp: 1.19, dmg: 0.93, enrageK: 1, gear: 'h' },
+    { id: 'mythic', name: '史诗', from: 60, five: false, raid: true, homeFrom: 60, need: 'hkill', lv: 'cap', hp: 1.1, dmg: 0.98, enrageK: 0.95, gear: 'm' }
+  ],
+  timewalk: { on: false, every: 2, pick: 1, row: { id: 'timewalk', name: '时光', from: 60, five: true, raid: true, need: 'kill', lv: 'cap', hp: 1, dmg: 1, enrageK: 1, gear: 't' } }
+};
+GAME_DATA.difficulty.tune = { slag: { '5-1': { 45: [11.834, 3.14], 60: [15.555, 5.542], 70: [16.781, 9.451] } }, jail: { '5-1': { 45: [4.488, 1.967], 60: [5.723, 2.422], 70: [6.64, 2.597] } }, serpent: { '5-1': { 45: [1.972, 1.423], 60: [2.608, 1.495], 70: [3.308, 1.588] } }, keep: { '5-1': { 45: [1.564, 1.262], 60: [2.063, 1.279], 70: [2.455, 1.407] } }, abbey: { '5-1': { 45: [1.497, 1.083], 60: [1.951, 1.133], 70: [2.478, 1.232] } }, sand: { '5-1': { 45: [1.128, 0.974], 60: [1.451, 1.055], 70: [1.836, 1.173] } }, forge: { '5-1': { 60: [0.939, 1.109], 70: [1.231, 1.31] } }, bone: { '5-1': { 60: [1.073, 1.137], 70: [1.229, 1.195] } }, rift: { '5-1': { 70: [1.01, 1.175] } }, sun: { '5-1': { 70: [0.945, 1.131] } }, moon: { '10-1': [1, 0.99], '25-0': [0.87, 0.88], '25-1': [0.87, 0.48] }, emberking: { '10-1': [0.87, 0.82], '10-2': [0.87, 0.78], '25-0': [1, 1.15], '25-1': [0.5, 0.5], '25-2': [0.57, 0.53] }, bell: { '10-1': [1, 0.91], '10-2': [1, 0.91], '25-0': [1, 1.12], '25-1': [0.66, 0.57], '25-2': [0.76, 0.53] }, gear1: { '10-1': [1, 1], '10-2': [1, 0.97], '25-0': [1.1, 1.75], '25-1': [0.95, 1.5], '25-2': [0.87, 1.25] }, gear2: { '10-1': [0.76, 1.15], '10-2': [0.87, 1.08], '25-0': [0.76, 1.27], '25-1': [0.66, 1.28], '25-2': [0.76, 1.15] }, sky1: { '10-1': [0.87, 0.88], '10-2': [0.87, 0.79], '25-0': [1, 1.06], '25-1': [0.76, 0.83], '25-2': [0.76, 0.66] }, sky2: { '10-1': [0.87, 1.085], '10-2': [1, 0.93], '25-0': [1, 1.22], '25-1': [0.87, 1.48], '25-2': [1, 1.05] } };
+GAME_DATA.diffNames = GAME_DATA.difficulty.modes.map(function (m) { return m.name; });
+// 这个副本属于哪个版本(45 / 60 / 70):它的等级上限落在哪个版本里
+GAME_DATA.verOf = function (d) { return +Object.keys(GAME_DATA.versions).filter(function (v) { return +v >= d.max; })[0] || GAME_DATA.levelCap; };
+// 微调倍数的唯一读写入口。读:没填过就是 [1, 1]
+GAME_DATA.diffTune = function (id, size, n, cap) { var e = (GAME_DATA.difficulty.tune[id] || {})[size + '-' + n]; return !e ? [1, 1] : e.length ? e : e[cap] || [1, 1]; };
+// 写:byCap 为真(或者这一格本来就是按版本分的)写到 cap 那个版本下,否则各版本通用
+GAME_DATA.setDiffTune = function (id, size, n, cap, val, byCap) {
+  var T = GAME_DATA.difficulty.tune, row = T[id] || (T[id] = {}), key = size + '-' + n, e = row[key];
+  if (byCap || (e && !e.length)) { if (!e || e.length) e = row[key] = {}; e[cap] = val; } else row[key] = val;
+  return val;
+};
+// 掉落装备档的名字(装备库里的"出处"):普通十人 / 五人就是副本 id
+GAME_DATA.diffGearKey = function (d, n, size, cap) {
+  var M = GAME_DATA.difficulty.modes[n];
+  if (d.raid) return size === 25 || n ? d.id + '.' + (size === 25 ? '25' : '') + M.gear : d.id;
+  return n ? d.id + '_' + M.gear + cap : d.id;
+};
 // 规模:十人或二十五人,同一批首领同一套技能。二十五人血量乘 hp,平砍和重击乘 tank,点名人数和地上的圈数乘 count(叫出来的小怪数量不变,血量跟着放大);版本上限到 fromCap 才开。
-GAME_DATA.diffRule = { names: ['普通', '英雄', '史诗'], hp: [1, 1.19, 1.1], dmg: [1, 0.93, 0.98], enrageK: [1, 1, 0.95], heroic5From: 60, heroicOldCap: 60, heroicOld: true, mythicFromCap: 70 }; // 用户 2026-11-17 最后定的:60 级开始有英雄模式,70 级开始有史诗模式。heroicOld:60 级以前的五人本从 60 级版本起开英雄;mythicFromCap:版本上限到这个等级才有史诗; // heroicOldCap:60 级以前的五人本在这个版本上限下开英雄、按这个等级算
 // 编队:各规模建议的坦克 / 治疗人数(其余是输出;只用来提示和"一键补满",不是硬性要求);团本分几个小队、每队几人
 GAME_DATA.formation = { need: { 5: { tank: 1, heal: 1 }, 10: { tank: 2, heal: 3 }, 25: { tank: 3, heal: 6 } }, groups: { 10: 2, 25: 7 }, groupSize: 5 };
 GAME_DATA.sizeRule = { 10: { hp: 1, tank: 1, count: 1, loot: 1 }, 25: { hp: 3.6, tank: 1.15, count: 2.3, loot: 3, fromCap: 60 } }; // loot:每个首领的掉落件数倍数(用户:25 人比 10 人掉得多,难度主要来自要操作的人更多——count 放大点名人数、圈数、小怪数)
-// 单个团本在某个"规模-难度"下的微调:团本 id: { '10-1': [生命倍数, 伤害倍数], '25-0': … }(10 / 25 人;0 普通、1 英雄、2 史诗)。
-// 上面两张表是全团本通用的倍数;各团本机制不一样,同一个倍数下有的太容易有的打不动,就在这里单独补(test/balance.js fit raid 自动填)
-GAME_DATA.raidTune = { moon: { '10-1': [1, 0.99], '25-0': [0.87, 0.88], '25-1': [0.87, 0.48] }, emberking: { '10-1': [0.87, 0.82], '10-2': [0.87, 0.78], '25-0': [1, 1.15], '25-1': [0.5, 0.5], '25-2': [0.57, 0.53] }, bell: { '10-1': [1, 0.91], '10-2': [1, 0.88], '25-0': [1, 1.12], '25-1': [0.66, 0.57], '25-2': [0.76, 0.53] }, gear1: { '10-1': [1, 1], '10-2': [1, 0.97], '25-0': [1.1, 1.75], '25-1': [0.95, 1.5], '25-2': [0.87, 1.25] }, gear2: { '10-1': [0.76, 1.15], '10-2': [0.87, 1.08], '25-0': [0.76, 1.27], '25-1': [0.66, 1.28], '25-2': [0.76, 1.12] }, sky1: { '10-1': [0.87, 0.88], '10-2': [0.87, 0.79], '25-0': [1, 1.06], '25-1': [0.76, 0.83], '25-2': [0.76, 0.66] }, sky2: { '10-1': [0.87, 1.085], '10-2': [1, 0.93], '25-0': [1, 1.22], '25-1': [0.87, 1.48], '25-2': [1, 1.05] } };
 // (花名册上限不再走公会天赋「扩编」,改成按公会等级,见 rosterBase / rosterMax)
-GAME_DATA.rosterCapBy = { 45: 15, 60: 30, 70: 30 }; // 各版本的花名册上限(内测只有十人团)
 // ---------- 团本:按"周"存进度 ----------
 // weekSec:游玩这么多秒算一周,到点所有团本重置(人还在团本里就等出来再重置)。一周内杀过的首领和它前面的小怪不再出现,回公会再进来接着打。
 // wipeBuff:同一个首领每灭一次,全团伤害和治疗加这么多,最多 wipeBuffMax;杀掉或重置后清零
@@ -3428,7 +3457,7 @@ GAME_DATA.bossPlus = {
       boss1: { room: '蜕皮洞深处', drop: ['_legs', 'ring'], base: 'bossBrute', name: '蜕皮者·斯里克', short: '斯里克', hp: 145000, melee: { interval: 1.8, dmg: 400 },
         script: [{ at: 5, id: 'fissure' }, { at: 21, id: 'mend' }], cycleLen: 26,
         abilities: { fissure: { kind: 'fissure', name: '毒涎', count: 2, r: 72, delay: 3.0, dmg: 2100, pool: { dur: 10, dps: 340, name: '毒涎' } }, mend: { kind: 'mend', name: '蜕皮', cast: 3.0, heal: 12000, interruptible: true } },
-        area: [{ id: 'a1', at: 0.5, kind: 'cone', back: true, name: '甩尾', r: 210, half: 0.8, delay: 1.8, dmg: 1900 }],
+        area: [{ id: 'a1', at: 0.5, kind: 'cone', back: true, name: '甩尾', r: 210, half: 0.8, delay: 2, dmg: 1900 }],
         yell: { pull: ['嘶——新皮,正合身。', '嘶嘶。'], mid: ['这层皮,不要了。'], enrage: ['嘶——!!'] } },
       boss2: { room: '女王的卵室', drop: ['_head', 'w0', 'w1'], base: 'bossCaster', name: '孵化池女王', short: '女王', hp: 118000, melee: { interval: 2.0, dmg: 380, ranged: true },
         script: [{ at: 8, id: 'smash' }], cycleLen: 28,
@@ -3859,12 +3888,12 @@ GAME_DATA.bossPlus = {
 // 同一件装备有几档,名字一样,卡片上名字下面标"英雄 / 史诗",物品等级更高;同名套装的几档混着穿算同一套。
 //   diffLv   英雄 / 史诗比普通高多少"装备等级"(装备的属性都按装备等级算,见下面的生成函数)
 //   size25Lv 二十五人团掉的比十人高多少
-//   heroic5Lv 五人本英雄档 = 版本上限 + 这么多
+//   五人本英雄档 = 版本上限 + diffLv[1](同一个副本在每个有英雄的版本各一档,出处是 "副本_h45 / _h60 / _h70",见 GAME_DATA.diffGearKey)
 //   dkpK / priceK 高档装备的 DKP 定价和卖价倍数
-// 装备库里的写法:团本的高档装备挂在 "副本.h"(十人英雄)".m"(十人史诗)".25"".25h"".25m" 这几个出处下面,五人本英雄仍是 "副本_h";
+// 装备库里的写法:团本的高档装备挂在 "副本.h"(十人英雄)".m"(十人史诗)".25"".25h"".25m" 这几个出处下面,五人本英雄是 "副本_h60" 这样带版本上限的;
 //   每件带 base(原副本)、diff(0/1/2)、size、baseId(普通十人版那一件的 id)。掉哪一档由 campaign.js 的 g.gearKey 决定。
 // 注意(职业分支合并后要对一遍):这里只定了"各档之间差多少",普通档的数值和品质系数没动;提案第 5 节的"资料片跳档、品质差距收窄"还没做。
-GAME_DATA.gearTier = { diffLv: [0, 6, 12], size25Lv: 3, heroic5Lv: 6, tag: ['', '英雄', '史诗'], dkpK: [1, 1.25, 1.5], priceK: [1, 1.3, 1.6] };
+GAME_DATA.gearTier = { diffLv: [0, 6, 12], size25Lv: 3, tag: ['', '英雄', '史诗'], dkpK: [1, 1.25, 1.5], priceK: [1, 1.3, 1.6] };
 // ---------- 栏位和武器类型(装备系统第 7 批)----------
 // 8 个栏位:武器、副手、头、肩、胸、腿、戒指、饰品。肩是套装的第 4 件;副手让"单手 + 盾 / 双手 / 双持 / 法杖 / 单手 + 副手物"成立。
 // slotK:每个栏位占多少属性预算(主属性、耐力、护甲都乘它)。双手武器 = 单手 + 副手。norm 把全身的总量拉回加栏位之前的水平
@@ -3994,10 +4023,14 @@ GAME_DATA.uniques = {
   D.dungeons.forEach(function (d) {
     tiers.push({ id: d.id, tier: G.tier[d.id], lv: d.max >= D.levelCap ? D.levelCap : Math.min(D.levelCap, d.level + (d.raid ? G.raidBonus : 0)), req: d.min, quals: ['green', 'rare', 'epic'], legend: true }); // 满级副本出的就是 70 级装备
     var base = tiers[tiers.length - 1];
-    if (!d.raid) tiers.push({ id: d.id + '_h', base: d.id, diff: 1, size: 5, tier: G.tier[d.id], lv: (d.min >= D.diffRule.heroic5From ? D.levelCap : D.diffRule.heroicOldCap) + GT.heroic5Lv, req: d.min >= D.diffRule.heroic5From ? D.levelCap : D.diffRule.heroicOldCap, quals: ['epic'], legend: false }); // 五人本英雄(60 级以前的副本按 60 级版本算)
+    if (!d.raid) D.difficulty.modes.forEach(function (M, n) { // 五人本的高档:每个有这个模式的版本各一档,装备等级 = 版本上限 + diffLv
+      if (!n || !M.five) return;
+      Object.keys(D.versions).forEach(function (v) { v = +v; if (v < M.from || d.level > v) return;
+        tiers.push({ id: D.diffGearKey(d, n, 5, v), base: d.id, diff: n, size: 5, ver: v, tier: G.tier[d.id], lv: v + GT.diffLv[n], req: v, quals: ['epic'], legend: false }); });
+    });
     else [10, 25].forEach(function (size) { [0, 1, 2].forEach(function (diff) { // 团本:十人 / 二十五人 × 普通 / 英雄 / 史诗
       if (size === 10 && !diff) return;
-      tiers.push({ id: d.id + '.' + (size === 25 ? '25' : '') + ['', 'h', 'm'][diff], base: d.id, diff: diff, size: size, tier: G.tier[d.id], lv: base.lv + GT.diffLv[diff] + (size === 25 ? GT.size25Lv : 0), req: diff ? verCap(d) : d.min, quals: ['epic'], legend: false });
+      tiers.push({ id: D.diffGearKey(d, diff, size), base: d.id, diff: diff, size: size, tier: G.tier[d.id], lv: base.lv + GT.diffLv[diff] + (size === 25 ? GT.size25Lv : 0), req: diff ? verCap(d) : d.min, quals: ['epic'], legend: false });
     }); });
   });
   tiers.forEach(function (d) {
@@ -4005,7 +4038,7 @@ GAME_DATA.uniques = {
     function add(key, it) {
       var q = D.quality[it.q];
       it.id = d.id + '_' + (it.idq || it.q) + '_' + key; it.dungeon = d.id; it.lv = lv; it.req = req;
-      if (d.base) { it.base = d.base; it.diff = d.diff; it.size = d.size; it.baseId = d.base + '_' + (it.idq || it.q) + '_' + key; } // 高一档的同名装备
+      if (d.base) { it.base = d.base; it.diff = d.diff; it.size = d.size; if (d.ver) it.ver = d.ver; it.baseId = d.base + '_' + (it.idq || it.q) + '_' + key; } // 高一档的同名装备
       it.ilv = Math.round(lv * 1.5 + 10) + D.ilvBonus[it.q];
       it.budget = q.power * lv;                          // 比较装备好坏用
       var wk = it.slot === 'ring' || it.slot === 'trinket' ? 1 : wkOf(it) * SK.norm; // 戒指和饰品不参与归一
@@ -6344,6 +6377,8 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
     const fromDef = st => { const c = fresh(JSON.parse(JSON.stringify(st))); const sh = c.shown; delete c.shown; return meet(c, sh); };
     if (save && save.roster && save.roster.length) {
       seq = save.seq; delete save.seq;
+      // 五人本英雄装的出处改成带版本上限的("副本_h60"):旧存档里的 "副本_h_…" 按当时的规则换过去(熔渣到学院是 60 级档,裂隙、日冕是 70 级档)
+      save = JSON.parse(JSON.stringify(save).replace(/"([a-z0-9]+)_h_/g, (m, id) => { const d = D.dungeons.find(x => x.id === id); return d && !d.raid ? '"' + id + '_h' + (d.min >= 60 ? 70 : 60) + '_' : m; }));
       Object.assign(g, save); // 存档就是 toSave() 的原样,不做旧版本兼容
     } else {
       D.starters.forEach(st => g.roster.push(fromDef(st)));
@@ -7183,9 +7218,9 @@ const K = D.statK;
       const avg = g.roster.reduce((x, h) => x + h.level, 0) / (g.roster.length || 1);
       return (open.filter(x => avg >= x.min).pop() || open[0]).id;
     };
-    const priceOf = it => Math.round(D.prices[it.q] * (1 + 0.25 * (/_h$/.test(it.dungeon) ? D.dungeons.length : it.world ? D.dungeons.filter(x => !x.raid && x.level <= it.lv).length + 2 : Math.max(0, dIndex(it.base || it.from || it.dungeon)))) * (/_h$/.test(it.dungeon) ? 1 : D.gearTier.priceK[it.diff || 0])); // 越后面的副本,装备越值钱;团本的英雄 / 史诗档更贵
-    // 装备档:这一趟掉哪一档(见 data.js 的 gearTier)。团本看规模和难度,五人本英雄是 "副本_h"
-    g.gearKey = d => (d.raid ? (g.raidSize(d) === 25 || g.diffN() ? d.id + '.' + (g.raidSize(d) === 25 ? '25' : '') + ['', 'h', 'm'][g.diffN()] : d.id) : g.heroic ? d.id + '_h' : d.id);
+    const priceOf = it => Math.round(D.prices[it.q] * (1 + 0.25 * (it.size === 5 ? D.dungeons.length : it.world ? D.dungeons.filter(x => !x.raid && x.level <= it.lv).length + 2 : Math.max(0, dIndex(it.base || it.from || it.dungeon)))) * (it.size === 5 ? 1 : D.gearTier.priceK[it.diff || 0])); // 越后面的副本,装备越值钱;团本的英雄 / 史诗档更贵
+    // 装备档:这一趟掉哪一档(见 data.js 的 gearTier 和 diffGearKey)。团本看规模和难度,五人本英雄是 "副本_h" + 版本上限
+    g.gearKey = d => D.diffGearKey(d, g.diffN(), d.raid ? g.raidSize(d) : 5, g.cap());
     g.dkpPrice = it => Math.round(D.dkp.price[it.q] * D.gearTier.dkpK[it.diff || 0] * (it.unique ? D.uniqueRule.dkpK : 1)); // 高档装备要的分更多
     function ahRoll() { // 公会打通的副本越多,拍卖行里越容易出好东西
       const c = g.cleared(), r = rng() - g.perkValue('broker') / 100 * 0.8; // 人脉越广,越容易碰到好货
@@ -7227,8 +7262,8 @@ const K = D.statK;
         gold0: 0, xp0: LQ.questDur / 60 * D.quests.xpPerMin * D.quests.starK[2], itemChance: 0, legend: key });
     }
     function lgTemper() { // 淬炼要打哪三个首领
-      const five = D.dungeons.filter(d => !d.raid && d.level <= g.cap()), hs = g.cap() >= D.levelCap ? five.filter(d => d.min >= D.diffRule.heroic5From) : [];
-      if (hs.length) { // 有英雄五人本的版本:从它们的首领里挑
+      const five = D.dungeons.filter(d => !d.raid && d.level <= g.cap()), hs = five.filter(d => g.diffOpen(d, 1)); // 当前版本里已经开了英雄的五人本
+      if (hs.length) { // 有开了英雄的五人本:从它们的首领里挑;一个都没开才退回普通
         const pool = []; hs.forEach(d => d.rooms.forEach(r => { if (r.boss) pool.push({ d: d.id, boss: r.enemies[0], heroic: true, done: false }); }));
         const out = []; while (out.length < LQ.temperN && pool.length) out.push(pool.splice(Math.floor(rng() * pool.length), 1)[0]);
         return out;
@@ -7444,11 +7479,29 @@ const K = D.statK;
     };
 
     // ---------- 副本 ----------
-    // 五人本的英雄:60 级以后的副本(裂隙、日冕)在 70 级版本开、按 70 级算;更早的副本(熔渣到学院)在 60 级版本开、按 60 级算(用户:"60 级版本英雄按 60 级算")。45 级内测没有。
-    g.heroicLv = d => (d.min >= D.diffRule.heroic5From ? D.levelCap : D.diffRule.heroicOldCap);
-    g.heroicOpen = d => !d.raid && !!D.heroic.tune[d.id] && (d.min >= D.diffRule.heroic5From || D.diffRule.heroicOld) && g.cap() >= g.heroicLv(d) && (g.kills[d.id] || 0) > 0 && g.roster.some(h => h.level >= g.heroicLv(d));
-    // 难度:团本三档;n 档开没开(英雄要普通打通过、有人到版本上限;史诗要英雄打通过、版本上限够)
-    g.diffOpen = (d, n) => !n || (d.raid ? (n === 1 ? (g.kills[d.id] || 0) > 0 && g.roster.some(h => h.level >= g.cap()) : g.cap() >= D.diffRule.mythicFromCap && (g.hkills[d.id] || 0) > 0) : n === 1 && g.heroicOpen(d));
+    // ---------- 难度:统一入口(表在 data.js 的 GAME_DATA.difficulty;界面、掉落、任务、测试都走这一组)----------
+    //   g.diffHas(d, n)   当前版本里这个副本有没有这一档(不看打没打通)
+    //   g.diffWhy(d, n)   这一档现在为什么进不去:'none' 没有这一档 / 'ver' 版本没到 / 'kill' 普通没打通 / 'cap' 没人到版本上限 / 'hkill' 英雄没打通;能进是 null
+    //   g.diffOpen(d, n)  能不能进
+    //   g.diffLv(d, n)    怪按多少级算(经验也按它:g.diffXp)
+    //   g.enemyScale(d)   敌人强度;g.gearKey(d) 掉哪一档装备
+    const DM = D.difficulty.modes;
+    g.diffHas = (d, n) => { const M = DM[n]; return !!M && (d.raid ? M.raid : M.five) && !g.verLocked(d) && g.cap() >= M.from && D.verOf(d) >= (M.homeFrom || 0); };
+    g.diffWhy = (d, n) => {
+      const M = DM[n];
+      if (!M || !(d.raid ? M.raid : M.five) || g.verLocked(d) || D.verOf(d) < (M.homeFrom || 0)) return 'none';
+      if (g.cap() < M.from) return 'ver';
+      if (M.need === 'kill' && !(g.kills[d.id] > 0)) return 'kill';
+      if (M.need === 'hkill' && !(g.hkills[d.id] > 0)) return 'hkill';
+      if (M.needCap && !g.roster.some(h => h.level >= g.cap())) return 'cap';
+      return null;
+    };
+    g.diffOpen = (d, n) => !g.diffWhy(d, n);
+    g.diffLv = (d, n) => (DM[n].lv === 'cap' ? g.cap() : d.level);
+    g.diffXp = d => { const n = g.diffN(); return DM[n].lv === 'cap' ? { level: g.cap(), max: g.cap() } : d; }; // 经验按什么等级的副本算
+    // 旧名字留一层转调(界面的副本卡片、副本任务在用)
+    g.heroicLv = d => g.diffLv(d, 1);
+    g.heroicOpen = d => !d.raid && g.diffOpen(d, 1);
     g.setDiff = n => { g.diff = n; g.heroic = n > 0; };
     g.diffN = () => (g.heroic ? Math.max(1, g.diff || 0) : 0);
     // 规模:十人或二十五人。这一周已经开打了就不能换
@@ -7482,11 +7535,12 @@ const K = D.statK;
       g.dungeon = null; g.sim = null; g.loot = []; g.room = 0; g.flaskOn = null; g.heroic = false; g.diff = 0; g.roster.forEach(h => { h.afk = 0; h.away = false; }); };
     // 敌人强度:副本等级的成长倍数 × 副本为几人队设计的系数
     g.enemyScale = d => {
-      const n = g.diffN(), R = D.diffRule, trash = d.trashK || D.trashHpK, NS = D.numScale; // NS:全局的数字量级,队员和怪一起乘
-      if (!d.raid) return n ? { hp: LS(g.heroicLv(d)) * D.heroic.tune[d.id][0] * NS, dmg: LS(g.heroicLv(d)) * D.heroic.tune[d.id][1] * NS, trash } : { hp: LS(d.level) * d.hpK * NS, dmg: LS(d.level) * d.dmgK * NS, trash };
-      const lv = n ? g.cap() : d.level, Z = D.sizeRule[g.raidSize(d)]; // 团本:英雄和史诗按版本上限算,再乘难度和规模
-      const T = (D.raidTune[d.id] || {})[g.raidSize(d) + '-' + n] || [1, 1]; // 这个团本在这个规模和难度下的单独微调
-      return { hp: LS(lv) * d.hpK * R.hp[n] * Z.hp * T[0] * NS, dmg: LS(lv) * d.dmgK * R.dmg[n] * T[1] * NS, trash, tank: Z.tank, count: Z.count, enrageK: R.enrageK[n] };
+      const n = g.diffN(), M = DM[n], trash = d.trashK || D.trashHpK, NS = D.numScale; // NS:全局的数字量级,队员和怪一起乘
+      const size = d.raid ? g.raidSize(d) : 5, Z = d.raid ? D.sizeRule[size] : null, lv = LS(g.diffLv(d, n));
+      const T = D.diffTune(d.id, size, n, g.cap()); // 这个副本在这个人数、难度(和版本)下的单独微调
+      // 都是同一个基座:等级成长 × 副本那一行的 hpK / dmgK × 模式的通用倍数 × 规模 × 微调
+      const sc = { hp: lv * d.hpK * M.hp * (Z ? Z.hp : 1) * T[0] * NS, dmg: lv * d.dmgK * M.dmg * T[1] * NS, trash };
+      return d.raid ? Object.assign(sc, { tank: Z.tank, count: Z.count, enrageK: M.enrageK }) : sc;
     };
     // 进入当前房间。返回开场时的闲话(记仇的人可能翻旧账)
     g.startRoom = function () {
@@ -7610,7 +7664,7 @@ const K = D.statK;
         if (k > 0) g.roster.forEach(h => { if (ph.indexOf(h) < 0 && !g.busy(h.uid) && h.level < g.cap()) addXp(h, Math.round(baseXp * k * g.xpMult(h, d)), []); }); } // 替补升级不在战斗里播报
       ph.forEach(h => {
         if (h.level >= g.cap()) return;
-        h.xp += Math.round(baseXp * g.xpMult(h, g.heroic ? { level: d.raid ? g.cap() : g.heroicLv(d), max: d.raid ? g.cap() : g.heroicLv(d) } : d) * (1 + g.gt('mentor')) * (lootMods(h).xpK || 1) * (1 + mentorOf(h)) * (1 + g.gearFx(h, 'xpK')));
+        h.xp += Math.round(baseXp * g.xpMult(h, g.diffXp(d)) * (1 + g.gt('mentor')) * (lootMods(h).xpK || 1) * (1 + mentorOf(h)) * (1 + g.gearFx(h, 'xpK')));
         while (h.xp >= xpNeed(h) && h.level < g.cap()) { h.xp -= xpNeed(h); h.level++; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: h.level === D.firstSkillLevel ? cls(h).firstSkill.name : null }); }
       });
       if (last && d === D.dungeons[0]) ph.forEach(h => { while (h.level < D.talentFromLevel && h.level < g.cap()) { h.level++; h.xp = 0; levelups.push({ uid: h.uid, level: h.level, point: h.level >= D.talentFromLevel, learn: h.level === D.firstSkillLevel ? cls(h).firstSkill.name : null }); } }); // 教学本保底:打通就到 10 级
@@ -7899,7 +7953,7 @@ const K = D.statK;
     g.teamHeroes = i => (g.teams[i] || []).map(hero).filter(Boolean);
     // ---------- 徽章兑换(英雄难度) ----------
     g.badgeShop = function () {
-      const all = Object.keys(D.items).filter(k => /_h$/.test(D.items[k].dungeon)).sort(), n = D.heroic.shop, off = (g.cleared() * 7 + Object.keys(g.hkills).reduce((x, k) => x + g.hkills[k], 0) * 5) % Math.max(1, all.length);
+      const all = Object.keys(D.items).filter(k => D.items[k].size === 5 && D.items[k].diff === 1 && D.items[k].ver === g.cap()).sort() /* 当前版本的五人本英雄装 */, n = D.heroic.shop, off = (g.cleared() * 7 + Object.keys(g.hkills).reduce((x, k) => x + g.hkills[k], 0) * 5) % Math.max(1, all.length);
       return all.slice(off, off + n).concat(all.slice(0, Math.max(0, off + n - all.length)));
     };
     g.buyBadge = function (id) {
@@ -10740,7 +10794,7 @@ var SCN = (function () {
     HOW.frenzy = '残血后伤害上涨。让会驱散的人把它驱掉';
     Object.assign(HOW, { fixate: '盯着一个人追,追上了打得很疼。拖着他绕圈跑', soak: '地上亮蓝圈,读秒结束时每个圈里要有人。没人站全团挨打', totem: '叫出一个不会动的东西,活着首领就一直回血。点它集火', cage: '把一个人关进笼子。点笼子集火把他救出来', still: '点名一个人不许动,一动全团挨炸。别拖他', pulse: '', sunder: '给坦克叠层,层数越高挨打越疼。两个坦克轮着接', intermission: '首领缩起来打不动,叫一波小怪。清完小怪它会瘫痪几秒、受到的伤害加倍,爆发留到这时候', mirror: '分出几个假身,所有人的目标被打乱。点出真身;打死假身会炸全团', polarity: '每人头上一个电荷,异种电荷挨着就互相电。红蓝分两边站', knock: '以它为圆心的大圈,圈里的人会被掀飞出去、落地愣一下。读条时跑出圈' });
     const absOf = B => {
-      const abs = Object.keys(B.abilities || {}).map(k => B.abilities[k]).concat(Object.keys(B.pas || {}).map(k => B.pas[k])).sort((x, y) => (x.diff || 0) - (y.diff || 0)).map(x => `<span class="bab${x.diff ? ' dif' + x.diff : ''}" data-tip="<b>${x.name}</b>${x.diff ? ` <span style=&quot;color:${x.diff === 1 ? '#7dff9a' : '#ffb347'}&quot;>${D.diffRule.names[x.diff]}难度才有</span>` : ''}<br>${HOW[x.kind] || ''}${x.kind === 'afflict' ? '<br><b style=&quot;color:#c9a0ff&quot;>类型:' + D.dispelType[x.type || 'poison'] + '</b>(能解的:' + Object.keys(D.dispelSkill).filter(c => D.dispelSkill[c].types.indexOf(x.type || 'poison') >= 0).map(c => D.classes[c].name).join('、') + ')' : ''}${x.kind === 'raidwide' ? (x.interruptible ? '。可以打断,队里要有会打断的人' : '。打断不了,靠治疗和全队减伤硬吃') : ''}">${ART.icon(x.kind)}</span>`);
+      const abs = Object.keys(B.abilities || {}).map(k => B.abilities[k]).concat(Object.keys(B.pas || {}).map(k => B.pas[k])).sort((x, y) => (x.diff || 0) - (y.diff || 0)).map(x => `<span class="bab${x.diff ? ' dif' + x.diff : ''}" data-tip="<b>${x.name}</b>${x.diff ? ` <span style=&quot;color:${x.diff === 1 ? '#7dff9a' : '#ffb347'}&quot;>${D.diffNames[x.diff]}难度才有</span>` : ''}<br>${HOW[x.kind] || ''}${x.kind === 'afflict' ? '<br><b style=&quot;color:#c9a0ff&quot;>类型:' + D.dispelType[x.type || 'poison'] + '</b>(能解的:' + Object.keys(D.dispelSkill).filter(c => D.dispelSkill[c].types.indexOf(x.type || 'poison') >= 0).map(c => D.classes[c].name).join('、') + ')' : ''}${x.kind === 'raidwide' ? (x.interruptible ? '。可以打断,队里要有会打断的人' : '。打断不了,靠治疗和全队减伤硬吃') : ''}">${ART.icon(x.kind)}</span>`);
       if (B.enrageAt) abs.push(`<span class="bab" data-tip="<b>狂暴</b><br>${B.enrageAt} 秒还没打死,首领伤害暴涨。输出要够">${ART.icon('skull')}</span>`);
       if (B.phase2At) abs.push(`<span class="bab" data-tip="<b>第二阶段</b><br>血量低于 ${Math.round(B.phase2At * 100)}% 后伤害更高、技能更快。爆发技能留到这时候">${ART.icon('phase')}</span>`);
       return abs.join('');
@@ -11767,7 +11821,7 @@ var SCN = (function () {
       const bad = list.filter(x => !x.ready).length;
       box.className = 'show';
       box.innerHTML = `<h4>就位确认</h4><div class="rdy">${list.map(x => { const hh = g.hero(x.uid); return `<div class="rd${x.ready ? ' ok' : ' no'}"><div class="mh">${ART.heroHead(hh.cls, hh.look)}</div><b>${x.ready ? '✓' : '✗'}</b><span>${x.ready ? (x.warn || '') : x.why}</span></div>`; }).join('')}</div>
-        ${g.inRaid() ? `<div class="dfpick">${D.diffRule.names.map((nm2, n) => `<span class="hbtn mini${g.diffN() === n ? '' : ' sec'}${g.diffOpen(g.dungeonDef(), n) ? '' : ' dis'}" data-df="${n}" data-tip="${n === 0 ? '这个首领按普通难度打' : g.diffOpen(g.dungeonDef(), n) ? nm2 + '难度:怪按当前版本上限算,血和伤害更高,首领多' + n + ' 个技能,掉更好的' : n === 1 ? '英雄难度:要先用普通难度打通这个团本,并且有人到了版本上限' : g.cap() < D.diffRule.mythicFromCap ? '史诗难度要到 ' + D.versions[D.diffRule.mythicFromCap].short + '才开放' : '史诗难度:要先用英雄难度打通这个团本'}">${nm2}${g.diffOpen(g.dungeonDef(), n) ? '' : ' 🔒'}</span>`).join('')}</div>` : ''}
+        ${g.inRaid() ? `<div class="dfpick">${D.diffNames.map((nm2, n) => `<span class="hbtn mini${g.diffN() === n ? '' : ' sec'}${g.diffOpen(g.dungeonDef(), n) ? '' : ' dis'}" data-df="${n}" data-tip="${n === 0 ? '这个首领按普通难度打' : g.diffOpen(g.dungeonDef(), n) ? nm2 + '难度:怪按当前版本上限算,血和伤害更高,首领多' + n + ' 个技能,掉更好的' : ({ none: '这个团本没有' + nm2 + '难度', ver: nm2 + '难度要到 ' + (D.versions[D.difficulty.modes[n].from] || {}).short + '才开放', kill: nm2 + '难度:要先用普通难度打通这个团本', cap: nm2 + '难度:要有人到了版本上限', hkill: nm2 + '难度:要先用英雄难度打通这个团本' })[g.diffWhy(g.dungeonDef(), n)]}">${nm2}${g.diffOpen(g.dungeonDef(), n) ? '' : ' 🔒'}</span>`).join('')}</div>` : ''}
         <div class="btn" id="rdGo">${bad ? '不等了,读秒开怪' : '读秒开怪'}</div>`;
       $('#rdGo').onclick = go;
       box.querySelectorAll('[data-df]').forEach(e => { e.onclick = () => { if (e.classList.contains('dis') || +e.dataset.df === g.diffN()) return; g.setDiff(+e.dataset.df); snd('click'); box.className = ''; noWalk = true; beginRoom(); }; }); // 换难度:这一关按新难度重新摆
@@ -11817,7 +11871,7 @@ var SCN = (function () {
     sim.enemies.forEach(e => { const t = mk('enemy' + (e.def.boss ? ' boss' : '') + (e.def.rare ? ' rare' : ''), e.def.fig[0], e.def.fig[1], ART.enemy(e.def.art, e.def.pal), e.def.name); t.dataset.enemy = e.uid; tok[e.uid] = t; if (e.def.boss && sim.enemies.filter(x => x.def.boss).length > 1) t.classList.add('pairb'); });
     sim.heroes.forEach(h => { const t = mk('hero', HERO_W, HERO_H, ART.hero(H(h.id).cls, H(h.id).look), h.name, h.def.color); t.dataset.hero = h.id; tok[h.id] = t; });
     for (const id in uf) uf[id].classList.remove('dead');
-    if (room.boss) { $('#bossName').textContent = sim.enemies.filter(e => e.def.boss).map(e => e.def.name).join(' 和 '); $('#bossTag').textContent = g.inRaid() && g.diffN() ? D.diffRule.names[g.diffN()] : ''; }
+    if (room.boss) { $('#bossName').textContent = sim.enemies.filter(e => e.def.boss).map(e => e.def.name).join(' 和 '); $('#bossTag').textContent = g.inRaid() && g.diffN() ? D.diffNames[g.diffN()] : ''; }
     refreshMeta(); g.partyHeroes().forEach(paintBig);
     sim.heroes.forEach(h => { // 每个人身上带的那瓶药,画在头像框右下角
       const pe = uf[h.id] && uf[h.id].querySelector('.pot'); if (!pe) return;

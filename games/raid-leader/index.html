@@ -2009,6 +2009,9 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .fmBoxes.nT { width: 940px; grid-template-columns: 1fr 1fr; gap: 5px; }
 .nT .fmBox { display: flex; align-items: center; gap: 6px; padding: 3px 6px; cursor: pointer; } .nT .fmHead { flex-direction: column; width: 124px; height: auto; gap: 2px; flex: none; } .nT .fmHead .rolec { gap: 2px; } .nT .fmHead .rolec i { padding: 0 3px; font-size: 10.5px; } .nT .fmSlots { flex: 1; }
 .nT .fmSlots { grid-template-columns: repeat(5, 1fr); } .nT .fmSlot { height: 40px; flex-direction: row; justify-content: flex-start; gap: 4px; padding: 0 3px; } .nT .fmSlot .mh { width: 28px; height: 28px; border-radius: 4px; } .nT .fmSlot b { font-size: 11px; }
+/* 技能预告:去掉轨道的遮罩(遮罩会把伸出轨道边的图标切掉——到点那头的图标正好一半在轨道外,放大闪时更多);右端渐隐改由脚本逐个图标设透明度 */
+#dbm .dbtrack { -webkit-mask-image: none; mask-image: none; overflow: visible; }
+#dbm .dbi.hot, #dbm .dbi.dbpop { z-index: 3; }
 
 </style>
 </head>
@@ -2076,7 +2079,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1818";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-1819";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -12681,6 +12684,7 @@ var SCN = (function () {
       // 首领读条时后面的技能整体推迟:不跳,慢慢退到新位置;往前走照常
       e._s = t > e._s ? e._s + Math.max(0.04, (t - e._s) * 0.12) : t; if (e._s > t) e._s = t;
       e.style.left = (e._s / DBM_W * 100) + '%';
+      e.style.opacity = Math.max(0, Math.min(1, (DBM_W - e._s) / (DBM_W * 0.22))).toFixed(2); // 右端渐隐:逐个图标算透明度(以前用整条的遮罩,会把到点那头的图标切掉一半)
       e.classList.toggle('hot', e._s < 3);
     };
     // 读条时技能循环不走:正在读的剩多久要加上,排在前面、还没放的技能要读多久也提前加上(不然一开读,后面的图标全得往回退)

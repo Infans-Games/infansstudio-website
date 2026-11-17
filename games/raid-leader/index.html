@@ -288,6 +288,25 @@ svg.iti { display: block; }
 /* 弹窗 */
 #overlay { position: absolute; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; background: rgba(8, 4, 2, .72); }
 #overlay.show { display: flex; }
+/* 开场小演出(ui.js 的 showIntro):压暗得浅一点,能看见身后的公会;三个人在下方的地面上走到一起,头顶冒话 */
+#overlay.intro { background: radial-gradient(ellipse 520px 300px at 50% 78%, rgba(60, 36, 16, .55), rgba(8, 4, 2, .9) 100%), rgba(8, 4, 2, .55); cursor: pointer; transition: opacity .35s; }
+#overlay.intro.iout { opacity: 0; }
+.intro-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 210px; background: radial-gradient(ellipse 460px 60px at 50% 66%, rgba(255, 200, 120, .3), transparent 70%); }
+.ihero { position: absolute; top: 420px; width: 120px; height: 156px; margin-left: -60px; }
+.ihero .fig { width: 100%; height: 100%; position: relative; z-index: 1; }
+.ihero.flip .fig { transform: scaleX(-1); }
+.ihero .ishadow { position: absolute; left: 20px; right: 20px; bottom: -6px; height: 16px; border-radius: 50%; background: rgba(0, 0, 0, .45); }
+.ihero.walk .fig { animation: introBob .28s ease-in-out infinite alternate; }
+.ihero.talk .fig { animation: introTalk .5s ease-in-out 2 alternate; }
+@keyframes introBob { from { translate: 0 0; } to { translate: 0 -7px; } }
+@keyframes introTalk { from { translate: 0 0; } to { translate: 0 -4px; } }
+.isay { position: absolute; top: 300px; width: 300px; margin-left: -150px; padding: 10px 14px 12px; border-radius: 12px; background: #fff7e6; border: 3px solid #3a2413; box-shadow: 0 6px 18px rgba(0, 0, 0, .6); font: 600 16px/1.5 var(--ui); color: #2a1a0c; text-align: left; opacity: 0; transform: translateY(8px) scale(.96); transition: opacity .18s, transform .18s; pointer-events: none; }
+.isay.on { opacity: 1; transform: none; }
+.isay b { display: block; font: 700 13px var(--ui); margin-bottom: 2px; text-shadow: 0 1px 0 rgba(0, 0, 0, .25); }
+.isay::after { content: ''; position: absolute; left: 50%; bottom: -14px; margin-left: -10px; border: 10px solid transparent; border-top: 12px solid #3a2413; border-bottom: 0; }
+.iskip { position: absolute; right: 22px; top: 18px; padding: 6px 14px; border-radius: 16px; border: 1px solid #c9a35a; background: rgba(20, 12, 6, .7); font: 700 14px var(--ui); color: #ffd98a; cursor: pointer; }
+.iskip:hover { background: rgba(60, 36, 16, .85); }
+.ihint { position: absolute; left: 0; right: 0; bottom: 20px; text-align: center; font: 13px var(--ui); color: rgba(255, 230, 180, .55); pointer-events: none; }
 .card { width: 800px; padding: 24px 34px 26px; text-align: center; border-radius: 10px; border: 3px solid var(--gold);
   background: radial-gradient(ellipse at 50% 0, #4a3120, #1d120b 75%); box-shadow: inset 0 0 0 1px #000, inset 0 0 0 4px #5d4320, 0 18px 50px #000; animation: pop .35s ease-out; }
 @keyframes pop { from { transform: scale(.88); opacity: 0; } }
@@ -875,6 +894,36 @@ kbd { display: inline-block; min-width: 22px; padding: 0 6px; text-align: center
 .tt-fl { color: #ffd45a; font-style: normal; margin-top: 4px; }
 .tt-want { margin-top: 7px; padding-top: 6px; border-top: 1px solid #4a4a60; }
 .tt-w .coin { width: 12px; height: 12px; vertical-align: -2px; }
+/* 通用说明卡(ui.js 的 tipCard):标题条 / 分行要点(色块或标签开头)/ 一行关键数字 / 压淡的脚注。装备卡仍用上面的 .tt-* */
+#tip:has(> .tc) { padding: 0; max-width: 340px; min-width: 220px; overflow: hidden; }
+#tip:has(> .tc-wide) { max-width: 400px; width: 400px; }
+.tc-h { display: flex; align-items: baseline; gap: 10px; padding: 7px 12px 6px; background: linear-gradient(90deg, rgba(255, 214, 120, .16), rgba(255, 214, 120, 0) 80%); border-bottom: 1px solid #34344a; }
+.tc-h b { font: 700 15px var(--ui); color: #ffd98a; white-space: nowrap; }
+.tc-h small { margin-left: auto; font-size: 11.5px; color: #a0a0b8; white-space: nowrap; }
+.tc-b { padding: 5px 0 7px; }
+.tc-d { padding: 1px 12px 3px; font-size: 12.5px; color: #d8d0c0; }
+.tc-r { display: flex; align-items: flex-start; gap: 7px; padding: 2px 12px; font-size: 12.5px; line-height: 1.5; color: #ece6d8; }
+.tc-r > span { min-width: 0; }
+.tc-r .chip { flex: none; margin-top: 1px; width: 52px; padding: 0 2px; text-align: center; overflow: hidden; }
+.tc-m { flex: none; min-width: 18px; height: 18px; margin-top: 1px; padding: 0 4px; border-radius: 4px; font: normal 700 11px/18px var(--ui); text-align: center; color: #1a1006; background: var(--mc); box-sizing: border-box; }
+.tc-dot { flex: none; width: 6px; height: 6px; margin: 7px 3px 0; border-radius: 1px; background: var(--mc); transform: rotate(45deg); }
+.tc-n { color: #ffe14d; font-weight: 700; }
+.tc-mut { color: #8a8a9a; }
+.tc-sec { padding: 5px 12px 2px; font-size: 11px; color: #8a8aa2; letter-spacing: 2px; }
+.tc-b > .tc-sec:first-child { padding-top: 1px; }
+.tc-gear { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; padding: 1px 12px 0; }
+.tc-gear div { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: 12px; line-height: 18px; white-space: nowrap; }
+.tc-gear i { flex: none; width: 18px; height: 18px; box-sizing: border-box; border-radius: 4px; border: 1px solid var(--qc, #3a3a50); background: rgba(0, 0, 0, .45); font: normal 11px/16px var(--ui); text-align: center; color: #c8c8d8; }
+.tc-gear span { overflow: hidden; text-overflow: ellipsis; }
+.tc-gear .emp { opacity: .4; }
+.tc-kv { display: flex; flex-wrap: wrap; gap: 3px 14px; padding: 6px 12px; border-top: 1px solid #34344a; background: rgba(255, 255, 255, .035); }
+.tc-kv span { display: inline-flex; align-items: baseline; gap: 5px; white-space: nowrap; }
+.tc-kv small { font-size: 11px; color: #8a8aa2; }
+.tc-kv b { font-size: 13.5px; color: #fff; }
+.tc-f { padding: 5px 12px 7px; font-size: 11.5px; line-height: 1.45; color: #8a8a9c; border-top: 1px solid #26263a; }
+.tc-kv + .tc-f { border-top: 0; padding-top: 0; }
+.tc.tc-one { padding: 5px 11px; font-size: 12.5px; line-height: 1.45; color: #ece6d8; }
+#tip:has(> .tc-one) { min-width: 0; }
 /* ===== 小怪关:一条从左往右的路 ===== */
 #road, #roadwall { position: absolute; left: 0; right: 0; display: none; pointer-events: none; }
 #stage.road #road, #stage.road #roadwall { display: block; }
@@ -1167,6 +1216,11 @@ kbd { display: inline-block; min-width: 22px; padding: 0 6px; text-align: center
 .crest svg { width: 62%; height: 62%; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, .6)); }
 .whome b svg { width: 22px; height: 22px; }
 .whome b.alli { background: linear-gradient(#4a7ad9, #24408a); }
+/* 团章按阵营:有阵营时底子由 ART.crest 画(联盟骑士盾 / 部落尖刺战旗),外框的底色和描边都去掉 */
+.crx { background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+.crx > svg.crsvg { width: 100% !important; height: 100% !important; overflow: visible; filter: drop-shadow(0 3px 2px rgba(0, 0, 0, .65)); }
+.gid.alert .crest.crx > svg.crsvg { filter: drop-shadow(0 0 5px #ffe14d) drop-shadow(0 0 9px #ffd45a); }
+.cr.crx { opacity: .55; } .cr.crx:hover, .cr.crx.on { opacity: 1; } .cr.crx.on > svg.crsvg { filter: drop-shadow(0 0 4px #ffe6a8) drop-shadow(0 0 10px #ffd45a); }
 .tsave { width: 860px; }
 .svrow { display: flex; gap: 16px; justify-content: center; margin: 18px 0 14px; }
 .svc { position: relative; width: 250px; height: 270px; padding: 14px 12px; border-radius: 10px; border: 3px solid #7a5622; background: linear-gradient(#3a2819, #1d120b); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: transform .12s, box-shadow .12s; }
@@ -1178,6 +1232,11 @@ kbd { display: inline-block; min-width: 22px; padding: 0 6px; text-align: center
 .svc .hbtn { margin-top: auto; min-width: 120px; text-align: center; }
 .svcrest { width: 62px; height: 68px; display: flex; align-items: center; justify-content: center; border-radius: 8px 8px 30px 30px; background: linear-gradient(color-mix(in srgb, var(--fc) 80%, #fff), color-mix(in srgb, var(--fc) 70%, #000)); box-shadow: inset 0 0 0 2px #000, inset 0 0 0 4px rgba(255, 230, 168, .5); }
 .svcrest svg { width: 38px; height: 38px; }
+/* 存档卡:人数 / 平均等级 / 平均物品等级 / 通关副本 四格 */
+.svst { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 100%; margin-top: 4px; }
+.svst span { display: flex; flex-direction: column; align-items: center; padding: 3px 0 2px; border-radius: 6px; background: rgba(0, 0, 0, .3); border: 1px solid #5d4320; }
+.svst b { font: 700 17px/20px var(--ui); color: #ffe6a8; }
+.svst em { font: normal 10px/13px var(--ui); color: var(--muted); white-space: nowrap; transform: scale(.92); }
 .svdel { font: 400 12px var(--ui); color: var(--muted); text-decoration: underline; cursor: pointer; margin-top: 2px; }
 .svdel:hover, .svdel.sure { color: #ff8a7a; }
 .svc.empty { justify-content: center; border-style: dashed; opacity: .8; }
@@ -1299,6 +1358,13 @@ kbd { display: inline-block; min-width: 22px; padding: 0 6px; text-align: center
 #stage.raid10 #hudLoot .seg, #stage.raid25 #hudLoot .seg { width: 190px; } #stage.raid25 #hudLoot small { display: block; }
 #sysRow { display: flex; gap: 5px; }
 #hudLoot #sysRow .sk { width: 64px; height: 36px; margin: 0; border-width: 1px; }
+/* 合剂:系统区按钮一排的最右边,只留一个圆章(没用合剂是灰的),名字和效果看悬停 */
+#hudLoot #sysRow .sk { width: 52px; }
+#sysRow > #hudSup { position: static; align-items: center; }
+#sysRow > #hudSup .supc { padding: 0; border: 0; background: none; font-size: 0; gap: 0; }
+#sysRow > #hudSup .supc b { width: 32px; height: 32px; font-size: 14px; border: 2px solid #1c110a; box-shadow: 0 0 0 1px #8a6a3a; }
+#sysRow > #hudSup .supc.on b { box-shadow: 0 0 0 1px #ffd45a, 0 0 8px #ffb347; }
+#sysRow > #hudSup .supc.none { opacity: .5; } #sysRow > #hudSup .supc.none b { background: radial-gradient(#6a5a48, #2a2018); color: #a89878; }
 #hudLoot #sysRow .sk .n { display: none; } #hudLoot #sysRow .sk .g { font-size: 15px; padding: 0; } #hudLoot #sysRow .sk .k { font-size: 9px; left: 3px; top: 1px; color: #c9b98a; }
 /* 五人:框架略收紧,给左下角腾地方 */
 .uf { margin-top: 3px; }
@@ -1356,6 +1422,16 @@ kbd { display: inline-block; min-width: 22px; padding: 0 6px; text-align: center
 .mgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 30px; margin-bottom: 10px; }
 .mrow { padding: 7px 4px; font-size: 15px; gap: 10px; } .mrow > span:first-child { flex: 1; min-width: 0; }
 .mrow .hbtn { min-width: 0; padding: 5px 12px; font-size: 13px; white-space: nowrap; } .mrow .vseg .hbtn { padding: 5px 10px; }
+/* 设置分页:上面一排页签,下面一页几行;卡片固定大小,切页不跳 */
+.mcard { width: 720px; }
+.mtabs { display: flex; justify-content: center; gap: 6px; margin: 6px 0 10px; border-bottom: 2px solid #5d4320; }
+.mtab { padding: 6px 18px 5px; border: 2px solid #5d4320; border-bottom: 0; border-radius: 8px 8px 0 0; background: #1d120b; font: 700 16px var(--disp); letter-spacing: 2px; color: var(--muted); cursor: pointer; margin-bottom: -2px; }
+.mtab:hover { color: #ffe6a8; } .mtab.on { color: #ffd98a; background: linear-gradient(#4a3219, #2a1b10); border-color: var(--gold); }
+.mpage { height: 330px; overflow-y: auto; padding: 0 14px; text-align: left; margin-bottom: 12px; }
+.mkeys { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px; padding-top: 8px; }
+.mkeys div { display: flex; align-items: center; gap: 10px; font: 14px var(--ui); color: var(--text); }
+.mkeys kbd { flex: none; width: 168px; white-space: nowrap; }
+.mnote { margin-top: 12px; font: 13px/1.6 var(--ui); color: var(--muted); }
 
 /* 副本任务:还没接的那几条淡一点 */
 .qrow.dq.offer { opacity: .8; border-style: dashed; } .qrow.dq .link { cursor: pointer; color: var(--muted); font-size: 12px; text-decoration: underline; }
@@ -1911,6 +1987,18 @@ kbd { display: inline-block; min-width: 22px; padding: 0 6px; text-align: center
 .brk .ic { width: 22px; height: 22px; }
 .uf .brkslot .brk { left: 33px; top: 31px; right: auto; width: 18px; height: 18px; }
 .uf .brkslot .brk .ic { width: 18px; height: 18px; }
+/* 头像框:左边一竖栏,上面头像、下面随身药水(没带药也留一个虚线空格),每个人的框长得一样;右边一栏名字、性格、血蓝、装备和士气 */
+.uf .ufl { flex: none; align-self: stretch; display: flex; flex-direction: column; align-items: center; justify-content: space-between; gap: 1px; }
+.uf .ufl .pot { position: static; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; } /* 药瓶放大、在头像正下方居中,底边和右栏最下面那行对齐 */
+.uf .ufl .pot .potsvg { width: 34px; height: 34px; filter: drop-shadow(0 1px 1px #000); }
+.uf .ufl .pot.none { display: flex; width: 28px; height: 28px; margin: 3px; border-radius: 6px; border: 1px dashed #5d4320; opacity: .45; }
+.uf .ft2 em, .uf:has(.pot.none) .ft2 em { margin-right: 0; }
+#stage.raid10:not(.raid25) .uf .ufl { gap: 1px; } #stage.raid10:not(.raid25) .uf .ufl .pot { width: 24px; height: 24px; } #stage.raid10:not(.raid25) .uf .ufl .pot .potsvg { width: 24px; height: 24px; } #stage.raid10:not(.raid25) .uf .ufl .pot.none { width: 20px; height: 20px; margin: 2px; }
+#stage.raid25 .uf .ufl { display: contents; }
+/* 连击点(盗贼 / 德鲁伊猫):五人框里放到左栏药水下面,不再让这个人的框比别人高一截;二十五人的小框里不显示 */
+#stage:not(.raid10) .uf .cpts { position: absolute; left: 3px; top: 3px; width: 50px; margin: 0; text-align: center; letter-spacing: 1px; z-index: 1; text-shadow: 0 0 2px #000, 0 0 2px #000; } /* 压在头像顶上一排 */
+#stage.raid25 .uf .cpts { display: none; }
+#stage.raid25 .uf .ufl .pot { position: absolute; right: 1px; top: 1px; width: 10px; height: 10px; border: 0; background: none; } #stage.raid25 .uf .ufl .pot.none { display: none; } #stage.raid25 .uf .ufl .pot .potsvg { width: 10px; height: 10px; }
 
 /* 苹果手机:长按不弹系统菜单、点按不闪灰块、双击不放大、整页不回弹 */
 html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
@@ -1963,6 +2051,18 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 /* 角色卡:装备格单独一行,士气和耐久一行 */
 .rcard .md.gd { display: flex; justify-content: center; }
 .rcard .chips:empty { display: none; }
+/* 公会名单的角色卡:五列等宽、卡片固定大小(性格标签最多排两行,不再把卡撑宽);职业 · 专精 · 职责竖着放在右上角 */
+.rgrid { grid-template-columns: repeat(5, minmax(0, 1fr)); grid-auto-rows: 186px; }
+.rcard { height: 186px; overflow: hidden; }
+.rcard .chips { flex-wrap: wrap; row-gap: 3px; max-height: 37px; overflow: hidden; padding: 0 4px; }
+.rcard .nm { margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 4px; }
+.rtr { position: absolute; right: 5px; top: 5px; display: flex; flex-direction: column; align-items: flex-end; gap: 1px; font: 11px/14px var(--ui); color: var(--muted); pointer-events: none; }
+.rtr b { font: 700 11px/14px var(--ui); }
+.rtr .rtag { font-size: 10px; line-height: 14px; padding: 0 4px; margin-top: 1px; }
+/* 任务页右栏最上面:橙装任务一栏 */
+.qsub.first { margin-top: 0; border-top: 0; padding-top: 0; }
+.qlgq .lgq-bar { display: flex; margin: 2px 0 2px; padding: 4px 10px; }
+.qlgq .lgq-bar i { flex: 1; width: auto; }
 /* 公会大厅右边的角色详情:一页放完不滚动。随身药水挪到「技能」标题行(不再把技能那排挤成两行),各段间距收紧 */
 .detail .dsec h4 .potpick { margin-left: auto; display: inline-flex; align-items: center; gap: 3px; height: 24px; padding: 0 8px 0 3px; border-radius: 12px; border: 1px solid #5d4320; background: #24170e; cursor: pointer; font: 700 12px var(--ui); color: var(--text); letter-spacing: 0; }
 .detail .dsec h4 .potpick .potsvg { width: 18px; height: 18px; }
@@ -2050,6 +2150,15 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 .tcard .tpbig .tfoot.jpick { margin: 5px 0 0; padding-top: 4px; }
 .tcard .tpbig .jopt { padding: 1px 8px 1px 4px; font-size: 12px; border-width: 1px; }
 .tcard .trees { margin-top: 6px; }
+/* 天赋页固定一个尺寸:换人、点天赋、底部说明栏出现 / 消失,整张卡都不变高、不跳。底部说明栏常驻留空(没指着天赋时写一句提示) */
+.tcard { height: 678px; box-sizing: border-box; display: flex; flex-direction: column; }
+.tcard .tmain { display: flex; flex-direction: column; } .tcard .tmain .trees { margin-top: auto; } /* 三棵树贴底:上面「团长喊的技能」那块高矮不一,树的位置也不跟着动 */
+.tcard > .thead { flex: none; }
+.tcard .thead > div:nth-child(2) { min-width: 0; } .tcard .thead h3 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tcard .tlay { flex: 1; min-height: 0; }
+.tcard .tbsk { overflow-y: auto; }
+.tcard .tinfo { flex: none; height: 34px; min-height: 0; margin-top: 6px; box-sizing: border-box; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.tcard .tinfo:empty { visibility: visible; } .tcard .tinfo:empty::before { content: '指到天赋上看说明 · 点一下加一点'; color: #6a5a3a; }
 /* 天赋页:左边一竖栏基础技能(按学会等级),右边团长喊的技能 + 三棵树 */
 .tcard .tlay { display: flex; gap: 12px; align-items: stretch; margin-top: 6px; }
 .tcard .tmain { flex: 1; min-width: 0; }
@@ -2145,7 +2254,7 @@ html, body { -webkit-touch-callout: none; -webkit-tap-highlight-color: transpare
 
   <div id="overlay"></div>
 </div>
-<script>window.RAID_BUILD = "20261117-1855";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
+<script>window.RAID_BUILD = "20261117-2005";window.RAID_TELEMETRY_URL = "https://rtc-telemetry.capoofun.workers.dev/v1/raid-leader/events";</script>
 <script>
 // 数值表:纯数据,不依赖任何运行环境。移植到 Godot 时可直接转成 JSON / Resource。
 var GAME_DATA = {
@@ -2262,15 +2371,16 @@ var GAME_DATA = {
   lootBonus: 0.5, // 装备栏多了,每波怪额外有这么大机会多掉一件
   // ---------- 公会等级与公会天赋 ----------
   // 公会声望:打怪、做任务、完成副本委托都给。公会等级和角色等级一个刻度:上限 = 当前版本开放的角色等级上限(45 / 60 / 70,g.cap())。
-  // 升一级要 guildLevelBase + guildLevelStep × 当前等级 点声望(四舍五入;1→2 级 22 点,44→45 级 86 点),每升一级得 guildPointsPerLevel 点公会天赋。
-  // 量级:一趟五人本给 66–98 点声望(约是角色经验的三分之一)。到 45 / 60 / 70 级累计要约 2370 / 3840 / 5000 点:主力练到版本满级时公会差不多到顶,
-  // 最后几级靠满级后刷团本(一趟 136–204 点)补上。教学本打通一次公会到 3 级。
+  // 升一级要 guildLevelBase + guildLevelStep × 等级 + guildLevelQuad × 等级² 点声望(四舍五入;1→2 级 50 点,44→45 级约 800 点,69→70 级约 1750 点),每升一级得 guildPointsPerLevel 点。
+  // 量级(用户 2026-11-17:"公会声望需要的太少了,需要大大提高。特别是后期的,让游戏时长长起来"):一趟五人本给 66–98 点声望。
+  // 到 45 / 60 / 70 级累计要约 1.5 万 / 3.1 万 / 4.6 万点(原来是 2370 / 3840 / 5000),越往后每级越贵。
+  // 教学本打通一次公会正好升 1 级、得 1 点(用户:"怎么打完第一个副本就 3 级了,应该就 1 级吧,然后有 1 个点")。
   // 到了版本上限声望照样攒着,版本上限提高时一口气补升。
   // guildOld:2026-11-17 以前的老刻度(升一级要 20 + 20 × 等级,上限 50),只用来给旧存档换算:按攒过的声望总数重新算等级,只升不降。
-  guildXp: { room: 4, boss: 30, quest: 8, dquest: 40 }, guildLevelBase: 20, guildLevelStep: 1.5, guildPointsPerLevel: 2, guildOld: { base: 20, step: 20 },
+  guildXp: { room: 4, boss: 30, quest: 8, dquest: 40 }, guildLevelBase: 46, guildLevelStep: 4, guildLevelQuad: 0.3, guildPointsPerLevel: 2, guildPointsStart: 2, guildOld: { base: 20, step: 20, ppl2: 2, ppl3: 1 }, // 每级 2 点,1 级时先有 guildPointsStart 点:70 级时 2 + 69 × 2 = 140 点,正好把公会升级全部点满(为此生财有道和扩建仓库各砍了 1 级,总数 142 → 140)(用户:"还是让玩家满级的时候能点满");ppl2 / ppl3:前两版刻度每级给的点数,换算旧存档用
   // 花名册:开局 rosterBase 人,公会每升一级多 rosterPerLevel 个位置(向下取整),最多 rosterMax 人(不再靠公会天赋「扩编」)
   // 量级:公会 3 级 4 人、5 级 5 人、15 级 11 人、45 级 29 人(够二十五人团带替补)、60 级 38 人、70 级 44 人
-  rosterBase: 3, rosterPerLevel: 0.6, rosterMax: 50,
+  rosterBase: 3, rosterPerLevel: 0.6, rosterRound: 0.5, rosterMax: 50, // rosterRound:四舍五入(公会 2 级就有第 4 个位置,第二个副本是四人本)
   // 拾取品质门槛(照魔兽):低于门槛的装备不用团长操心,大家自动按需求 / 贪婪 Roll(照样分护甲梯队);门槛及以上的才按玩家选的分配方式(团长分配 / Roll / DKP)。
   // quals:能选的门槛;def:新公会和旧存档的默认值(用户 2026-11-17 定:蓝 = 绿装自动 Roll,蓝装及以上按选的方式)
   // 教学本还没打通过时门槛不生效(所有装备都走选的方式),好让新手引导教"把装备拖给人"
@@ -3354,7 +3464,7 @@ var GAME_DATA = {
   gtree: {
     thrift: { b: 'guild', ic: '省', name: '精打细算', desc: '修理费用', per: -8, unit: '%', max: 3, req: 1 },
     unity: { b: 'guild', ic: '和', name: '同舟共济', desc: '分装备、眼红造成的士气损失', per: -10, unit: '%', max: 3, req: 2 },
-    income: { b: 'guild', ic: '财', name: '生财有道', desc: '副本和任务得到的金币', per: 8, unit: '%', max: 6, req: 5 },
+    income: { b: 'guild', ic: '财', name: '生财有道', desc: '副本和任务得到的金币', per: 8, unit: '%', max: 5, req: 5 },
     mentor: { b: 'guild', ic: '教', name: '言传身教', desc: '队员得到的经验', per: 8, unit: '%', max: 4, req: 8 },
     understudy: { b: 'guild', ic: '带', name: '老带新', desc: '没上场的人也能分到的副本经验', base: 0, per: 10, unit: '%', sign: '+', max: 3, req: 11 },
     squads: { b: 'guild', ic: '阵', name: '战术板', desc: '出战队伍的编队位(公会大厅「出战队伍」右上的 1 2 3…)', base: 3, per: 1, unit: ' 个', max: 7, req: 12 },
@@ -3379,7 +3489,7 @@ var GAME_DATA = {
     qxp: { b: 'quest', ic: '历', name: '历练', desc: '外派任务给的经验', per: 20, unit: '%', max: 3, req: 24 },
     dqgold: { b: 'quest', ic: '酬', name: '委托酬金', desc: '完成副本委托得到的金币', per: 20, unit: '%', max: 3, req: 32 },
 
-    bank: { b: 'ah', ic: '仓', name: '扩建仓库', desc: '公会仓库的格子数(给替补和小号攒装备)', base: 12, per: 6, unit: ' 格', max: 8, req: 1 },
+    bank: { b: 'ah', ic: '仓', name: '扩建仓库', desc: '公会仓库的格子数(给替补和小号攒装备)', base: 12, per: 6, unit: ' 格', max: 7, req: 1 },
     stalls: { b: 'ah', ic: '架', name: '货架', desc: '拍卖行每批上架的装备数', base: 5, per: 1, unit: ' 件', max: 3, req: 2 },
     supply: { b: 'ah', ic: '药', name: '后勤有方', desc: '合剂和药水的价格', per: -12, unit: '%', max: 3, req: 5 },
     haggle: { b: 'ah', ic: '价', name: '讨价还价', desc: '在拍卖行买装备的价格', per: -8, unit: '%', max: 3, req: 8 },
@@ -6564,7 +6674,7 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
     const E = D.economy;
     const g = { name: D.guildName, gold: E.startGold, kills: {}, roster: [], party: [], candidates: [],
       dungeon: null, room: 0, runs: 0, auto: false, loot: [], sim: null, lootMode: 'master', raidParty: [], stock: { flask: 0, potion: 0 }, flaskPick: 'flask', flaskOn: null, news: [],
-      faction: null, crest: 'fire', gxp: 0, glevel: 1, gver: 2, gtBonus: 0, rosterKeep: 0, lootQ: D.lootRule.def, gtalents: {}, dquests: [], teams: new Array(D.teamSlots).fill(null), teamIdx: 0, raidGroups: {}, badges: 0, hkills: {}, pity: {}, playSec: 0, weekAt: 0, weekN: 1, weekDue: false, raidLock: {}, heroic: false, event: null,
+      faction: null, crest: 'fire', gxp: 0, glevel: 1, gver: 4, gtBonus: 0, rosterKeep: 0, lootQ: D.lootRule.def, gtalents: {}, dquests: [], teams: new Array(D.teamSlots).fill(null), teamIdx: 0, raidGroups: {}, badges: 0, hkills: {}, pity: {}, playSec: 0, weekAt: 0, weekN: 1, weekDue: false, raidLock: {}, heroic: false, event: null,
       bank: [], perks: {}, quests: { board: [], active: [] }, ah: { list: [], next: 0, sells: [] }, alumni: [], blacklist: [], dqOffers: [], scrolls: {}, legend: { frag: false, pick: null, prog: {}, forged: [] } };
     let seq = 0, lootSeq = 0;
     const pick = a => a[Math.floor(rng() * a.length)];
@@ -6745,7 +6855,7 @@ if (typeof module !== 'undefined') module.exports = GAME_DATA;
     g.partyHeroes = () => (g.inRaid() ? g.raidParty : g.party).map(hero).filter(Boolean);
     g.rep = () => Object.keys(g.kills).reduce((x, k) => x + g.kills[k], 0);
     g.cleared = () => D.dungeons.filter(d => !d.raid && (g.kills[d.id] || 0) > 0).length;
-    g.rosterCap = () => Math.min(D.rosterMax, Math.max(g.rosterKeep || 0, D.rosterBase + Math.floor((g.glevel - 1) * D.rosterPerLevel))); // 花名册上限按公会等级;rosterKeep:旧存档换算时原来的上限,只升不降
+    g.rosterCap = () => Math.min(D.rosterMax, Math.max(g.rosterKeep || 0, D.rosterBase + Math.floor((g.glevel - 1) * D.rosterPerLevel + (D.rosterRound || 0)))); // 花名册上限按公会等级;rosterKeep:旧存档换算时原来的上限,只升不降
     g.dungeonDef = () => D.dungeons.find(d => d.id === g.dungeon);
     g.roomDef = () => g.dungeonDef().rooms[g.room];
     g.unlocked = d => { if (g.verLocked(d)) return false; if (d.after) return (g.kills[d.after] || 0) > 0; const i = D.dungeons.indexOf(d); return i === 0 || (g.kills[D.dungeons[i - 1].id] || 0) > 0; };
@@ -6964,7 +7074,7 @@ const K = D.statK;
     g.hire = function (i) {
       const c = g.candidates[i];
       if (!c) return { ok: false };
-      if (g.roster.length >= g.rosterCap()) return { ok: false, reason: '花名册满了。公会每升一级多一个位置' };
+      if (g.roster.length >= g.rosterCap()) return { ok: false, reason: '公会名单满了。公会每升一级多一个位置' };
       if (g.gold < g.hireCost(c)) return { ok: false, reason: '金币不够' };
       g.gold -= g.hireCost(c); g.roster.push(c);
       if (c.alum) { g.alumni = g.alumni.filter(x => x !== c); c.mood = c.leftWhy === 'fired' ? 45 : 60; c.grumble = 0; delete c.alum; delete c.leftWhy; } // 回来的人:心情归位,被开除过的还有点别扭
@@ -7039,9 +7149,9 @@ const K = D.statK;
     // 公会等级和角色等级一个刻度:上限就是当前版本开放的角色等级上限(g.cap())
     g.guildCap = () => g.cap();
     g.guildMaxed = () => g.glevel >= g.guildCap();
-    g.gxpNeed = () => Math.round(D.guildLevelBase + D.guildLevelStep * g.glevel);
+    g.gxpNeed = () => Math.round(D.guildLevelBase + D.guildLevelStep * g.glevel + (D.guildLevelQuad || 0) * g.glevel * g.glevel);
     g.gtSpent = () => Object.keys(g.gtalents).reduce((x, k) => x + g.gtalents[k], 0);
-    g.gtPoints = () => (g.glevel - 1) * D.guildPointsPerLevel + (g.gtBonus || 0) - g.gtSpent(); // gtBonus:旧存档换算时补的点(保证已经点的天赋一个不掉)
+    g.gtPoints = () => (D.guildPointsStart || 0) + (g.glevel - 1) * D.guildPointsPerLevel + (g.gtBonus || 0) - g.gtSpent(); // gtBonus:旧存档换算时补的点(保证已经点的天赋一个不掉)
     g.guildSync = function () { // 声望够就升级;到了版本上限声望照样攒着,上限提高时补升
       let ups = 0;
       while (g.glevel < g.guildCap() && g.gxp >= g.gxpNeed()) { g.gxp -= g.gxpNeed(); g.glevel++; ups++; }
@@ -7049,13 +7159,21 @@ const K = D.statK;
     };
     g.addGuildXp = function (n) { g.gxp += n; return g.guildSync(); };
     if (!g.gver) { // 旧存档(老刻度:升一级要 20 + 20 × 等级,上限 50):按攒过的声望总数在新刻度上重算等级,只升不降;花名册上限和天赋点也只多不少
-      const O = D.guildOld, oldLv = g.glevel || 1, oldPts = (oldLv - 1) * D.guildPointsPerLevel;
+      const O = D.guildOld, oldLv = g.glevel || 1, oldPts = (oldLv - 1) * O.ppl2;
       let T = g.gxp || 0; for (let l = 1; l < oldLv; l++) T += O.base + O.step * l;
       g.rosterKeep = Math.min(D.rosterMax, D.rosterBase + oldLv - 1);
       g.glevel = 1; g.gxp = T; g.guildSync();
       if (g.glevel < oldLv) { g.glevel = oldLv; g.gxp = 0; }
-      g.gtBonus = Math.max(0, Math.max(oldPts, g.gtSpent()) - (g.glevel - 1) * D.guildPointsPerLevel);
+      g.gtBonus = Math.max(0, Math.max(oldPts, g.gtSpent()) - (g.glevel - 1) * O.ppl2);
       g.gver = 2;
+    }
+    if (g.gver === 2) { // 第二版刻度(每级 2 点、升级便宜)的存档:等级不动,已经有的点(花了的和没花的)一点不少
+      g.gver = 3; g.gtBonus = (g.gtBonus || 0) + (g.glevel - 1) * (D.guildOld.ppl2 - D.guildOld.ppl3); // 先换成第三版(每级 1 点)的记法,下面统一换到现在的
+    }
+    Object.keys(g.gtalents || {}).forEach(k => { const t = D.gtree[k]; if (!t) delete g.gtalents[k]; else if (g.gtalents[k] > t.max) g.gtalents[k] = t.max; }); // 升级项的级数上限调低过:超出的退回成点数
+    if (g.gver === 3) { // 第三版(每级 1 点):换到现在的(1 级 guildPointsStart 点、每级 guildPointsPerLevel 点),原来多出来的照留,一点不少
+      const had = (g.glevel - 1) * D.guildOld.ppl3 + (g.gtBonus || 0);
+      g.gtBonus = Math.max(0, had - (D.guildPointsStart || 0) - (g.glevel - 1) * D.guildPointsPerLevel); g.gver = 4;
     }
     g.gtCost = id => { const t = D.gtree[id], C = D.gtCost; return C.base + C.perReq * t.req + C.perRank * (g.gtalents[id] || 0); };
     g.spendGt = function (id) {
@@ -7110,7 +7228,14 @@ const K = D.statK;
       return { id: 'dq' + (++seq), dungeon: d.id, kind, need: T[0], prog: 0, gold: Math.round(T[1] * (d.goldMult || 1)), item: T[2], badges: kind === 'heroic' ? Q.heroicBadges : 0 };
     }
     // 副本任务要自己接:任务页上挂着几条可接的,接了才算进度;同时能接几条看「委托人脉」
-    g.dquestTick = function () { while (g.dqOffers.length < D.dquest.offers) g.dqOffers.push(genDQuest()); };
+    // 看板上"可接的 + 手上的"一共 offers 条:接了不马上补新的,做完或放弃一条才补(用户:"任务应该是完成了才刷新,而不是接取后就马上刷新")
+    g.dquestTick = function () {
+      while (g.dqOffers.length + g.dquests.length < D.dquest.offers) {
+        let q = genDQuest(); const same = x => x.dungeon === q.dungeon && x.kind === q.kind;
+        for (let k = 0; k < 6 && g.dquests.concat(g.dqOffers).some(same); k++) q = genDQuest(); // 尽量别和已有的一模一样
+        g.dqOffers.push(q);
+      }
+    };
     g.acceptDQuest = function (id) {
       const i = g.dqOffers.findIndex(q => q.id === id);
       if (i < 0) return { ok: false };
@@ -8581,6 +8706,7 @@ var ART = (function () {
   const mounted = (cls, look, m) => `<svg class="figsvg" viewBox="0 0 100 130" xmlns="http://www.w3.org/2000/svg">${(MOUNT[m[0]] || MOUNT.horse)(m[1], m[2])}<svg x="24" y="8" width="56" height="73" viewBox="0 0 100 130" overflow="visible">${joints(dress(cls, look))}</svg></svg>`;
   // 技能图标:白色线条的小图形,底色按类别(输出红、治疗绿、防御蓝、辅助金、法力蓝)
   const S = 'fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"', F = 'fill="#fff"';
+  let crestSeq = 0; // 团章渐变的 id 要各不相同
   const GLYPH = {
     dmg: ['#c9453a', `<path d="M4 20 L7 17 M5.5 13.5 L10.5 18.5 M8 16 L20 4 L19 9 L10.5 17.5" ${S}/>`],
     strike: ['#d9a12a', `<path d="M13 2 L5 13 H11 L9 22 L19 10 H13Z" ${F}/>`],
@@ -8635,6 +8761,23 @@ var ART = (function () {
   return {
     hasIcon: key => !!(GLYPH[key] || ICON_OF[key]),
     glyph: key => '<svg viewBox="0 0 24 24">' + (GLYPH[key] || GLYPH.fire)[1] + '</svg>',
+    // 公会团章:底子按阵营分——联盟是蓝底银金边的骑士盾,部落是暗红底铁边、带尖刺和铆钉的战旗;图案是玩家挑的那个。还没选阵营就只画图案(老样式)
+    crest: (fac, key) => {
+      const gl = (GLYPH[key] || GLYPH.fire)[1], id = 'crg' + (++crestSeq);
+      if (fac === 'alliance') return `<svg class="crsvg" viewBox="0 0 60 66"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a9af0"/><stop offset=".55" stop-color="#2f58b8"/><stop offset="1" stop-color="#1a2f72"/></linearGradient></defs>
+        <path d="M5 7 Q30 0 55 7 V31 C55 47 44 57 30 64 C16 57 5 47 5 31 Z" fill="url(#${id})" stroke="#0a0a14" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M5 7 Q30 0 55 7 V31 C55 47 44 57 30 64 C16 57 5 47 5 31 Z" fill="none" stroke="#f0e2b0" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M10.5 11 Q30 5.5 49.5 11 V31 C49.5 44 40.5 52.5 30 58 C19.5 52.5 10.5 44 10.5 31 Z" fill="none" stroke="#a9c8ff" stroke-opacity=".55" stroke-width="1.2"/>
+        <path d="M8 9 Q30 3 52 9 L52 15 Q30 9.5 8 15Z" fill="#fff" opacity=".14"/>
+        <g transform="translate(14 15) scale(1.34)">${gl}</g></svg>`;
+      if (fac === 'horde') return `<svg class="crsvg" viewBox="0 0 60 66"><defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9553f"/><stop offset=".6" stop-color="#8a2014"/><stop offset="1" stop-color="#4a0e08"/></linearGradient></defs>
+        <path d="M6 9 L12 2 L18 8 L24 1 L30 7 L36 1 L42 8 L48 2 L54 9 V49 L45 61 L37 54 L30 65 L23 54 L15 61 L6 49 Z" fill="url(#${id})" stroke="#140804" stroke-width="5" stroke-linejoin="round"/>
+        <path d="M6 9 L12 2 L18 8 L24 1 L30 7 L36 1 L42 8 L48 2 L54 9 V49 L45 61 L37 54 L30 65 L23 54 L15 61 L6 49 Z" fill="none" stroke="#a8743a" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M6 13 H54" stroke="#3a1a0c" stroke-width="3"/><path d="M6 13 H54" stroke="#a8743a" stroke-width="1"/>
+        ${[[11, 19], [49, 19], [11, 45], [49, 45]].map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.3" fill="#d9a55a" stroke="#140804" stroke-width="1.2"/>`).join('')}
+        <g transform="translate(14 17) scale(1.34)">${gl}</g></svg>`;
+      return '<svg viewBox="0 0 24 24">' + gl + '</svg>';
+    },
     icon: key => { const k = GLYPH[key] ? key : ICON_OF[key] || 'none', g = GLYPH[k]; return `<span class="ic" style="--c:${g[0]}"><svg viewBox="0 0 24 24">${g[1]}</svg></span>`; },
     hero: (cls, look, mount) => (mount ? mounted(cls, look, mount) : wrap('0 0 100 130', dress(cls, look))),
     heroHead: (cls, look) => wrap('22 0 56 56', dress(cls, look)),
@@ -10269,7 +10412,7 @@ var SCN = (function () {
     if (host) { Array.from(host.children).forEach(c => { if (!cur || c !== cur.a) c.remove(); }); Array.from(hostNear.children).forEach(c => { if (!cur || c !== cur.n) c.remove(); }); }
   }
 
-  // 进一个房间。o:{ dungeon, pal, boss, grand, ring, travel, tok, heroes, enemies, oldPos, speed, auto }
+  // 进一个房间。o:{ dungeon, pal, boss, grand, ring, travel, tok, heroes, enemies, ground(地上的陷阱元素), oldPos, speed, auto }
   //   travel 为真就从上一个房间滚过来,返回这段过渡要多少毫秒(界面层等这么久再开打);否则直接摆好,返回 0。
   function enter(o) {
     init(); stop();
@@ -10293,6 +10436,8 @@ var SCN = (function () {
     if (cur) cur.layers.forEach(l => play(l[0], [{ translate: D[l[1]] + 'px 0' }, { translate: '0 0' }]));
     // 怪跟着地面进来;队员从上一关站的地方走到这一关的起始站位(场景在动,人只挪一点)
     (o.enemies || []).forEach(e => { const t = o.tok[e.uid]; if (t) play(t, [{ translate: dist + 'px 0' }, { translate: '0 0' }]); });
+    // 地上的陷阱(火圈之类)长在地面上:跟怪一样随地面滚进来,不然地面在走、圈停着,看着像飘
+    (o.ground || []).forEach(t => play(t, [{ translate: dist + 'px 0' }, { translate: '0 0' }]));
     (o.heroes || []).forEach(h => {
       const t = o.tok[h.id], p = o.oldPos && o.oldPos[h.id]; if (!t) return;
       play(t, [{ translate: (p ? p.x - h.pos.x : -T.heroFrom) + 'px ' + (p ? p.y - h.pos.y : 0) + 'px' }, { translate: '0 0' }]);
@@ -10454,15 +10599,22 @@ var SCN = (function () {
   // 引导里队员说的每一句话都在这儿,一句一个名字;步骤表里只写名字。要改哪句话,只改这张表(小秘书的台词页也是读写这张表)。
   // {tank} {heal} {dps} 会换成队员的名字,{name} {skill} {key} {lv} 是当时的陷阱名 / 技能名 / 按键 / 等级。行尾的注释:谁说 · 什么时候。
   const L = {
+    // —— 开场小演出(新建公会后、第一次进副本前;ui.js 的 showIntro 按顺序演)——
+    intro_t1: '我先到的!所以坦克是我,规矩也我定。', // 坦克 · 第一个走进来
+    intro_d1: '我就路过,看这儿站着人就过来了……有啥好事吗?', // 输出 · 第二个
+    intro_h1: '那、那个……这儿是招人吗?我会加血,就是有点怕疼。', // 治疗 · 最后一个,慢吞吞
+    intro_t2: '齐了!一个扛、一个打、一个奶,这就叫一个团。', // 坦克
+    intro_d2: '那谁带队?……哦,是你啊。团长好!', // 输出 · 转头看镜头
+    intro_h2: '团长……第一次,咱们挑个简单点的副本,好不好?', // 治疗
     go: '人齐了团长,咱们这儿去打本吧。', // 坦克 · 开头,指「去打副本」
     go2: '熔渣裂口嘛,新人都从这儿起步的。点出发,走着!', // 输出 · 副本页,指「出发」
     watch: '左边是咱们仨:我扛怪,{heal}加血,{dps}输出。我们自己会打的,你先看着就行。', // 坦克 · 第 1 关,先看
     loot1_need: '哎,这件我喊的是「需求」,是真用得上啊。拖到我身上就归我了。', // 想要的人 · 分装备(需求)
-    loot1_sub: '我这是「副需求」,能穿是能穿,就是不太对路。你拖给谁就归谁吧。', // 想要的人 · 分装备(副需求)
+    loot1_sub: '我这是「凑合用」,能穿是能穿,就是不太对路,排在后面。你拖给谁就归谁吧。', // 想要的人 · 分装备(副需求)
     loot1_greed: '我这是「贪婪」,用不上,就是眼馋。怎么样,你打我呀?', // 想要的人 · 分装备(贪婪)
     loot1_late: '按住地上那件装备,拖到我身上再松手就行。', // 分装备 · 半天没动时
     loot1_sulk: '唉,我也想要的啊……没分到,士气都掉了。', // 没分到的人 · 分完补一句
-    loot1_rule: '想要的人都会先喊一声的。该给谁嘛,需求先,副需求后,贪婪最后。', // 坦克 · 分完补一句(没人不高兴时)
+    loot1_rule: '想要的人都会先喊一声的。该给谁嘛,需求先,凑合用的其次,贪婪最后。', // 坦克 · 分完补一句(没人不高兴时)
     ready_wait: '打首领前先问一圈哈。有人还没好,等他打勾再读秒吧;不等也行,就是开怪时他不在。', // 输出 · 就位确认(有人没好)
     ready_ok: '都好了,点「读秒开怪」,开怪吧。', // 输出 · 就位确认(都好了)
     buster: '它在读条呢,要砸{tank}了!快把我拖到他身上,我先盯着他奶。', // 治疗 · 首领读重击
@@ -10502,16 +10654,16 @@ var SCN = (function () {
     t3: '你看,我这个【{skill}】是归你喊的。下回下本我提醒你,到时候按一下就行。', // 他 · 归你喊的技能
     g0: '公会升级了,有升级点可以点了。点上面的「公会升级」吧。', // 坦克 · 提醒公会升级
     g1: '这是给整个公会点的,五条线各管一摊。挑眼下最缺的点吧。', // 坦克 · 公会升级页
-    tav0: '钱够招人了,花名册也有空位。要不去酒馆看看?', // 坦克 · 提醒酒馆
+    tav0: '钱够招人了,公会名单也有空位。要不去酒馆看看?', // 坦克 · 提醒酒馆
     tav1: '看职责啊,咱们缺什么就招什么。性格嘛,只看得到一部分,剩下的处久了才知道。', // 输出 · 酒馆页
     tav_in: '新人报到!我已经在出战队伍里啦。', // 新人 · 招到以后(已进队)
     tav_out: '新人报到!出战队伍得去公会大厅里排哈。', // 新人 · 招到以后(没进队)
     q0: '任务板上有活儿了。派人出去跑一趟吧,到点回来领钱。', // 输出 · 提醒任务
-    q1: '点一个叹号,挑人,出发就行。人在外面的时候下不了副本的,别把主力都派走啊。', // 输出 · 任务页
+    q1: '点一个任务(地图上的叹号也行),挑人,出发就行。人在外面的时候下不了副本的,别把主力都派走啊。', // 输出 · 任务页
     b0: '仓库里攒了些装备了……要不去拍卖行看看?能卖,也能买。', // 治疗 · 提醒拍卖行
     b1: '左边是仓库,点一件,能给人穿,也能卖。右边买装备,药水的话在「药剂」那一页。', // 治疗 · 拍卖行页
     trait: '哎,被你看出来了啊,我是有点【{trait}】。处久了,你还能看出更多呢。', // 被看出性格的人 · 第一次翻牌(第二趟以后)
-    skip: '好嘞,不教了。想再看的话,去右上角 ⚙ 设置里的「新手引导」就行。', // 点了「别教了」以后
+    skip: '好嘞,教程跳过了。想再看的话,去右上角 ⚙ 设置里的「新手教程」就行。', // 点了「跳过教程」以后
     skill_late: '点下面亮着的那个图标也行。', // 喊技能 · 半天没动时
   };
   TUT.lines = L;
@@ -10534,7 +10686,7 @@ var SCN = (function () {
   //   drag    c => { from, to }:画一只手从哪儿拖到哪儿(to 也可以是场地坐标 { x, y })
   //   done    怎么算做对了:{ tap: true } 点"知道了";{ ev: [事件], ok: (c, e) => true / false / '再提醒一句' };{ poll: c => 真假 }
   //   late    超时怎么办:{ sec, say } 换一句更直白的;{ sec, drop: true } 先放下,下次回公会再提(放下两次就不提了)
-  //   at      'bottom' / 'top' = 气泡固定放在画面底部 / 顶部(目标太散的时候,免得盖住要看、要点的东西)
+  //   at      'bottom' / 'top' = 气泡固定放在画面底部 / 顶部(目标太散的时候,免得盖住要看、要点的东西);{ right, bottom } = 固定贴在右下角这么远
   //   dim     false = 不压暗(弹窗里的内容团长还要看:通关结算、天赋面板)
   //   enter   c => 这一步出现时顺手做的事
   //   after   c => { who, say }:做完以后补的一句(不暂停、不压暗,几秒后自己消失)
@@ -10675,8 +10827,8 @@ var SCN = (function () {
     // —— 任务:任务板上有活儿、又有人手的时候 ——
     { id: 'q0', chap: 'quest', scene: 'hub:guild', nudge: true, need: ['t2'], when: c => c.g.quests.board.length > 0 && c.g.quests.active.length < c.g.questSlots(),
       who: 'dps', say: L.q0, point: () => ['.tab[data-tab="quest"]'], done: { poll: c => c.api.tab === 'quest' }, late: { sec: 45, drop: true } },
-    { id: 'q1', chap: 'quest', scene: 'hub:quest', when: c => !!$('.wpin') && { n: c.g.quests.active.length },
-      who: 'dps', say: L.q1, point: () => ['.wpin'], done: { tap: true, poll: c => c.g.quests.active.length > c.x.n || !!$('[data-go]') } },
+    { id: 'q1', chap: 'quest', scene: 'hub:quest', when: c => !!$('.wpin') && { n: c.g.quests.active.length }, at: { right: 22, bottom: 18 }, // 气泡固定在右下角(任务列表下面的空处),不跟着叹号跑、不盖地图
+      who: 'dps', say: L.q1, point: () => ['.qbrd'], done: { tap: true, poll: c => c.g.quests.active.length > c.x.n || !!$('[data-go]') } },
 
     // —— 拍卖行:仓库里攒了东西的时候 ——
     { id: 'b0', chap: 'bank', scene: 'hub:guild', nudge: true, need: ['t2'], when: c => c.g.bank.length > 0,
@@ -10782,12 +10934,12 @@ var SCN = (function () {
     layer.className = 'on' + (s.hold ? ' hold' : '') + (s.dim === false ? ' nodim' : '');
     layer.innerHTML = `<svg class="tutDim" viewBox="0 0 1280 720" preserveAspectRatio="none"><defs><mask id="tutMask"><rect width="1280" height="720" fill="#fff"/><g id="tutHoles"></g></mask></defs><rect width="1280" height="720" fill="rgba(6,3,2,.66)" mask="url(#tutMask)"/></svg>
       <div id="tutRings"></div><div class="tutPath"></div><div class="tutHand"><i></i></div>
-      <div class="tutSay${cur.nagged ? ' nag' : ''}">${sayHTML(h, text)}<div class="tutBtns">${s.done.tap ? '<span class="tutOk">知道了</span>' : ''}${canSkip() ? '<span class="tutSkip">别教了</span>' : ''}</div></div>`;
+      <div class="tutSay${cur.nagged ? ' nag' : ''}">${sayHTML(h, text)}<div class="tutBtns">${s.done.tap ? '<span class="tutOk">知道了</span>' : ''}${canSkip() ? '<span class="tutSkip">跳过教程</span>' : ''}</div></div>`;
     const ok = layer.querySelector('.tutOk'), sk = layer.querySelector('.tutSkip');
     if (ok) ok.onclick = e => { e.stopPropagation(); api.snd('click'); finish(); };
     if (sk) sk.onclick = e => { // 点两次才真的关,免得手滑
       e.stopPropagation();
-      if (sk.dataset.sure !== '1') { sk.dataset.sure = '1'; sk.textContent = '真不教了?再点一次'; sk.classList.add('sure'); return; }
+      if (sk.dataset.sure !== '1') { sk.dataset.sure = '1'; sk.textContent = '真的跳过?再点一次'; sk.classList.add('sure'); return; }
       TUT.skip();
     };
     sig = ''; layout();
@@ -10822,7 +10974,8 @@ var SCN = (function () {
     const say = layer.querySelector('.tutSay'), bw = say.offsetWidth || 340, bh = say.offsetHeight || 90;
     const all = rects.concat(a && b ? [{ x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y) }] : []);
     let x = 640 - bw / 2, y = 560;
-    if (s.at === 'bottom') y = 706 - bh;
+    if (s.at && typeof s.at === 'object') { x = 1280 - s.at.right - bw; y = 720 - s.at.bottom - bh; } // 这一页固定一个位置
+    else if (s.at === 'bottom') y = 706 - bh;
     else if (s.at === 'top') y = 8;
     else if (all.length) {
       const x0 = Math.min.apply(null, all.map(r => r.x)), y0 = Math.min.apply(null, all.map(r => r.y)), x1 = Math.max.apply(null, all.map(r => r.x + r.w)), y1 = Math.max.apply(null, all.map(r => r.y + r.h)), g = 22;
@@ -10931,7 +11084,7 @@ var SCN = (function () {
   // 记下现在已经看出来的性格:以后再多看出一个,就是"第一次翻牌"(trait 那一步)
   function snapTraits() { const S = st(); if (S.traitBase || !S.done.slag_clear) return; S.traitBase = {}; api.g.roster.forEach(h => { S.traitBase[h.uid] = h.traits.filter(t => h.known[t]); }); api.save(); }
   // 设置菜单里的一行
-  TUT.menuRow = () => `<div class="mrow"><span>新手引导</span><div class="vseg"><span class="hbtn mini${st().off ? ' sec' : ''}" data-tut="on">开</span><span class="hbtn mini${st().off ? '' : ' sec'}${canSkip() ? '' : ' dis'}" data-tut="off"${canSkip() ? '' : ' data-tip="第一次玩要先跟着走完教学本(熔渣裂口),之后才能关"'}>关</span><span class="hbtn mini sec" data-tut="redo" data-tip="把学过的全忘掉,从头再教一遍。下次进熔渣裂口会重新按教学本来">从头再教</span></div></div>`;
+  TUT.menuRow = () => `<div class="mrow"><span>新手教程</span><div class="vseg"><span class="hbtn mini${st().off ? ' sec' : ''}" data-tut="on">开</span><span class="hbtn mini${st().off ? '' : ' sec'}${canSkip() ? '' : ' dis'}" data-tut="off"${canSkip() ? ' data-tip="跳过教程:以后不再弹引导"' : ' data-tip="第一次玩要先跟着走完教学本(熔渣裂口),之后才能跳过"'}>跳过教程</span><span class="hbtn mini sec" data-tut="redo" data-tip="把学过的全忘掉,从头再教一遍。下次进熔渣裂口会重新按教学本来">从头再教</span></div></div>`;
   TUT.bindMenu = function (box, redraw) {
     box.querySelectorAll('[data-tut]').forEach(b => { b.onclick = () => {
       const S = st(), k = b.dataset.tut;
@@ -10956,6 +11109,120 @@ var SCN = (function () {
 
   root.TUT = TUT;
 })(this);
+
+</script>
+<script>
+// 多语言(画面层,原型阶段的试验版):设置 → 语言 里选 简体中文 / 繁體中文 / English。
+// 做法:游戏里所有文字照旧用简体写;这个文件盯着页面,把新出现的文字节点就地换成目标语言(MutationObserver),
+// 原文记在节点上(_zh),切回简体时还原。繁体按常用字一个字一个字换;英语按下面的词表整句 / 词组替换,没收进词表的暂时还是中文。
+// 主要用途:看界面换成英语后排版会不会变形。正式做多语言时(转 Godot 以后)应换成按 key 取文案的做法,这张词表可以当初稿。
+// 不翻译的地方:带 translate="no" 的元素(比如语言选项本身)、输入框、脚本和样式。
+var I18N = (function () {
+  const KEY = 'raidleader_lang';
+  const I = { lang: 'zh-CN' };
+  try { I.lang = localStorage.getItem(KEY) || 'zh-CN'; } catch (e) { /* 读不了就用简体 */ }
+  const HAN = /[㐀-鿿]/;
+
+  // ---------- 简 → 繁(常用字;两边一样的字不列) ----------
+  const T2 = {};
+  ('团團 长長 当當 个個 们們 会會 战戰 级級 说說 话話 让讓 认認 识識 设設 声聲 画畫 斗鬥 键鍵 语語 队隊 员員 闲閒 开開 关關 伤傷 疗療 数數 动動 闪閃 强強 预預 览覽 频頻 对對 调調 统統 计計 时時 带帶 没沒 装裝 备備 进進 仓倉 库庫 卖賣 档檔 现現 号號 换換 继繼 续續 游遊 戏戲 简簡 体體 还還 来來 变變 暂暫 为為 与與 从從 发發 头頭 问問 题題 门門 边邊 样樣 经經 过過 应應 实實 际際 产產 业業 东東 车車 马馬 鸟鳥 鱼魚 龙龍 龟龜 书書 见見 贝貝 页頁 风風 飞飛 机機 将將 军軍 爱愛 间間 听聽 写寫 读讀 学學 习習 觉覺 观觀 规規 视視 亲親 记記 许許 论論 证證 译譯 试試 该該 误誤 请請 谁誰 谈談 谢謝 财財 货貨 质質 购購 费費 资資 赞讚 赢贏 转轉 轮輪 轻輕 较較 输輸 达達 迟遲 远遠 连連 选選 遗遺 钟鐘 钱錢 铁鐵 银銀 错錯 锅鍋 闭閉 闷悶 闹鬧 阵陣 阳陽 阴陰 陆陸 难難 随隨 险險 雾霧 静靜 项項 顺順 须須 领領 颜顏 饭飯 饮飲 馆館 驱驅 验驗 骑騎 鸡雞 鹰鷹 麦麥 黄黃 齐齊 绝絕 纪紀 约約 纯純 纸紙 线線 练練 组組 细細 终終 结結 给給 维維 综綜 绿綠 网網 罗羅 义義 买買 乱亂 争爭 亏虧 仅僅 优優 传傳 侦偵 债債 储儲 儿兒 党黨 兰蘭 兴興 养養 兽獸 冲衝 决決 况況 冻凍 净淨 减減 处處 击擊 划劃 刚剛 创創 删刪 别別 剑劍 剧劇 劝勸 办辦 务務 劳勞 势勢 区區 医醫 华華 协協 单單 卫衛 厂廠 厅廳 历歷 压壓 县縣 参參 双雙 叙敘 叶葉 叹嘆 吓嚇 吗嗎 启啟 呜嗚 响響 唤喚 园園 围圍 图圖 圆圓 圣聖 场場 坏壞 块塊 坚堅 坛壇 垒壘 墙牆 壮壯 壳殼 夺奪 奋奮 奖獎 妆妝 妇婦 妈媽 娱娛 宁寧 宝寶 宠寵 审審 宫宮 宽寬 宾賓 寻尋 导導 寿壽 尔爾 尘塵 尝嘗 层層 属屬 岁歲 岂豈 岗崗 岛島 岭嶺 峡峽 币幣 师師 帐帳 帮幫 庙廟 废廢 异異 弃棄 张張 弹彈 归歸 录錄 彻徹 径徑 忆憶 忧憂 怀懷 态態 怜憐 总總 恋戀 恶惡 恼惱 惊驚 惧懼 惩懲 愤憤 户戶 扑撲 扩擴 扫掃 扬揚 扰擾 抛拋 抢搶 护護 报報 担擔 拟擬 拥擁 拦攔 择擇 挂掛 挡擋 挤擠 挥揮 损損 据據 掷擲 携攜 摄攝 摆擺 摇搖 摊攤 撑撐 敌敵 断斷 无無 旧舊 显顯 晓曉 晕暈 术術 杀殺 杂雜 权權 条條 杨楊 极極 构構 枪槍 柜櫃 标標 栋棟 栏欄 树樹 桥橋 梦夢 检檢 楼樓 欢歡 欧歐 毁毀 毕畢 毙斃 气氣 汇匯 汉漢 沟溝 泪淚 泽澤 洁潔 洒灑 浅淺 测測 济濟 浑渾 浓濃 涂塗 涛濤 涡渦 润潤 涨漲 渊淵 渐漸 渔漁 温溫 湾灣 湿濕 满滿 滚滾 滩灘 潜潛 灭滅 灯燈 灵靈 灾災 灿燦 炉爐 点點 炼煉 烂爛 烛燭 烟煙 烦煩 烧燒 热熱 爷爺 牵牽 状狀 犹猶 独獨 狮獅 狱獄 猎獵 猪豬 献獻 环環 电電 畅暢 疮瘡 疯瘋 痒癢 皱皺 盏盞 盐鹽 监監 盖蓋 盘盤 矿礦 码碼 砖磚 础礎 确確 碍礙 礼禮 祷禱 祸禍 离離 种種 积積 称稱 稳穩 穷窮 窃竊 竞競 笔筆 笼籠 筑築 签簽 粮糧 紧緊 纠糾 红紅 纤纖 纬緯 纱紗 纲綱 纳納 纵縱 纷紛 纹紋 纺紡 纽紐 绅紳 织織 绊絆 绑綁 绒絨 绕繞 绘繪 络絡 绩績 绳繩 绵綿 缓緩 编編 缘緣 缠纏 缩縮 缴繳 罚罰 罢罷 联聯 聪聰 肃肅 肤膚 肿腫 胀脹 胁脅 胜勝 胶膠 脉脈 脏髒 脑腦 脚腳 脱脫 脸臉 舰艦 舱艙 艰艱 节節 苍蒼 苏蘇 荐薦 荡蕩 荣榮 药藥 莲蓮 获獲 营營 萝蘿 蓝藍 虏虜 虑慮 虚虛 虫蟲 虽雖 蚀蝕 蚁蟻 蛮蠻 蝇蠅 补補 衬襯 袜襪 裤褲 触觸 誉譽 订訂 讨討 训訓 议議 讯訊 讲講 讶訝 讽諷 访訪 评評 诈詐 诉訴 诊診 词詞 诗詩 诚誠 询詢 详詳 诱誘 诸諸 诺諾 课課 谊誼 谋謀 谎謊 谓謂 谜謎 谣謠 谨謹 谱譜 贞貞 负負 贡貢 责責 贤賢 败敗 账賬 贩販 贪貪 贫貧 贯貫 贴貼 贵貴 贷貸 贸貿 贺賀 贼賊 赋賦 赌賭 赏賞 赐賜 赔賠 赖賴 赚賺 赛賽 赠贈 赵趙 赶趕 趋趨 跃躍 践踐 踪蹤 躯軀 轨軌 软軟 轰轟 轴軸 载載 辅輔 辆輛 辈輩 辉輝 辑輯 辞辭 辩辯 迁遷 迈邁 运運 这這 违違 适適 逊遜 递遞 邓鄧 邻鄰 郑鄭 酱醬 酿釀 释釋 鉴鑑 针針 钉釘 钓釣 钢鋼 钥鑰 钩鉤 钮鈕 钳鉗 钻鑽 铃鈴 铅鉛 铜銅 铠鎧 铭銘 铸鑄 铺鋪 链鏈 销銷 锁鎖 锈鏽 锋鋒 锐銳 锡錫 锤錘 锯鋸 锻鍛 镀鍍 镇鎮 镜鏡 闯闖 闸閘 闻聞 阀閥 阁閣 阅閱 阶階 陈陳 隐隱 隶隸 雏雛 霉黴 韩韓 顶頂 顽頑 顾顧 顿頓 颈頸 颗顆 额額 颠顛 飘飄 饥飢 饰飾 饱飽 饲飼 饶饒 饼餅 馈饋 驳駁 驴驢 驶駛 驻駐 驾駕 骂罵 骄驕 骆駱 骇駭 骗騙 骚騷 骤驟 髅髏 鲜鮮 鲸鯨 鸣鳴 鸭鴨 鸽鴿 鹅鵝 齿齒 ' +
+   '烬燼 剂劑 价價 职職 专專 鲁魯 萨薩 颂頌 腾騰 胆膽 芦蘆 痨癆 猫貓 复復 后後 准準 范範 云雲 尽盡 么麼 于於 余餘 着著 并並 里裡 坠墜 碍礙 惯慣 喷噴 冲衝 鸿鴻 苹蘋 缆纜 荐薦 观觀 侣侶 锦錦 伦倫 纶綸 涌湧 寝寢 怼懟 卢盧 炖燉 钝鈍 衔銜 蛰蟄 钞鈔 扎紮 杠槓 颤顫 滤濾 侠俠 凤鳳 闺閨 婴嬰 锐銳 晒曬 测測 摊攤 帘簾 叠疊 毡氈 铲鏟 牺犧 圹壙 浊濁 凯凱 绣繡 锣鑼 陨隕 涩澀 诡詭 骷骷 庄莊 胶膠 鸦鴉 猬蝟 歼殲 泻瀉 惭慚 筛篩 粪糞 坝壩 鬓鬢 冈岡 尸屍 痴癡 怂慫 肠腸 蝎蠍 铡鍘 熏燻 蝶蝶 迹跡 粤粵 钦欽 颁頒 刽劊 烛燭 嘱囑 噜嚕 帅帥 盗盜 姗姍 嗳噯 帜幟 饶饒 凿鑿 摁摁 罩罩 熔熔 锄鋤 恳懇 坟墳 谷谷 灶灶 扰擾 喂餵 闲閒 酝醞 锻鍛 锭錠 浏瀏 胧朧 拣揀 炀煬 纫紉 谦謙 讼訟 粮糧 杰傑 晋晉 苇葦 缝縫 蓦驀 涣渙 鸥鷗 鳄鱷 侨僑 挚摯 蛎蠣 谍諜 伪偽 罐罐 缔締 绪緒 阔闊 牍牘 楞稜 碱鹼 赎贖 秃禿 庐廬 疟瘧 喽嘍 咙嚨 咸鹹 斩斬 惮憚 绰綽 嫔嬪 绢絹 鹦鸚 鹉鵡 苹蘋 磙磙 啮嚙 渗滲 缭繚 霁霽 颅顱 颇頗 颓頹 驯馴 驰馳 骼骼 鳞鱗 鹤鶴 黩黷 鼋黿 龄齡 龛龕').split(/\s+/).forEach(p => { if (p.length === 2 && p[0] !== p[1]) T2[p[0]] = p[1]; });
+  const toTW = s => { let o = ''; for (const c of s) o += T2[c] || c; return o; };
+
+  // ---------- 英语 ----------
+  // 整句:整个文字节点(去掉首尾空白)正好是这些词时直接换
+  const EN = {
+    '团长不好当': 'Raid Leader Is Hard', '设置': 'Settings', '继续游戏': 'Resume', '声音': 'Sound', '画面': 'Display', '战斗': 'Combat', '按键': 'Keys', '语言': 'Language', '其他': 'Other',
+    '音效': 'Sound effects', '音乐': 'Music', '音乐音量': 'Music volume', '队员闲话': 'Party chatter', '全屏': 'Fullscreen', '伤害和治疗数字': 'Damage & healing numbers', '震动和闪屏强度': 'Screen shake & flash',
+    '首领技能预告': 'Boss timers', '队伍框架放右边(和团队频道对调)': 'Party frames on the right (swap with chat)', '伤害统计窗口': 'Damage meter', '分配方式': 'Loot mode', '拖整队时带上坦克': 'Include tank when dragging a group',
+    '拖小队要按多久': 'Hold time to drag a group', '没人要的装备': 'Unwanted gear', '进仓库': 'To bank', '直接卖掉': 'Sell', '预览版本': 'Content version', '换存档': 'Switch save', '新手教程': 'Tutorial', '跳过教程': 'Skip tutorial', '从头再教': 'Restart tutorial',
+    '大': 'High', '中': 'Med', '小': 'Low', '多': 'Lots', '少': 'Some', '关': 'Off', '开': 'On', '强': 'Strong', '弱': 'Weak', '短': 'Short', '长': 'Long',
+    '酒馆': 'Tavern', '公会大厅': 'Guild Hall', '公会升级': 'Upgrades', '任务': 'Quests', '拍卖行': 'Auction House', '去打副本': 'Dungeons', '公会名单': 'Roster', '出战队伍': 'Party', '配置队伍': 'Set up party',
+    '技能': 'Skills', '天赋与技能': 'Talents & Skills', '性格': 'Traits', '装备': 'Gear', '修理': 'Repair', '士气': 'Morale', '友谊': 'Bond', '疲劳': 'Fatigue', '说说他': 'Have a word', '谈心': 'Talk', '请他喝酒': 'Buy a drink',
+    '加入队伍': 'Add to party', '移出队伍': 'Bench', '开除': 'Dismiss', '全团请客': 'Round for all', '全团修理': 'Repair all', '出战': 'In party', '任务中': 'On quest', '想退团': 'Wants out', '改名': 'Rename', '换造型': 'Change look',
+    '坦克': 'Tank', '治疗': 'Healer', '输出': 'DPS', '战士': 'Warrior', '盗贼': 'Rogue', '法师': 'Mage', '猎人': 'Hunter', '牧师': 'Priest', '圣骑士': 'Paladin', '萨满': 'Shaman', '术士': 'Warlock', '德鲁伊': 'Druid',
+    '铁壁': 'Bulwark', '怒吼': 'Fury', '破阵': 'Breaker', '刺杀': 'Assassin', '诡斗': 'Trickster', '毒影': 'Venom', '烈焰': 'Blaze', '陨星': 'Meteor', '灰烬': 'Ash', '神射': 'Marksman', '游击': 'Skirmish', '号令': 'Packlord',
+    '圣愈': 'Mending', '颂歌': 'Hymn', '暮影': 'Dusk', '守护': 'Warden', '圣疗': 'Lightmend', '惩戒': 'Judgment', '潮汐': 'Tide', '元素': 'Elements', '图腾': 'Totem', '痛苦': 'Agony', '契约': 'Pact', '毁灭': 'Ruin', '回春': 'Bloom', '星界': 'Astral', '野性': 'Wild',
+    '武器': 'Weapon', '副手': 'Off-hand', '肩部': 'Shoulders', '头部': 'Head', '胸甲': 'Chest', '腿部': 'Legs', '戒指': 'Ring', '饰品': 'Trinket', '纹章': 'Token', '坐骑': 'Mount',
+    '力量': 'Str', '敏捷': 'Agi', '智力': 'Int', '耐力': 'Sta', '精神': 'Spi', '生命': 'HP', '护甲': 'Armor', '暴击': 'Crit', '命中': 'Hit', '急速': 'Haste', '减伤': 'Mitig.', '防御等级': 'Defense', '仇恨': 'Threat', '攻击强度': 'Attack Power',
+    '优秀': 'Uncommon', '精良': 'Rare', '史诗': 'Epic', '传说': 'Legendary', '法力': 'Mana', '能量': 'Energy', '怒气': 'Rage',
+    '士气高昂': 'High spirits', '心情平稳': 'Steady', '有点不爽': 'Annoyed', '闷闷不乐': 'Gloomy', '看不出来': "Can't tell", '陌生': 'Stranger', '认识': 'Acquainted', '熟络': 'Friendly', '信任': 'Trusted', '过命': 'Sworn',
+    '有点累': 'A bit tired', '很累': 'Tired', '精疲力竭': 'Exhausted', '手上': 'Combat', '眼里': 'Loot', '嘴上': 'Social', '家里': 'Life',
+    '稳重': 'Steady', '贪功': 'Glory hog', '高傲': 'Proud', '机灵': 'Nimble', '胆小': 'Timid', '划水': 'Slacker', '热血': 'Hothead', '老好人': 'Softie', '见啥要啥': 'Grabby', '记仇': 'Grudger', '话痨': 'Chatterbox', '谦让': 'Modest',
+    '家里事多': 'Busy home', '讲理': 'Fair', '谨慎': 'Careful', '上头': 'Tilted', '听话': 'Obedient', '手残': 'Clumsy', '专注': 'Focused', '大方': 'Generous', '眼红': 'Envious', '念旧': 'Loyal', '戏精': 'Drama queen', '财迷': 'Miser',
+    '好奇': 'Curious', '慢热': 'Slow starter', '全能': 'All-rounder', '毕业狂': 'BiS chaser', '外观党': 'Fashionista', '囤分': 'Hoarder', '手黑': 'Unlucky', '刺头': 'Troublemaker', '热心': 'Helpful', '闷葫芦': 'Quiet one',
+    '马屁精': 'Flatterer', '好面子': 'Vain', '甩锅': 'Blamer', '独狼': 'Lone wolf', '夜猫子': 'Night owl', '加班狗': 'Overworked', '学生党': 'Student', '网卡': 'Laggy', '肝帝': 'Grinder', '佛系': 'Zen', '土豪': 'Rich kid', '月光': 'Broke',
+    '挂机': 'Auto', '暂停': 'Pause', '速度': 'Speed', '自动': 'Auto', '空格': 'Space', '团长': 'Leader', '门槛': 'Threshold', '绿': 'G', '蓝': 'B', '紫': 'P', '◀ 回公会': '◀ Guild', '团队频道': 'Raid chat', '战斗记录': 'Combat log',
+    '伤害': 'Damage', '承伤': 'Taken', '打断': 'Kicks', '驱散': 'Dispels', '未学会': 'Not learned', '还没有数据': 'No data yet', '一队': 'Group 1', '读秒开怪': 'Pull!', '就位确认': 'Ready check',
+    '新建公会': 'New guild', '载入': 'Load', '删除': 'Delete', '人数': 'Members', '平均等级': 'Avg level', '平均物品等级': 'Avg item lvl', '通关副本': 'Cleared', '建立公会': 'Found a guild', '阵营': 'Faction', '公会名': 'Guild name', '图章': 'Crest', '开张': 'Open for business', '先选阵营': 'Pick a faction first',
+    '联盟': 'Alliance', '部落': 'Horde', '外出的队伍': 'Teams out', '橙装任务': 'Legendary quest', '未开启': 'Locked', '副本任务': 'Dungeon quests', '接取': 'Accept', '放弃': 'Abandon', '领取': 'Claim', '副本': 'Dungeon', '精英': 'Elite', '英雄': 'Heroic', '团队': 'Raid',
+    '派谁去': 'Who goes', '闲着的人': 'Idle', '取消': 'Cancel', '知道了': 'Got it', '跳过 ▸▸': 'Skip ▸▸', '点一下继续': 'Click to continue', '出发': 'Go', '继续': 'Continue', '完成': 'Done', '重置天赋': 'Reset talents', '基础技能': 'Basic skills', '团长喊的技能': 'Called skill',
+    '仓库': 'Bank', '装备 ': 'Gear', '附魔': 'Enchants', '宝石': 'Gems', '药剂': 'Supplies', '我的挂单': 'My listings', '徽章': 'Badges', '招募': 'Recruit', '拉黑': 'Block', '就这么定': 'Confirm', '一键补满': 'Auto-fill', '清空': 'Clear', '全部': 'All',
+    '熔渣裂口': 'Slag Rift', '石牢暴动': 'Stockade Riot', '沉眠蛇窟': "Sleeper's Den", '狼影古堡': 'Wolfshade Keep', '绯红修院': 'Crimson Abbey', '沙海神庙': 'Dune Temple', '黑烟熔炉': 'Blacksmoke Forge', '枯骨学院': 'Bone Academy', '虚空裂隙': 'Void Rift', '日冕高台': 'Corona Spire',
+    '血月祭坛': 'Bloodmoon Altar', '烬王熔窟': "Ember King's Hollow", '溺钟海窟': 'Drowned Bell', '千机城·上城': 'Gearhold: Upper', '千机城·下城': 'Gearhold: Lower', '天外回廊·星桥': 'Skyway: Starbridge', '天外回廊·天顶': 'Skyway: Zenith',
+    '音效开关': 'Sound', '存档': 'Save', '人': 'ppl', '公会已满级 · 声望照攒': 'Guild maxed · rep still counts'
+  };
+  // 词组:句子里出现就换(长的先换),换完剩下的中文暂时保留
+  const ENP = Object.assign({}, EN, {
+    '声望': 'Rep', '金币': 'gold', '经验': 'XP', '耐久': 'Dur', '进度': 'Progress', '击败': 'Defeat ', '击杀': 'Kill ', '次精英': ' elites', '一件': 'an ', '装备': ' item', '已接': 'Accepted', '需要': 'Needs ', '来回': 'round trip ',
+    '冷却': 'CD ', '点可用': ' pts free', '已用': 'Used', '天赋点': 'Talent pts', '并肩': 'Fought together', '指上去看说明': 'hover for details', '公会': 'Guild ',
+    '最高': 'Top', '还要': 'left: ', '物品等级': 'Item Lvl', '拾取后绑定': 'Binds on pickup', '装备后绑定': 'Binds on equip', '出售价格': 'Sell price', '需要等级': 'Requires level',
+    '现在': 'Now'
+  });
+  Object.keys(ENP).forEach(k => { if (k.length < 2) delete ENP[k]; }); // 单个字的词只做整句匹配,不在句子里换(会把"大招"换成"High招")
+  const ENK = Object.keys(ENP).sort((a, b) => b.length - a.length);
+  const ENR = [[/(\d+)\s*级/g, 'Lv $1'], [/(\d+)\s*分钟/g, '$1 min'], [/(\d+)\s*分(?![配装])/g, '$1 min'], [/(\d+)\s*秒/g, '$1s'], [/(\d+)\s*点/g, '$1 pts'], [/(\d+)\s*场/g, '$1 fights'], [/(\d+)\s*人/g, '$1 ppl'], [/(\d+)\s*队/g, 'Team $1'], [/(\d+)\s*个/g, '$1'], [/(\d+)\s*次/g, '$1×'], [/(\d+)\s*件/g, '$1 items']];
+  const PUNC = { ',': ', ', '。': '. ', ':': ': ', ';': '; ', '!': '! ', '?': '? ', '、': ', ', '(': ' (', ')': ') ', '「': '"', '」': '"', '【': '[', '】': ']', '……': '...', '——': ' - ' };
+  function toEN(s) {
+    const t = s.trim();
+    if (EN[t]) return s.replace(t, EN[t]);
+    let o = s;
+    for (const r of ENR) o = o.replace(r[0], r[1]);
+    for (const k of ENK) if (o.indexOf(k) >= 0) o = o.split(k).join(ENP[k]);
+    for (const k in PUNC) if (o.indexOf(k) >= 0) o = o.split(k).join(PUNC[k]);
+    return o.replace(/ {2,}/g, ' ');
+  }
+  function tr(s) { return I.lang === 'zh-TW' ? toTW(s) : I.lang === 'en' ? toEN(s) : s; }
+
+  // ---------- 换页面上的字 ----------
+  const SKIP = 'SCRIPT,STYLE,TEXTAREA,INPUT';
+  function doNode(n) {
+    if (n._tr != null && n.data === n._tr) return; // 是我们换上去的
+    const p = n.parentElement;
+    if (!p || SKIP.indexOf(p.tagName) >= 0 || (p.closest && p.closest('[translate="no"]'))) return;
+    if (n._tr == null || n.data !== n._tr) n._zh = n.data; // 游戏自己改过字:以它为新的原文
+    if (I.lang === 'zh-CN') { if (n._tr != null) { n._tr = null; } return; }
+    if (!HAN.test(n._zh)) return;
+    const t = tr(n._zh); n._tr = t; if (n.data !== t) n.data = t;
+  }
+  function walk(root) {
+    if (!root) return;
+    if (root.nodeType === 3) { doNode(root); return; }
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
+    while ((n = w.nextNode())) doNode(n);
+  }
+  function restore(root) { // 切回简体:换过的节点还原
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n;
+    while ((n = w.nextNode())) if (n._tr != null && n.data === n._tr && n._zh != null) { n.data = n._zh; n._tr = null; }
+  }
+  let obs = null;
+  function watch() {
+    if (obs) return;
+    obs = new MutationObserver(list => { if (I.lang === 'zh-CN') return; list.forEach(m => { if (m.type === 'characterData') doNode(m.target); else m.addedNodes.forEach(walk); }); });
+    obs.observe(document.body, { childList: true, subtree: true, characterData: true });
+  }
+  I.set = lang => {
+    I.lang = lang; try { localStorage.setItem(KEY, lang); } catch (e) { /* 存不了就算了 */ }
+    document.documentElement.lang = lang; document.body.classList.toggle('lang-en', lang === 'en');
+    restore(document.body); if (lang !== 'zh-CN') walk(document.body);
+    document.title = tr('团长不好当');
+  };
+  I.t = tr;
+  watch();
+  document.documentElement.lang = I.lang; document.body.classList.toggle('lang-en', I.lang === 'en');
+  if (I.lang !== 'zh-CN') { walk(document.body); document.title = tr('团长不好当'); }
+  return I;
+})();
 
 </script>
 <script>
@@ -11021,10 +11288,56 @@ var SCN = (function () {
   const chipsShort = h => { const k = h.traits.filter(t => h.known[t]), n = h.traits.length - k.length; return k.map(chipOf).join('') + (n ? `<span class="chip unk" data-tip="还有 ${n} 个性格没看出来,一起多打几场就知道了">?×${n}</span>` : ''); };
   const chipsMini = h => h.traits.filter(t => h.known[t]).map(chipOf).join(''); // 只显示看出来的性格,没看出来的不占位
   // 角色页:四张固定位置的牌(手上 / 眼里 / 嘴上 / 家里),说明放在悬停里;没处出来的是背面朝上
-  const traitCards = h => h.traits.map(t => { const k = D.traits[t].kind, kn = h.known[t]; return `<div class="trcard${KCL[k]}${kn ? '' : ' unk'}" data-tip="${kn ? '<b>' + D.traits[t].name + '</b>(' + kindName(t) + ')<br>' + D.traits[t].desc : '<b>' + kindName(t) + '</b>:还不了解。处久了、出了事,自然就知道了。'}"><small>${kindName(t)}</small><b>${kn ? D.traits[t].name : '???'}</b></div>`; }).join('');
+  const traitCards = h => h.traits.map(t => { const k = D.traits[t].kind, kn = h.known[t]; return `<div class="trcard${KCL[k]}${kn ? '' : ' unk'}" data-tip="${kn ? tipCard({ t: D.traits[t].name, s: kindName(t), d: D.traits[t].desc }) : tipCard({ t: '???', s: kindName(t), d: '还不了解。处久了、出了事,自然就知道了。' })}"><small>${kindName(t)}</small><b>${kn ? D.traits[t].name : '???'}</b></div>`; }).join('');
   const traitRows = h => h.traits.map(t => (h.known[t] ? `<div class="trow"><small class="tkind">${kindName(t)}</small>${chipOf(t)}${D.traits[t].desc}</div>` : `<div class="trow unk"><small class="tkind">${kindName(t)}</small>${UNK} 还不了解,处久了才知道</div>`)).join('');
   // 闷葫芦:交情不到「熟络」,看不出他高不高兴
   const moodOf = h => (g.moodHidden(h) ? ['看不出来', '#9a8a6a'] : moodWord(h.mood));
+  // ---------- 说明卡:全游戏的悬停说明统一用这一套(装备卡除外,它仿经典样式,在 itemTip0) ----------
+  // tipCard({ t 标题, tc 标题颜色, s 标题右边的小字, d 一句话的总述, rows: [{ m 开头的小方块里的字 / 不给就是一个色点, c 颜色, b 加粗的短标签, x 后面的话 }],
+  //           html 自己拼的一段, kv: [[名, 值, 颜色]] 底下一行关键数字, f 压淡的脚注, wide 宽一点 })
+  // 生成的 HTML 只用单引号,能直接塞进 data-tip="…"
+  const tcN = (v, c) => `<b class='tc-n'${c ? ` style='color:${c}'` : ''}>${v}</b>`; // 正文里要高亮的数字
+  const tcRow = r => `<div class='tc-r'>${r.chip ? r.chip : r.m != null ? `<i class='tc-m' style='--mc:${r.c || '#c9a35a'}'>${r.m}</i>` : `<i class='tc-dot' style='--mc:${r.c || '#c9a35a'}'></i>`}<span>${r.b ? `<b style='color:${r.bc || r.c || '#ffd98a'}'>${r.b}</b> ` : ''}${r.x || ''}</span></div>`;
+  function tipCard(o) {
+    let s = `<div class='tc${o.wide ? ' tc-wide' : ''}'>`;
+    if (o.t) s += `<div class='tc-h'><b${o.tc ? ` style='color:${o.tc}'` : ''}>${o.t}</b>${o.s ? `<small>${o.s}</small>` : ''}</div>`;
+    let body = o.d ? `<div class='tc-d'>${o.d}</div>` : '';
+    body += (o.rows || []).filter(Boolean).map(r => (r.sec ? `<div class='tc-sec'>${r.sec}</div>` : tcRow(r))).join('');
+    if (o.html) body += o.html;
+    if (body) s += `<div class='tc-b'>${body}</div>`;
+    if (o.kv && o.kv.length) s += `<div class='tc-kv'>${o.kv.filter(Boolean).map(k => `<span><small>${k[0]}</small><b${k[2] ? ` style='color:${k[2]}'` : ''}>${k[1]}</b></span>`).join('')}</div>`;
+    if (o.f) s += `<div class='tc-f'>${o.f}</div>`;
+    return s + '</div>';
+  }
+  // 没专门排过版的说明(各处 data-tip 里写的"<b>标题</b> 小字<br>一句<br>一句"):在 tip() 里统一拆成同一种卡片——
+  // 开头的 <b>…</b> 当标题(同一行后面的字当右边的小字),其余每个 <br> 一行、前面一个色点,正文里的数字高亮;短短一句的就是一个小标签
+  const TC_NUM = /([+\-−]?\d+(?:\.\d+)?\s*(?:%|秒|分钟|分|金币|级|点|场|人|次|瓶|件|倍|片|枚|个)?|×\s?\d+(?:\.\d+)?)/g;
+  const tcNums = html => html.split(/(<[^>]+>|&[#\w]+;)/).map(p => (!p || p[0] === '<' || p[0] === '&' ? p : p.replace(TC_NUM, m => `<b class='tc-n'>${m}</b>`))).join('');
+  const tcPlain = h => h.replace(/<[^>]+>/g, '').replace(/&[#\w]+;/g, ' ');
+  function tipAuto(html) {
+    if (/class=['"](tt-|tc)/.test(html)) return html; // 装备卡和已经排好的卡片不动
+    const segs = html.split(/<br\s*\/?>/i).map(x => x.trim()).filter(Boolean);
+    if (!segs.length) return html;
+    if (segs.length === 1 && tcPlain(segs[0]).length <= 26) return `<div class='tc tc-one'>${segs[0]}</div>`;
+    const lead = segs.length === 1 && segs[0].match(/^([^<:]{1,8})[::]([\s\S]{8,})$/); // "挂机:……" 这种一句话:冒号前面当标题
+    if (lead) return tipCard({ t: lead[1], d: tcNums(lead[2]) });
+    let t = null, s = null, first = segs[0];
+    const m = first.match(/^<b(?:\s[^>]*)?>([\s\S]*?)<\/b>\s*([\s\S]*)$/);
+    if (m && tcPlain(m[1]).length <= 16) { t = m[1]; s = m[2].replace(/^[\s—:·:-]+/, ''); segs.shift(); if (tcPlain(s).length > 22) { segs.unshift(s); s = null; } }
+    if (!segs.length) return tipCard({ t, s: s && tcNums(s) });
+    const rows = segs.map(x => { const k = x.match(/^<b(?:\s[^>]*)?>([\s\S]{1,16}?)<\/b>\s*[::]?\s*([\s\S]*)$/); return k && k[2] ? { b: k[1], x: tcNums(k[2]) } : { x: tcNums(x) }; });
+    if (!t && rows.length >= 2 && !rows[0].b && tcPlain(segs[0]).length <= 20) return tipCard({ t: segs[0], rows: rows.slice(1) }); // 第一行很短:当标题
+    return tipCard({ t, s: s && tcNums(s), rows: t || rows.length > 1 ? rows : null, d: !t && rows.length === 1 ? tcNums(segs[0]) : null });
+  }
+  const chipQ = t => `<span class='chip${KCL[D.traits[t].kind]}'>${D.traits[t].name}</span>`; // 单引号版的性格标签(放进说明卡)
+  // 队员的说明卡:性格一条一行、装备两列小格(带品质色)、底下一行关键数字。战斗里的头像框、公会大厅的角色卡都用它
+  function heroCard(h) {
+    const st = g.stats(h), c = cdef(h), mw = moodOf(h), ft = g.fatTier(h), f = Math.round(g.fatOf(h));
+    const rows = h.traits.map(t => (h.known[t] ? { chip: chipQ(t), x: D.traits[t].desc } : { chip: `<span class='chip unk'>???</span>`, x: `<span class='tc-mut'>${kindName(t)}:还不了解,处久了才知道</span>` }));
+    const gear = `<div class='tc-sec'>装备</div><div class='tc-gear'>${D.slots.map(sl => { const it = D.items[h.gear[sl]]; return it ? `<div><i style='--qc:var(--${it.q})'>${SLOT[sl]}</i><span style='color:var(--${it.q})'>${it.name}</span></div>` : `<div class='emp'><i>${SLOT[sl]}</i><span>${SLOT_NAME[sl]}</span></div>`; }).join('')}</div>`;
+    return tipCard({ wide: true, t: h.name, tc: c.color, s: `${h.level} 级 · ${specName(h)} · ${c.role}`, rows: [{ sec: '性格' }].concat(rows), html: gear,
+      kv: [['输出', '×' + st.power.toFixed(2), '#ffe14d'], ['DKP', h.dkp || 0], ['士气', mw[0] + (g.moodHidden(h) ? '' : ' ' + Math.round(h.mood)), mw[1]], g.gearValue(h) ? ['耐久', Math.round(h.dur), durColor(h.dur)] : null, f >= 1 ? ['疲劳', ft.name + ' ' + f, ft.color] : null], f: g.busy(h.uid) ? (h.vacation > 0 ? '请假中,这几场来不了' : '外派任务中,回来前下不了副本') : '' });
+  }
   const snd = n => SFX.play(n);
   const sndBtn = () => `<span class="snd" id="bSnd" title="音效开关">${SFX.muted ? '🔇' : '🔊'}</span>`;
   function bindSnd(redo) { const b = $('#bSnd'); if (b) b.onclick = () => { SFX.toggle(); redo(); snd('click'); }; }
@@ -11036,7 +11349,11 @@ var SCN = (function () {
   const moodHTML = h => { const w = moodOf(h); return `<span style="color:${w[1]}">${w[0]}${g.moodHidden(h) ? '' : ' ' + Math.round(h.mood)}</span>`; };
   const durColor = d => d <= 0 ? '#ff5a40' : d < 30 ? '#ffb347' : d < 70 ? '#f1e2c2' : '#9aff8a';
   const brkIco = h => g.broken(h) ? `<span class="brk" data-tip="装备坏了:伤害、减伤、治疗只剩 ${Math.round(D.brokenK * 100)}%。修好就恢复">${ART.icon('broken')}</span>` : ''; // 耐久为零:头像上的破损图标
-  const fatTip = h => { const t = g.fatTier(h), F = D.fatigue; return `<b>疲劳</b> —— 身体累不累(士气是心情,这是体力)<br>外派任务回来就涨,不出门的时候慢慢缓过来(每分钟 -${F.recoverPerMin}${h.fatK > 1 ? ',这一趟有牧师照顾 ×' + h.fatK : ''})。<br>${F.tiers.slice(1).map(x => `<span style=&quot;color:${x.color}&quot;>${x.at}+ ${x.name}</span>:下副本伤害治疗 -${Math.round(x.stat * 100)}%,派任务失败率 +${Math.round(x.fail * 100)}%`).join('<br>')}<br>现在 <b style=&quot;color:${t.color}&quot;>${t.name} ${Math.round(g.fatOf(h))}</b>`; };
+  const fatTip = h => { const t = g.fatTier(h), F = D.fatigue; return tipCard({ t: '疲劳', s: '身体累不累(士气是心情,这是体力)', rows: [{ m: '↑', c: '#ff9a6a', x: '外派任务回来就涨' }, { m: '↓', c: '#8fe07a', x: `不出门慢慢缓过来:每分钟 ${tcN('-' + F.recoverPerMin)}${h.fatK > 1 ? ',这一趟有牧师照顾 ×' + h.fatK : ''}` }, { sec: '累到什么程度' }].concat(F.tiers.slice(1).map(x => ({ m: x.at + '+', c: x.color, b: x.name, x: `下副本伤害治疗 ${tcN('-' + Math.round(x.stat * 100) + '%')} · 派任务失败率 ${tcN('+' + Math.round(x.fail * 100) + '%')}` }))), kv: [['现在', t.name + ' ' + Math.round(g.fatOf(h)), t.color]] }); };
+  // 士气、友谊:公会大厅角色详情里那两条的说明卡
+  const moodTip = h => { const w = moodOf(h); return tipCard({ t: '士气', s: '他这阵子的心情', rows: [{ m: '±', c: '#ffd45a', x: `高了手热,低了手冷:输出和治疗最多 ${tcN('±10%')},自己放技能也更稳或更飘` }, { m: '↑', c: '#8fe07a', b: '涨', bc: '#8fe07a', x: '赢了、拿到装备' }, { m: '↓', c: '#ff7a5a', b: '跌', bc: '#ff8a6a', x: '灭团、被抢装备、坐板凳' }, { m: '~', c: '#9ab8d8', x: `来得快去得也快,不管它也会慢慢回到 ${tcN(D.moodHome)}` }, { m: '!', c: '#ff5a40', x: `掉到 ${tcN(D.quitMood, '#ff8a6a')} 以下,他就开始数日子了` }], kv: [['现在', w[0] + (g.moodHidden(h) ? '' : ' ' + Math.round(h.mood)), w[1]]], f: g.moodHidden(h) ? '他是闷葫芦:交情不到「熟络」看不出他高不高兴' : '' }); };
+  const friendTip = (h, fv) => tipCard({ t: '友谊', tc: '#ffb0c8', s: '他跟你这个团长的交情', rows: [{ m: '✓', c: '#ffb0c8', x: '交情深了,你喊他才动、他才肯忍你、别人挖不走。不加输出' }, { m: '⌛', c: '#c9a35a', x: '只能一场一场打、一件一件事处出来。谈心和喝酒最多处到「熟络」,酒买不来交情' }, fv.needDeed ? { m: '!', c: '#ffd45a', b: '还差一件事才到「' + fv.next + '」', x: '一起拿首杀、灭了几次终于过、准他的假、吵架时站他这边、被挖角时留住他、给他一件紫装' } : null, fv.deeds.length ? { m: '♥', c: '#ff7aa8', b: '共过的事', bc: '#ffb0c8', x: fv.deeds.join('、') } : null],
+    kv: [['现在', fv.name, '#ffb0c8'], ['喊技能', fv.callRel < 1 ? Math.round((1 - fv.callRel) * 100) + '% 慢半拍' : '立刻就放'], fv.patience ? ['士气低了多忍', fv.patience + ' 场'] : null] });
   const fatHTML = h => g.fatOf(h) >= 1 ? `<span class="ftg" style="color:${g.fatTier(h).color}" data-tip="${fatTip(h)}"><i>疲</i>${Math.round(g.fatOf(h))}</span>` : '';
   const durHTML = h => g.gearValue(h) ? `<span style="color:${durColor(h.dur)}">耐久 ${Math.round(h.dur)}</span>` : '';
   const gearDots = h => D.slots.map(sl => { const it = D.items[h.gear[sl]]; return `<span class="qd${it ? ' q' : ''}"${it ? ` style="--qc:var(--${it.q})"` : ''}></span>`; }).join('');
@@ -11046,7 +11363,7 @@ var SCN = (function () {
   function roomTip(r) {
     const cnt = {}, abil = [];
     r.enemies.forEach(k => { const e = D.enemies[k]; if (!e) return; cnt[e.name] = (cnt[e.name] || 0) + 1; Object.keys(e.abilities || {}).forEach(a => { const n = e.abilities[a].name; if (abil.indexOf(n) < 0) abil.push(n); }); });
-    return '<b>' + (r.name || '') + '</b><br>' + Object.keys(cnt).map(n => n + (cnt[n] > 1 ? ' ×' + cnt[n] : '')).join('、') + (abil.length ? '<br><span style=&quot;color:#ffb39a&quot;>' + abil.join(' · ') + '</span>' : '') + (r.traps ? '<br>路上有陷阱' : '') + (r.ambush ? '<br>背后会来怪' : '');
+    return tipCard({ t: r.name || '', s: r.boss ? (r.mini ? '小首领' : '首领') : r.elite || r.tag === '精' ? '精英' : '小怪', rows: [{ m: '敌', c: '#c9a35a', x: Object.keys(cnt).map(n => n + (cnt[n] > 1 ? ' ×' + cnt[n] : '')).join('、') }, abil.length ? { m: '技', c: '#ff8a6a', x: `<span style='color:#ffb39a'>${abil.join(' · ')}</span>` } : null, r.traps ? { m: '陷', c: '#ff7a2a', x: '路上有陷阱' } : null, r.ambush ? { m: '背', c: '#b08aff', x: '背后会来怪' } : null] });
   }
   const trackHTML = (d, cur, bare) => (bare && d.rooms.length > 8 ? trackRows(d) : trackHTML1(d, cur, bare));
   const trackRows = d => { const k = Math.ceil(d.rooms.length / 2), a = Object.assign({}, d, { rooms: d.rooms.slice(0, k) }), b = Object.assign({}, d, { rooms: d.rooms.slice(k) }); return `<div class="nodes2">${trackHTML1(a, null, true, k)}${trackHTML1(b, null, true, k)}</div>`; }; // 副本卡片上节点太多:分上下两行
@@ -11074,7 +11391,7 @@ var SCN = (function () {
     phase = 'hub'; running = false; clearTimers(); tipByAttr = false; tip('');
     stage.classList.add('in-hub'); stage.classList.remove('paused'); stage.classList.toggle('fac-alliance', g.faction === 'alliance');
     if (ART.cityMount) ART.cityMount($('#hub'), g.faction); // 阵营主城背景(js/art-city.js)
-    $('#gId .crest').innerHTML = ART.glyph(g.crest);
+    $('#gId .crest').innerHTML = ART.crest(g.faction, g.crest); $('#gId .crest').classList.toggle('crx', !!g.faction); // 团章按阵营换底子
     $('#gName').textContent = g.name;
     $('#gName').onclick = e => { e.stopPropagation(); snd('click'); askName('公会改名', g.name, D.guildNames, v => { g.name = v; save(); showHub(); }); };
     const gcap = g.guildMaxed(), gp = g.gtPoints();
@@ -11110,12 +11427,12 @@ var SCN = (function () {
     if (!g.hero(selUid)) selUid = g.roster[0].uid;
     const sel = g.hero(selUid), st = g.stats(sel), c = cdef(sel), inParty = g.party.indexOf(sel.uid) >= 0, mw = moodOf(sel), mHide = g.moodHidden(sel), fv = g.friendView(sel), gv = g.guideView(sel);
     let cards = g.roster.map(h => `<div class="rcard${h.uid === selUid ? ' sel' : ''}" data-uid="${h.uid}" data-drag="${h.uid}">${h.mood < D.quitMood && !g.moodHidden(h) ? '<div class="badge r">想退团</div>' : g.busy(h.uid) ? '<div class="badge q">任务中</div>' : g.party.indexOf(h.uid) >= 0 ? '<div class="badge">出战</div>' : ''}${brkIco(h)}${figure(h)}
-      <div class="nm" style="color:${cdef(h).color}">${h.name} <small style="color:#ffd45a">${h.level}级</small>${g.freePoints(h) > 0 ? ' <small class="tp">+' + g.freePoints(h) + '</small>' : ''}</div><div class="cl">${specName(h)} · ${cdef(h).role}</div><div class="chips">${chipsMini(h)}</div><div class="md gd">${gearDots(h)}</div><div class="md">${moodHTML(h)}${durHTML(h) ? ' · ' + durHTML(h) : ''}${fatHTML(h)}</div></div>`).join(''); // 装备格一行,士气、耐久、疲劳一行
+      <div class="rtr"><b style="color:${cdef(h).color}">${cdef(h).name}</b>${g.spec(h) ? `<span>${g.spec(h).name}</span>` : ''}${roleTag(cdef(h).role)}</div><div class="nm" style="color:${cdef(h).color}">${h.name} <small style="color:#ffd45a">${h.level}级</small>${g.freePoints(h) > 0 ? ' <small class="tp">+' + g.freePoints(h) + '</small>' : ''}</div><div class="chips">${chipsMini(h)}</div><div class="md gd">${gearDots(h)}</div><div class="md">${moodHTML(h)}${durHTML(h) ? ' · ' + durHTML(h) : ''}${fatHTML(h)}</div></div>`).join(''); // 装备格一行,士气、耐久、疲劳一行
     const capNow = g.rosterCap(), capMax = Math.min(D.rosterMax, Math.max(10, Math.ceil((capNow + 1) / 5) * 5));
     for (let i = g.roster.length; i < capMax; i++) cards += i < capNow ? `<div class="rcard empty"></div>` : `<div class="rcard empty lockd" data-tip="公会每升一级多一个位置">🔒</div>`;
     const ph = g.partyHeroes(), warn = partyWarn();
     let slots = ph.map(h => `<div class="pslot on" data-uid="${h.uid}" data-drag="${h.uid}" data-drop="slot" data-tip="点一下下阵 · 拖动换位置">${figure(h)}<div class="nm" style="color:${cdef(h).color}">${h.name}</div><div class="cl">${cdef(h).role}</div></div>`).join('');
-    for (let i = ph.length; i < 5; i++) slots += `<div class="pslot empty" data-tip="把花名册里的人拖过来,或者点这里配置队伍">＋</div>`;
+    for (let i = ph.length; i < 5; i++) slots += `<div class="pslot empty" data-tip="把公会名单里的人拖过来,或者点这里配置队伍">＋</div>`;
     const warn2 = warn.filter(w => !/没有坦克|没有治疗/.test(w)); // 缺坦克缺治疗已经在职责配比上标红了
     const gear = D.slots.map(sl => {
       const it = D.items[sel.gear[sl]];
@@ -11127,7 +11444,7 @@ var SCN = (function () {
     const bigNow = g.big(sel), freeP = g.freePoints(sel), unhappy = sel.mood < D.quitMood && !g.moodHidden(sel);
     const rsc = $('#page .rgrid') ? $('#page .rgrid').scrollTop : 0; // 花名册人多了要滚动,重画时别跳回顶上
     $('#page').innerHTML = `
-      <div class="panel rosterBox" data-drop="roster"><div class="ph"><span>花名册</span>${legendStrip()}<small>${g.roster.length} / ${g.rosterCap()}</small></div><div class="rgrid">${cards}</div>${g.roster.length > 10 ? '<div class="rmore" id="rMore" data-tip="往下还有人">▾</div>' : ''}</div>
+      <div class="panel rosterBox" data-drop="roster"><div class="ph"><span>公会名单</span><small>${g.roster.length} / ${g.rosterCap()}</small></div><div class="rgrid">${cards}</div>${g.roster.length > 10 ? '<div class="rmore" id="rMore" data-tip="往下还有人">▾</div>' : ''}</div>
       <div class="panel partyBox" data-drop="party"><div class="ph"><span>出战队伍</span>${roleChips(g.party, 5)}${warn2.length ? `<span class="wn" data-tip="${warn2.join('<br>')}">⚠</span>` : ''}
         <span class="phr"><span class="tswitch">${g.teams.map((t, i) => (g.teamOpen(i) ? `<i class="${i === (g.teamIdx || 0) ? 'on' : ''}" data-team="${i}" data-tip="${i + 1} 队${i === (g.teamIdx || 0) ? '(正在出战)' : ':' + (g.teamHeroes(i).map(h => h.name).join('、') || '还没编')}">${i + 1}</i>` : `<i class="tlk" data-tip="${i + 1} 队:还没解锁<br>公会升级「${D.gtree.squads.name}」每点一级多开一个编队位">${i + 1}</i>`)).join('')}</span><small>${ph.length} / 5</small><span class="hbtn mini sec" id="toDungeon">配置队伍</span></span></div><div class="pslots">${slots}</div></div>
       <div class="panel detail">
@@ -11144,8 +11461,8 @@ var SCN = (function () {
           <div class="gslots">${gear}</div></div>
 
         <div class="dsec mf${unhappy ? ' warn' : ''}">
-          <div class="mfrow" data-tip="<b>士气</b> —— 他这阵子的心情<br>高了手热,低了手冷(输出和治疗最多 ±10%,自己放技能也更稳或更飘)。<br>赢了、拿到装备就涨;灭团、被抢装备、坐板凳就跌。来得快,去得也快,不管它也会慢慢回到 ${D.moodHome}。<br>掉到 ${D.quitMood} 以下,他就开始数日子了。"><span class="mfl">士气</span><div class="moodbar"><i style="width:${mHide ? 0 : sel.mood}%;background:${mw[1]}"></i></div><b class="mfv" style="color:${mw[1]}">${mw[0]}${mHide ? '' : ' ' + Math.round(sel.mood)}</b></div>
-          <div class="mfrow" data-tip="<b>友谊</b> —— 他跟你这个团长的交情<br>交情深了,你喊他才动,他才肯忍你,别人才挖不走。不加输出。<br>只能一场一场打出来、一件一件事处出来。谈心和喝酒最多处到「熟络」,酒买不来交情。<br>现在「${fv.name}」:喊技能${fv.callRel < 1 ? ' ' + Math.round((1 - fv.callRel) * 100) + '% 会慢半拍' : '立刻就放'}${fv.patience ? ',士气低了多忍 ' + fv.patience + ' 场' : ''}。${fv.needDeed ? '<br><b style=&quot;color:#ffd45a&quot;>分数够了,还差一件事才到「' + fv.next + '」</b>:一起拿首杀、灭了几次终于过、准他的假、吵架时站他这边、被挖角时留住他、给他一件紫装。' : ''}${fv.deeds.length ? '<br>共过的事:' + fv.deeds.join('、') + '。' : ''}"><span class="mfl">友谊</span><div class="moodbar fr"><i style="width:${sel.friend || 0}%"></i></div><b class="mfv" style="color:#ffb0c8">${fv.name}${fv.needDeed ? ' · 差一件事' : ''}</b></div>
+          <div class="mfrow" data-tip="${moodTip(sel)}"><span class="mfl">士气</span><div class="moodbar"><i style="width:${mHide ? 0 : sel.mood}%;background:${mw[1]}"></i></div><b class="mfv" style="color:${mw[1]}">${mw[0]}${mHide ? '' : ' ' + Math.round(sel.mood)}</b></div>
+          <div class="mfrow" data-tip="${friendTip(sel, fv)}"><span class="mfl">友谊</span><div class="moodbar fr"><i style="width:${sel.friend || 0}%"></i></div><b class="mfv" style="color:#ffb0c8">${fv.name}${fv.needDeed ? ' · 差一件事' : ''}</b></div>
           ${(ft => `<div class="mfrow" data-tip="${fatTip(sel)}"><span class="mfl">疲劳</span><div class="moodbar"><i style="width:${g.fatOf(sel)}%;background:${ft.color}"></i></div><b class="mfv" style="color:${ft.color}">${ft.name}${g.fatOf(sel) >= 1 ? ' ' + Math.round(g.fatOf(sel)) : ''}</b></div>`)(g.fatTier(sel))}
           ${(rv => (rv.good.length || rv.bad.length ? `<div class="relrow" data-tip="合得来的人排在同一个小队里打得更顺(每人 +3%),对方拿到装备也不眼红,但一个走了另一个也会动心思。合不来的人排在同一个小队里别扭(每人 -3%),对方拿到装备加倍不服。吵过架、被甩过锅、被记了仇会结梁子;一顿和事酒、老带新能处成朋友。">${rv.good.length ? '<span class="rg">走得近:' + rv.good.slice(0, 3).join('、') + '</span>' : ''}${rv.bad.length ? '<span class="rb">合不来:' + rv.bad.slice(0, 3).join('、') + '</span>' : ''}</div>` : ''))(g.relView(sel))}
           <div class="mfbtn">${unhappy ? `<span class="quitline">想退团${fv.tier >= 2 ? ' · 还剩 ' + Math.max(1, g.patience(sel) - (sel.grumble || 0)) + ' 场' : ''}</span>` : ''}${sel.vacation > 0 ? `<span class="quitline" style="color:#9ad0e8">请假中 · 还有 ${sel.vacation} 场</span>` : ''}<span class="hbtn mini sec${gv.ok ? ' glow' : ' dim'}" id="bGuide" data-tip="${gv.ok ? '他最近惹了祸,交情也够了:可以借这件事劝一劝,让他的毛病收着点,或者换个活法。不是非做不可。' : gv.why}">说说他</span><span class="hbtn mini sec" id="bTalk" data-tip="私下找他谈心。不花钱,但同一个人谈得越多越不管用。">谈心 +${g.careGain(sel.uid, 'talk')}</span><span class="hbtn mini sec${g.gold < D.care.drink.cost ? ' dis' : ''}" id="bDrink" data-tip="单独请他喝酒。花公会的钱,效果比谈心好,喝多了说不定吐两句真话(看出一个还不了解的性格)。同样越请越不灵,一起多打几场会慢慢恢复。">请他喝酒 <i class="coin"></i>${D.care.drink.cost} +${g.careGain(sel.uid, 'drink')}</span></div></div>
@@ -11167,7 +11484,6 @@ var SCN = (function () {
     $('#bRepairAll').onclick = () => { const r = g.repairAll(); hubTip(r.ok ? `花了 ${r.cost} 金币,全团装备修好了` : r.reason); showHub(); };
     $('#page').querySelectorAll('.rcard[data-uid]').forEach(c2 => { c2.onclick = () => { selUid = c2.dataset.uid; showHub(); }; });
     $('#page').querySelectorAll('.pslot[data-uid]').forEach(c2 => { c2.onclick = () => { g.toggleParty(c2.dataset.uid); showHub(); }; });
-    $('#lgOpen').onclick = showLegend;
     $('#toDungeon').onclick = () => showTeamSetup(null);
     $('#page .rgrid').scrollTop = rsc;
     if ($('#rMore')) $('#rMore').onclick = () => { const b = $('#page .rgrid'); b.scrollTop = b.scrollTop + b.clientHeight >= b.scrollHeight - 4 ? 0 : b.scrollTop + 388; };
@@ -11301,10 +11617,10 @@ var SCN = (function () {
       close();
     }; });
   }
-  // 橙装任务:公会大厅花名册标题上的进度条,点开是完整的面板(选哪一把、五步走到哪了、交金币、谁拿着)
+  // 橙装任务:任务页右栏最上面的一栏(进度条),点开是完整的面板(选哪一把、五步走到哪了、交金币、谁拿着)
   function legendStrip() {
     const V = g.legendView();
-    return `<span class="lgq-bar${V.cur ? '' : V.frag ? ' pick' : ' lock'}" id="lgOpen" data-tip="${V.cur ? '橙装任务:' + V.steps.map((s, i) => (i + 1 === V.cur.stage ? '<b>' + s + '</b>' : s)).join(' → ') + '<br>点开看详情' : V.frag ? '拿到残片了:点开,选一把要做的橙装' : '橙装任务:击杀任意团本的最终首领,拿到残片后开启'}"><b>${V.cur ? '橙装 · ' + V.cur.name : '橙装任务'}</b>${V.cur ? `<i><u style="width:${Math.round(V.cur.pct * 100)}%"></u></i><em>${V.cur.stepText}</em>` : `<em>${V.frag ? '选一把来做' : '未开启'}</em>`}</span>`;
+    return `<span class="lgq-bar${V.cur ? '' : V.frag ? ' pick' : ' lock'}" id="lgOpen" data-tip="${tipCard({ t: '橙装任务', tc: 'var(--legend)', s: V.cur ? V.cur.name : '', rows: V.cur ? V.steps.map((s, i) => ({ m: i + 1, c: i + 1 < V.cur.stage ? '#8fe07a' : i + 1 === V.cur.stage ? '#ff9a2a' : '#5a5a6a', x: i + 1 === V.cur.stage ? `<b style='color:#ffb347'>${s}</b> ← 正在做` : i + 1 < V.cur.stage ? `<span class='tc-mut'>${s}</span>` : s })) : [{ m: '!', c: '#ff9a2a', x: V.frag ? '拿到残片了:点开,选一把要做的橙装' : '击杀任意团本的最终首领,拿到残片后开启' }], f: V.cur || V.frag ? '点开看详情' : '' })}"><b>${V.cur ? '橙装 · ' + V.cur.name : '橙装任务'}</b>${V.cur ? `<i><u style="width:${Math.round(V.cur.pct * 100)}%"></u></i><em>${V.cur.stepText}</em>` : `<em>${V.frag ? '选一把来做' : '未开启'}</em>`}</span>`;
   }
   function showLegend() {
     const ov2 = $('#overlay'), V = g.legendView(), c = V.cur;
@@ -11453,7 +11769,7 @@ var SCN = (function () {
     };
     const draw = () => {
       const size = SZ(), cur = d ? flat() : C[act], names = d ? groupLabels(size, C) : null, ord = { tank: 0, heal: 1, dps: 2 };
-      const htip = h => `${h.name} · ${h.level} 级 ${specName(h)} · ${cdef(h).role}<br>${g.busy(h.uid) ? (h.vacation > 0 ? '请假中' : '任务中') : traitTxt(h)}`;
+      const htip = h => heroCard(h); // 和战斗里头像框的说明卡一样
       const slotH = (ci, k) => { const h = g.hero(C[ci][k]); return h ? `<div class="fmSlot on r-${g.roleOf(h)}${g.busy(h.uid) ? ' busy' : ''}" data-drag="${h.uid}" data-c="${ci}" data-k="${k}" data-drop="1" data-tip="${htip(h)}"><div class="mh">${ART.heroHead(h.cls, h.look)}</div><b style="color:${cdef(h).color}">${h.name}</b></div>` : `<div class="fmSlot" data-c="${ci}" data-k="${k}" data-drop="1"></div>`; };
       const boxes = C.map((gr, ci) => `<div class="fmBox${!d && ci === act ? ' act' : ''}" data-c="${ci}" data-drop="1"><div class="fmHead">${d ? `<u data-gn="${ci}" data-tip="点一下起名">${names[ci]}</u><small>${gr.length || ''}</small>` : `<u>${ci + 1} 队</u>${roleChips(gr, 5)}<span class="tuse${ci === act ? ' on' : ''}">${ci === act ? '出战' : '点这队出战'}</span>`}</div><div class="fmSlots">${[0, 1, 2, 3, 4].map(k => slotH(ci, k)).join('')}</div></div>`).join('');
       const pool = g.roster.filter(h => !d || cur.indexOf(h.uid) < 0).sort((x, y) => (g.busy(x.uid) - g.busy(y.uid)) || ord[g.roleOf(x)] - ord[g.roleOf(y)] || y.level - x.level);
@@ -11623,7 +11939,7 @@ var SCN = (function () {
   let questPick = null; // 正在给哪个任务挑人
   const fmtT = sec => (sec >= 60 ? Math.floor(sec / 60) + ' 分' + (sec % 60 ? ' ' + (sec % 60) + ' 秒' : '') : sec + ' 秒');
   const hchip = (h, on, attr) => `<span class="hchip${on ? ' on' : ''}"${attr || ''}>${ART.heroHead(h.cls, h.look)}<em>${h.name} ${h.level}</em></span>`;
-  const roleTag = r => `<b class="rtag rk-${r === '坦克' ? 't' : 'h'}">${r}</b>`;
+  const roleTag = r => `<b class="rtag rk-${r === '坦克' ? 't' : r === '输出' ? 'd' : 'h'}">${r}</b>`;
   const needTags = q => (q.need || []).map(roleTag).join(' ');
   // 职业专精的小图标:on 这一趟会生效
   const qpkIco = (c, on, mini) => { const P = D.questPerks[c]; return `<span class="qpk${on ? ' on' : ''}${mini ? ' mini' : ''}" style="--pc:${D.classes[c].color}" data-tip="<b>${D.classes[c].name} · ${P.name}</b><br>${P.desc}${on ? '' : '<br><span style=&quot;color:#a89878&quot;>队里有' + D.classes[c].name + '就生效,几个人也只算一次</span>'}">${P.ic}</span>`; };
@@ -11649,10 +11965,13 @@ var SCN = (function () {
     if (questPick && !g.quests.board.some(q => q.id === questPick.qid)) questPick = null;
     const roads = '';
     const spots = Q.locs.map((l, i) => `<div class="wloc" style="left:${l.x}%;top:${l.y}%"><i></i><span>${l.name}</span></div>`).join('');
-    const seen = {};
+    const seen = {}, per = {};
+    g.quests.board.forEach(q => { per[q.loc] = (per[q.loc] || 0) + 1; });
     const pins = g.quests.board.map(q => {
-      const l = Q.locs[q.loc], n = seen[q.loc] = (seen[q.loc] || 0) + 1, on = questPick && questPick.qid === q.id;
-      return `<div class="wpin${on ? ' on' : ''}" data-pick="${q.id}" style="left:${l.x + (n - 1) * 3.2}%;top:${l.y}%" data-tip="${q.name} ${stars(q)} · ${l.name}<br>需要 ${q.size} 人 · ${fmtT(g.questView(q).dur)}${(q.need || []).length ? '<br>要带 ' + q.need.join('、') : ''}${g.questOdds(q, []).near ? '<br><span style=&quot;color:#ff8a7a&quot;>挨着' + foe + '的哨站,容易被蹲</span>' : ''}"><i>!</i></div>`;
+      const l = Q.locs[q.loc], n = seen[q.loc] = (seen[q.loc] || 0) + 1, on = questPick && questPick.qid === q.id, dx = (n - (per[q.loc] + 1) / 2) * 42; // 同一个地点几个任务:以地点为中心左右排开,每个隔 42 像素
+      const v = g.questView(q), near = g.questOdds(q, []).near;
+      const tp = tipCard({ t: q.name, s: stars(q) + ' · ' + l.name, rows: [{ m: '人', c: '#c9a35a', x: '需要 ' + tcN(q.size) + ' 人 · 来回 ' + tcN(fmtT(v.dur)) }, (q.need || []).length ? { m: '职', c: '#7aa8e0', x: '要带 ' + q.need.join('、') } : null, { m: '金', c: '#ffd45a', x: tcN(v.gold) + ' 金币 · 每人 ' + tcN(v.xp) + ' 经验' }, near ? { m: '!', c: '#ff7a6a', x: `<span style='color:#ff9a8a'>挨着${foe}的哨站,容易被蹲</span>` } : null] });
+      return `<div class="wpin${on ? ' on' : ''}" data-pick="${q.id}" style="left:calc(${l.x}% + ${dx}px);top:${l.y}%" data-tip="${tp}"><i>!</i></div>`;
     }).join('');
     const teams = g.quests.active.map(q => {
       const done = now >= q.end, p = teamPos(q, now), hs = q.heroes.map(u => g.hero(u)).filter(Boolean);
@@ -11697,8 +12016,9 @@ var SCN = (function () {
       }).join('');
       const brd = g.quests.board.map(q => { const v = g.questView(q); return `<div class="qrow" data-pick="${q.id}"><b>!</b><div><span>${q.name} <em class="qstar">${stars(q)}</em></span><small>${Q.locs[q.loc].name} · ${q.size} 人 · ${fmtT(v.dur)} · ${v.gold} 金币 ${needTags(q)}</small></div></div>`; }).join('');
       side = `<div class="ph"><span>外出的队伍</span><small>${g.quests.active.length} / ${g.questSlots()}</small></div><div class="qside">
+        <div class="qsub first">橙装任务</div><div class="qlgq">${legendStrip()}</div>
         ${act}
-        <div class="qsub">任务</div>${brd}
+        <div class="qsub">任务</div><div class="qbrd">${brd}</div>
         <div class="qsub">副本任务 · 已接 ${g.dquests.length} / ${g.perkValue('dqmax')}</div>${g.dquests.map(q => [q, false]).concat(g.dqOffers.map(q => [q, true])).map(qq => { const q = qq[0], offer = qq[1]; const dd = D.dungeons.find(x => x.id === q.dungeon), done = q.prog >= q.need; return `<div class="qrow dq${offer ? ' offer' : ''}${done ? ' done' : ''}"><b>${done ? '✓' : '⚔'}</b><div><span><em class="qk ${q.kind}">${{ boss: '副本', rooms: '副本', elite: '精英', heroic: '英雄', raid: '团队' }[q.kind]}</em>${q.kind === 'rooms' ? '清剿 ' + q.need + ' 波敌人' : q.kind === 'elite' ? '击杀 ' + q.need + ' 次精英' : (q.kind === 'heroic' ? '英雄难度击败' : '击败') + D.enemies[dd.boss].short} · ${dd.name}</span><small>${dd.min}–${dd.max} 级 · 进度 ${Math.min(q.prog, q.need)}/${q.need} · ${q.gold} 金币${q.item ? ' + 一件' + D.quality[q.item].label + '装备' : ''}${q.badges ? ' + ' + q.badges + ' 徽章' : ''}</small></div>${offer ? `<span class="hbtn sec" data-dacc="${q.id}">接取</span>` : done ? `<span class="hbtn" data-dclaim="${q.id}">领取</span>` : `<span class="link" data-ddrop="${q.id}">放弃</span>`}</div>`; }).join('')}</div>`;
     }
     $('#page').innerHTML = `
@@ -11717,7 +12037,7 @@ var SCN = (function () {
           <path d="M60 22 l5 -10 l5 10z M68 24 l6 -13 l6 13z M78 20 l5 -11 l5 11z M40 8 l4 -7 l4 7z M48 9 l4 -8 l4 8z" fill="#8a7a6a" opacity=".55"/>`}
         </svg>
         <div class="wtitle">${Q.name}</div>
-        ${spots}${Q.camps.map(p => `<div class="wcamp" style="left:${p.x}%;top:${p.y}%" data-tip="${p.name}<br>附近的任务容易被${foe}的人蹲"><i>☠</i><span>${p.name}</span></div>`).join('')}<div class="whome" style="left:${Q.home.x}%;top:${Q.home.y}%"><b class="${g.faction === 'alliance' ? 'alli' : ''}">${ART.glyph(g.crest)}</b><span>${Q.home.name}</span></div>${pins}${teams}
+        ${spots}${Q.camps.map(p => `<div class="wcamp" style="left:${p.x}%;top:${p.y}%" data-tip="${p.name}<br>附近的任务容易被${foe}的人蹲"><i>☠</i><span>${p.name}</span></div>`).join('')}<div class="whome" style="left:${Q.home.x}%;top:${Q.home.y}%"><b class="${g.faction === 'alliance' ? 'alli' : ''}${g.faction ? ' crx' : ''}">${ART.crest(g.faction, g.crest)}</b><span>${Q.home.name}</span></div>${pins}${teams}
         
       </div></div>
       <div class="panel wside">${side}</div>`;
@@ -11740,6 +12060,7 @@ var SCN = (function () {
     };
     P.querySelectorAll('[data-claim]').forEach(b => { b.onclick = () => claim(b.dataset.claim); });
     P.querySelectorAll('[data-qev]').forEach(b => { b.onclick = () => { const a = b.dataset.qev.split(','); showQuestEvent(a[0], +a[1]); }; });
+    if ($('#lgOpen')) $('#lgOpen').onclick = showLegend;
     P.querySelectorAll('.wteam.done').forEach(b => { b.onclick = () => claim(b.dataset.team); });
     P.querySelectorAll('[data-dacc]').forEach(b => { b.onclick = () => { const r = g.acceptDQuest(b.dataset.dacc); hubTip(r.ok ? '接下了,去对应的副本里完成' : r.reason); if (r.ok) snd('click'); save(); showHub(); }; });
     P.querySelectorAll('[data-ddrop]').forEach(b => { b.onclick = () => { g.dropDQuest(b.dataset.ddrop); hubTip('放弃了这条副本任务'); save(); showHub(); }; });
@@ -11791,41 +12112,42 @@ var SCN = (function () {
     } catch (e) { /* 浏览器不让全屏就算了 */ }
   }
   let menuOpen = false, menuPaused = false;
+  let menuTab = 'sound'; // 设置停在哪一页
   function showMenu() {
     const ov2 = $('#overlay');
     if (ov2.classList.contains('show') && !menuOpen) return; // 别的弹窗开着就不抢
     menuOpen = true;
     if (phase === 'fight' && !paused) { paused = true; menuPaused = true; stage.classList.add('paused'); }
     ov2.className = 'show';
-    ov2.innerHTML = `<div class="card mcard"><h2 style="color:#ffd98a;font-size:36px">设置</h2><div class="mgrid">
-      <div class="mrow"><span>音效</span><span class="sw${!SFX.muted ? ' on' : ''}" id="mSnd"><i></i></span></div>
-      <div class="mrow"><span data-tip="只放你自己放在本机 bgm 文件夹里的曲子(文件名怎么起见 bgm/说明.txt)。没有文件就没有音乐">音乐</span><span class="sw${PREF.music ? ' on' : ''}" data-pref="music" data-v="${PREF.music ? 0 : 1}"><i></i></span></div>
-      <div class="mrow"><span>音乐音量</span><div class="vseg">${[[0.8, '大'], [0.5, '中'], [0.25, '小']].map(x => `<span class="hbtn mini${PREF.musicVol === x[0] ? '' : ' sec'}" data-pref="musicVol" data-v="${x[0]}">${x[1]}</span>`).join('')}</div></div>
-      <div class="mrow"><span>全屏</span><span class="sw${isFS() ? ' on' : ''}" id="mFs"><i></i></span></div>
-      <div class="mrow"><span>分配方式</span><div id="mSeg">${segHTML()}</div></div>
-      <div class="mrow"><span>拖整队时带上坦克</span><span class="sw${!grpNoTank ? ' on' : ''}" id="mGrp"><i></i></span></div>
-      <div class="mrow"><span>拖小队要按多久</span><div class="vseg">${[[300, '短'], [450, '中'], [700, '长']].map(x => `<span class="hbtn mini${PREF.hold === x[0] ? '' : ' sec'}" data-pref="hold" data-v="${x[0]}">${x[1]}</span>`).join('')}</div></div>
-      <div class="mrow"><span>伤害和治疗数字</span><span class="sw${PREF.dmgNum ? ' on' : ''}" data-pref="dmgNum" data-v="${PREF.dmgNum ? 0 : 1}"><i></i></span></div>
-      <div class="mrow"><span>震动和闪屏强度</span><div class="vseg">${[[3, '强'], [2, '中'], [1, '弱'], [0, '关']].map(x => `<span class="hbtn mini${PREF.feel === x[0] ? '' : ' sec'}" data-pref="feel" data-v="${x[0]}">${x[1]}</span>`).join('')}</div></div>
-      <div class="mrow"><span>首领技能预告</span><span class="sw${PREF.dbm ? ' on' : ''}" data-pref="dbm" data-v="${PREF.dbm ? 0 : 1}"><i></i></span></div>
-      <div class="mrow"><span>队伍框架放右边(和团队频道对调)</span><span class="sw${PREF.swap ? ' on' : ''}" data-pref="swap" data-v="${PREF.swap ? 0 : 1}"><i></i></span></div>
-      <div class="mrow"><span>伤害统计窗口</span><span class="sw${PREF.meter ? ' on' : ''}" data-pref="meter" data-v="${PREF.meter ? 0 : 1}"><i></i></span></div>
-      <div class="mrow"><span>没人要的装备</span><div class="vseg">${[[0, '进仓库'], [1, '直接卖掉']].map(x => `<span class="hbtn mini${(g.autoSell ? 1 : 0) === x[0] ? '' : ' sec'}" data-asell="${x[0]}">${x[1]}</span>`).join('')}</div></div>
-      <div class="mrow"><span>队员闲话</span><div class="vseg">${[[2, '多'], [1, '少'], [0, '关']].map(x => `<span class="hbtn mini${PREF.chat === x[0] ? '' : ' sec'}" data-pref="chat" data-v="${x[0]}">${x[1]}</span>`).join('')}</div></div>
-      <div class="mrow"><span>预览版本</span><div class="vseg">${Object.keys(D.versions).map(v => `<span class="hbtn mini${applyVer() === +v ? '' : ' sec'}" data-ver="${v}">${D.versions[v].name}</span>`).join('')}</div></div>
-      ${TUT.menuRow()}
-      <div class="mrow"><span>存档(现在是 ${slot + 1} 号,自动保存)</span><span class="hbtn sec" id="mReset">换存档</span></div>
-      </div><div class="btn" id="mBack">继续游戏</div>
-      <div class="keys"><span><kbd>1–0</kbd>指令</span><span><kbd>空格</kbd>暂停</span><span><kbd>A</kbd>挂机</span><span><kbd>R</kbd>分配</span><span><kbd>F</kbd>全屏</span></div></div>`;
-    $('#mSnd').onclick = () => { SFX.toggle(); snd('click'); showMenu(); };
-    $('#mFs').onclick = () => { setFS(!isFS()); setTimeout(() => { if (menuOpen) showMenu(); }, 250); };
-    bindSeg($('#mSeg'), showMenu);
+    // 设置分页:声音 / 画面 / 战斗 / 按键 / 语言 / 其他。每页几行,卡片大小固定,切页不跳
+    const row = (label, ctl, tipx) => `<div class="mrow"><span${tipx ? ` data-tip="${tipx}"` : ''}>${label}</span>${ctl}</div>`;
+    const seg = (key, list) => `<div class="vseg">${list.map(x => `<span class="hbtn mini${PREF[key] === x[0] ? '' : ' sec'}" data-pref="${key}" data-v="${x[0]}">${x[1]}</span>`).join('')}</div>`;
+    const sw = (key) => `<span class="sw${PREF[key] ? ' on' : ''}" data-pref="${key}" data-v="${PREF[key] ? 0 : 1}"><i></i></span>`;
+    const KEYS = [['拖动队员', '走位'], ['点敌人', '集火'], ['右键点敌人 / Shift + 点', '控场'], ['1 – 0', '喊对应队员的技能'], ['空格', '暂停 / 继续'], ['A', '挂机'], ['S', '战斗速度 1× / 1.5× / 2×'], ['R', '换分配方式'], ['F', '全屏'], ['Esc', '打开 / 关上设置'], ['Enter', '确认弹窗'], ['← →', '天赋页里换人'], ['Shift(按住)', '装备说明里展开所有套装效果']];
+    const LANGS = [['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['en', 'English']];
+    const pages = {
+      sound: ['声音', row('音效', `<span class="sw${!SFX.muted ? ' on' : ''}" id="mSnd"><i></i></span>`) + row('音乐', sw('music'), '只放你自己放在本机 bgm 文件夹里的曲子(文件名怎么起见 bgm/说明.txt)。没有文件就没有音乐') + row('音乐音量', seg('musicVol', [[0.8, '大'], [0.5, '中'], [0.25, '小']])) + row('队员闲话', seg('chat', [[2, '多'], [1, '少'], [0, '关']]))],
+      view: ['画面', row('全屏', `<span class="sw${isFS() ? ' on' : ''}" id="mFs"><i></i></span>`) + row('伤害和治疗数字', sw('dmgNum')) + row('震动和闪屏强度', seg('feel', [[3, '强'], [2, '中'], [1, '弱'], [0, '关']])) + row('首领技能预告', sw('dbm')) + row('队伍框架放右边(和团队频道对调)', sw('swap')) + row('伤害统计窗口', sw('meter'))],
+      fight: ['战斗', row('分配方式', `<div id="mSeg">${segHTML()}</div>`) + row('拖整队时带上坦克', `<span class="sw${!grpNoTank ? ' on' : ''}" id="mGrp"><i></i></span>`) + row('拖小队要按多久', seg('hold', [[300, '短'], [450, '中'], [700, '长']])) + row('没人要的装备', `<div class="vseg">${[[0, '进仓库'], [1, '直接卖掉']].map(x => `<span class="hbtn mini${(g.autoSell ? 1 : 0) === x[0] ? '' : ' sec'}" data-asell="${x[0]}">${x[1]}</span>`).join('')}</div>`)],
+      keys: ['按键', `<div class="mkeys">${KEYS.map(k => `<div><kbd>${k[0]}</kbd><span>${k[1]}</span></div>`).join('')}</div>`],
+      lang: ['语言', row('语言 / Language', `<div class="vseg">${LANGS.map(x => `<span class="hbtn mini${I18N.lang === x[0] ? '' : ' sec'}" data-lang="${x[0]}" translate="no">${x[1]}</span>`).join('')}</div>`) + '<div class="mnote">英语和繁体还没翻完,先用来看界面换语言后排版会不会变形;没翻到的地方暂时还是中文。</div>'],
+      misc: ['其他', row('预览版本', `<div class="vseg">${Object.keys(D.versions).map(v => `<span class="hbtn mini${applyVer() === +v ? '' : ' sec'}" data-ver="${v}">${D.versions[v].name}</span>`).join('')}</div>`) + TUT.menuRow() + row(`存档(现在是 ${slot + 1} 号,自动保存)`, '<span class="hbtn sec" id="mReset">换存档</span>')]
+    };
+    if (!pages[menuTab]) menuTab = 'sound';
+    ov2.innerHTML = `<div class="card mcard"><h2 style="color:#ffd98a;font-size:36px">设置</h2>
+      <div class="mtabs">${Object.keys(pages).map(k => `<span class="mtab${menuTab === k ? ' on' : ''}" data-mtab="${k}">${pages[k][0]}</span>`).join('')}</div>
+      <div class="mpage">${pages[menuTab][1]}</div><div class="btn" id="mBack">继续游戏</div></div>`;
+    ov2.querySelectorAll('[data-mtab]').forEach(b => { b.onclick = () => { menuTab = b.dataset.mtab; snd('click'); showMenu(); }; });
+    ov2.querySelectorAll('[data-lang]').forEach(b => { b.onclick = () => { I18N.set(b.dataset.lang); snd('click'); if (phase === 'hub') { menuOpen = false; showHub(); } showMenu(); }; });
+    if ($('#mSnd')) $('#mSnd').onclick = () => { SFX.toggle(); snd('click'); showMenu(); };
+    if ($('#mFs')) $('#mFs').onclick = () => { setFS(!isFS()); setTimeout(() => { if (menuOpen) showMenu(); }, 250); };
+    if ($('#mSeg')) bindSeg($('#mSeg'), showMenu);
     ov2.querySelectorAll('[data-pref]').forEach(b => { b.onclick = () => { PREF[b.dataset.pref] = +b.dataset.v; savePref(); applyPref(); snd('click'); showMenu(); }; });
     ov2.querySelectorAll('[data-asell]').forEach(b => { b.onclick = () => { g.autoSell = b.dataset.asell === '1'; save(); snd('click'); showMenu(); }; });
-    $('#mGrp').onclick = () => { grpNoTank = !grpNoTank; try { localStorage.setItem('raidleader_grp_notank', grpNoTank ? '1' : '0'); } catch (e) { /* 存不了就算了 */ } snd('click'); showMenu(); };
+    if ($('#mGrp')) $('#mGrp').onclick = () => { grpNoTank = !grpNoTank; try { localStorage.setItem('raidleader_grp_notank', grpNoTank ? '1' : '0'); } catch (e) { /* 存不了就算了 */ } snd('click'); showMenu(); };
     ov2.querySelectorAll('[data-ver]').forEach(b => { b.onclick = () => { try { localStorage.setItem('raidleader_version', b.dataset.ver); } catch (e) { /* 存不了就算了 */ } applyVer(); snd('click'); if (phase === 'hub') { menuOpen = false; showHub(); showMenu(); } else showMenu(); }; });
     TUT.bindMenu(ov2, showMenu);
-    $('#mReset').onclick = () => { save(); location.reload(); };
+    if ($('#mReset')) $('#mReset').onclick = () => { save(); location.reload(); };
     $('#mBack').onclick = closeMenu;
   }
   function closeMenu() {
@@ -11884,7 +12206,7 @@ var SCN = (function () {
         const w = g.want(h, it), busy = g.busy(h.uid);
         const k = w.cant || w.lowLevel ? 4 : w.fit && w.upgrade ? (w.tier === 2 ? 1 : 0) : w.upgrade ? 2 : 3;
         const why = it.token ? (w.cant ? '不是他的纹章' : w.lowLevel ? '等级不够' : w.upgrade ? (w.up ? '升级成' : '换成') + '【' + w.piece.name + '】' : '已经有这一件了')
-          : w.cant ? '穿不了' + (it.typeLabel || '') : w.lowLevel ? '等级不够' : !w.fit ? (w.upgrade ? '主属性不对口,但比身上的好' : '主属性不对口') : !w.upgrade ? '不比身上的好' : w.tier === 2 ? '副需求:能用,但不是本甲 / 副属性不是他这一路的' : '需求:对他是提升';
+          : w.cant ? '穿不了' + (it.typeLabel || '') : w.lowLevel ? '等级不够' : !w.fit ? (w.upgrade ? '主属性不对口,但比身上的好' : '主属性不对口') : !w.upgrade ? '不比身上的好' : w.tier === 2 ? '凑合用:能穿,但不是本甲 / 副属性不是他这一路的,排在对路的人后面' : '需求:对他是提升';
         return { h, w, busy, k, why };
       }).sort((a, b) => a.k - b.k || b.h.level - a.h.level);
       const clsHave = Object.keys(D.classes).filter(c => g.roster.some(h => h.cls === c));
@@ -11892,7 +12214,7 @@ var SCN = (function () {
       const SYM = ['▲', '△', '◇', '=', '✕'], SCL = ['need', 'side', 'greed', 'same', 'cant'];
       alloc = `<div class="bk-alloc"><div class="bname">${itemText(it)}</div>
         <div class="bk-cls"><span class="bk-chip${bankCls === 'all' ? ' on' : ''}" data-bcls="all">全部 ${rows.length}</span>${clsHave.map(c => `<span class="bk-chip${bankCls === c ? ' on' : ''}" data-bcls="${c}" style="--cc:${D.classes[c].color}">${D.classes[c].name}${rows.some(r => r.h.cls === c && r.k === 0) ? '<i>▲</i>' : ''}</span>`).join('')}</div>
-        <div class="bk-legend"><span><i class="need">▲</i>需求</span><span><i class="side">△</i>副需求</span><span><i class="greed">◇</i>不对口</span><span><i class="same">=</i>不是提升</span><span><i class="cant">✕</i>用不了</span><span>点头像就给他</span></div>
+        <div class="bk-legend"><span><i class="need">▲</i>需求</span><span><i class="side">△</i>凑合用</span><span><i class="greed">◇</i>不对口</span><span><i class="same">=</i>不是提升</span><span><i class="cant">✕</i>用不了</span><span>点头像就给他</span></div>
         <div class="bk-tiles">${rows.filter(r => bankCls === 'all' || r.h.cls === bankCls).map(r => `<div class="bk-tile ${SCL[r.k]}${r.busy ? ' busy' : ''}" data-give="${r.h.uid}" data-tip="<b style='color:${cdef(r.h).color}'>${r.h.name}</b> · ${r.h.level} 级 ${specName(r.h)} · DKP ${r.h.dkp || 0}<br>${r.why}${r.busy ? '<br>正在外面做任务' : ''}">${ART.heroHead(r.h.cls, r.h.look)}<i>${SYM[r.k]}</i><em style="color:${cdef(r.h).color}">${r.h.name}</em></div>`).join('')}</div></div>`;
     }
     const foot = `<div class="bk-foot"><div>${it ? (g.canList(g.bank[bankSel]) ? `<span class="hbtn" id="bList" data-tip="挂到拍卖行:过一两分钟见分晓。${it.q === 'rare' ? '蓝装只有 ' + Math.round(g.sellChance(g.bank[bankSel]) * 100) + '% 的机会卖掉,没卖掉会退回来' : '这个品质一定卖得掉'};成交价会比挂价高一点或低一点">挂到拍卖行 <i class="coin"></i>约 ${g.listPrice(g.bank[bankSel])}</span>` : '')
@@ -12066,11 +12388,22 @@ var SCN = (function () {
     let x = mouse.x + off, y = mouse.y + off + 2;
     if (x + w > 1272) x = mouse.x - w - 14;
     if (y + h > 712) y = mouse.y - h - 14;
-    t.style.left = Math.max(6, x) + 'px'; t.style.top = Math.max(6, y) + 'px';
+    x = Math.max(6, x); y = Math.max(6, y);
+    // 开着引导气泡时:说明别压在气泡上(换到鼠标的另一侧 / 上方),实在放不下才算了
+    const bub = document.querySelector('#tut.on:not(.hid) .tutSay, #tutNote.on');
+    if (bub) {
+      const sr = stage.getBoundingClientRect(), k = sr.width / 1280 || 1, r = bub.getBoundingClientRect(), B = { x: (r.left - sr.left) / k - 6, y: (r.top - sr.top) / k - 6, w: r.width / k + 12, h: r.height / k + 12 };
+      const hit = (px, py) => px < B.x + B.w && px + w > B.x && py < B.y + B.h && py + h > B.y;
+      if (hit(x, y)) {
+        const c = [[mouse.x - w - 14, y], [x, mouse.y - h - 14], [mouse.x - w - 14, mouse.y - h - 14], [x, B.y + B.h + 4], [x, B.y - h - 4]].map(p => [Math.max(6, Math.min(1274 - w, p[0])), Math.max(6, Math.min(714 - h, p[1]))]).find(p => !hit(p[0], p[1]));
+        if (c) { x = c[0]; y = c[1]; }
+      }
+    }
+    t.style.left = x + 'px'; t.style.top = y + 'px';
   }
   function tip(html) {
     const t = $('#tip'); if (!html) { t.style.display = 'none'; t.classList.remove('tclick'); return; }
-    t.innerHTML = html; t.style.display = 'block';
+    t.innerHTML = tipAuto(String(html)); t.style.display = 'block';
     const sw = t.querySelector('.tt-setsw'); t.classList.toggle('tclick', !!sw); // 带"点这里展开"的说明:不跟着鼠标跑,鼠标能移上去点;触屏上本来就停着
     if (sw) sw.onclick = e => { e.stopPropagation(); setsAll = !setsAll; snd('click'); reTipItem(true); };
     placeTip();
@@ -12098,7 +12431,7 @@ var SCN = (function () {
   addEventListener('keydown', e => { if (e.key === 'Shift' && !tipShift) { tipShift = true; reTipItem(); } });
   addEventListener('keyup', e => { if (e.key === 'Shift') { tipShift = false; reTipItem(); } });
   addEventListener('blur', () => { tipShift = false; });
-  function reTipItem(force) { const t = $('#tip'); if (lastItemTip && t.style.display === 'block' && (force || t.innerHTML === lastItemTip.html)) { const keep = [t.style.left, t.style.top]; tip(itemTip.apply(null, lastItemTip.args)); if (force) { t.style.left = keep[0]; t.style.top = keep[1]; } } }
+  function reTipItem(force) { const t = $('#tip'); if (lastItemTip && t.style.display === 'block' && (force || t.innerHTML === lastItemTip.html || t.innerHTML === tipAuto(lastItemTip.html))) { const keep = [t.style.left, t.style.top]; tip(itemTip.apply(null, lastItemTip.args)); if (force) { t.style.left = keep[0]; t.style.top = keep[1]; } } }
   function itemTip(it, who, h, slot) {
     const html = itemTip0(it, who, h, slot); lastItemTip = { args: [it, who, h, slot], html }; return html;
   }
@@ -12152,7 +12485,7 @@ var SCN = (function () {
     w(`出售价格:<i class="coin"></i> ${g.sellPrice(it.id)}`);
     if (who && who.length) {
       const ws = who.map(x => ({ h: x, w: g.want(x, it) })).filter(x => x.w.level !== 'pass');
-      L.push(`<div class="tt-want">${ws.length ? ws.map(x => `<span style="color:${cdef(x.h).color}">${x.h.name}</span> ${x.w.level === 'need' ? (x.w.tier === 2 ? '副需求' : '需求') : '贪婪'}${x.w.lowLevel ? '(等级不够)' : x.w.fit ? '' : '(不对口)'}`).join('<br>') : '没人特别想要'}</div>`);
+      L.push(`<div class="tt-want">${ws.length ? ws.map(x => `<span style="color:${cdef(x.h).color}">${x.h.name}</span> ${x.w.level === 'need' ? (x.w.tier === 2 ? '凑合用' : '需求') : '贪婪'}${x.w.lowLevel ? '(等级不够)' : x.w.fit ? '' : '(不对口)'}`).join('<br>') : '没人特别想要'}</div>`);
     }
     return L.join('');
   }
@@ -12211,7 +12544,7 @@ var SCN = (function () {
     b.innerHTML = `<div class="g">${ART.icon(k.kind)}</div><div class="cd"></div><div class="ct"></div><div class="k">${(b._i + 1) % 10}</div><div class="who">${ART.heroHead(h.cls, h.look)}</div><div class="n">${k.name}</div>`;
     b.style.background = `radial-gradient(circle at 50% 30%, #fff8, transparent 60%), ${k.color || KIND_COLOR[k.kind] || '#6a5a3a'}`;
     b.classList.toggle('off', !!k.none);
-    b.onmouseenter = () => tip(`【${k.name}】${h.name}归你喊的技能:${k.desc}${k.cd ? ' · 冷却 ' + k.cd + ' 秒' : ''}`);
+    b.onmouseenter = () => tip(tipCard({ t: k.name, s: h.name + ' · 归你喊的技能', d: tcNums(k.desc), kv: k.cd ? [['冷却', k.cd + ' 秒']] : null }));
   }
   const SPEEDS = [1, 1.5, 2];
   function paintSpeed() { if (btn.speed) { btn.speed.querySelector('.g').textContent = speed + '×'; btn.speed.classList.toggle('on', speed > 1); } }
@@ -12287,18 +12620,13 @@ var SCN = (function () {
     });
     g.partyHeroes().forEach((h, i) => {
       const c = cdef(h);
-      const f = el('div', 'uf', `<div class="pt">${ART.heroHead(h.cls, h.look)}</div><div class="info">
+      const f = el('div', 'uf', `<div class="ufl"><div class="pt">${ART.heroHead(h.cls, h.look)}</div><div class="pot"></div></div><div class="info">
         <div class="nm"><span style="color:${c.color}">${h.name} <span class="lv">${h.level}级</span></span><small>${specName(h)}</small></div>
         <div class="tr">${chipsShort(h)}</div>
         <div class="aur"></div><div class="hp"><i></i><b></b></div>${c.res ? `<div class="mp ${c.res.type}" data-tip="${D.resName[c.res.type]}"><i></i></div>` : ''}${c.combo || (g.altDefOf(h) && g.altDefOf(h).combo) ? '<div class="cpts" data-tip="连击点:每一击攒 1 个(暴击 2 个),攒满自动打终结技。大招喊在满星上最赚"></div>' : ''}
-        <div class="ft2"><span class="gd2"></span><em></em></div></div><div class="pot"></div><span class="brkslot">${brkIco(h)}</span>`);
+        <div class="ft2"><span class="gd2"></span><em></em></div></div><span class="brkslot">${brkIco(h)}</span>`);
       f.dataset.hero = h.uid;
-      f.onmouseenter = () => {
-        const st = g.stats(h);
-        const dk = ` · DKP ${h.dkp || 0}`;
-        const gear = Object.keys(h.gear).map(sl => h.gear[sl] ? `<span style="color:var(--${D.items[h.gear[sl]].q})">${D.items[h.gear[sl]].name}</span>` : `<span style="opacity:.5">${SLOT_NAME[sl]}空</span>`).join(' · ');
-        tip(`${h.traits.map(t => (h.known[t] ? `【${D.traits[t].name}】${D.traits[t].desc}` : '【???】还不了解')).join('　')}<br>${gear} · 输出 ×${st.power.toFixed(2)}${dk}`);
-      };
+      f.onmouseenter = () => tip(heroCard(h));
       f.onmouseleave = () => tip('');
       gbox[grpOf[h.uid]].appendChild(f); uf[h.uid] = f;
 
@@ -12316,6 +12644,7 @@ var SCN = (function () {
     const sp = el('div', 'sk sys spd', `<div class="g"></div><div class="k">S</div><div class="n">速度</div>`);
     sp.onclick = cycleSpeed; sp.onmouseenter = () => tip('战斗速度:1× → 1.5× → 2×(按 S 切换)。只是让战斗跑得快,不改变结果。'); sp.onmouseleave = () => tip('');
     $('#sysRow').appendChild(sp); btn.speed = sp; paintSpeed();
+    $('#sysRow').appendChild($('#hudSup')); // 合剂:系统区按钮那一排的最右边一个小圆章(名字和效果在悬停里),位置固定,不压挂机按钮、不贴团队框架
     bindMeter();
     refreshMeta();
   }
@@ -12333,8 +12662,7 @@ var SCN = (function () {
     $('#dnav').innerHTML = `<span class="back" id="bBack">◀ 回公会</span>`;
     $('#hudR').innerHTML = `<span class="gearbtn" id="bMenu2" data-tip="设置(Esc)">⚙</span>`;
     const fk = g.flaskOn && D.supplies[g.flaskOn];
-    $('#hudSup').innerHTML = `<span class="supc${fk ? ' on' : ' none'}" data-tip="${fk ? fk.name + ':' + fk.desc + '(全队,管这一趟)' : '这一趟没有用合剂。合剂在「去打副本」页选,拍卖行买'}"><b${fk ? ` style="background:${fk.color}"` : ''}>${fk ? fk.icon : '剂'}</b>${fk ? fk.name : '没用合剂'}</span>`;
-    { const rp = $('#raid'), hs = $('#hudSup'); hs.style.left = rp.offsetLeft + 'px'; hs.style.top = (rp.offsetTop + rp.offsetHeight + 5) + 'px'; } // 合剂:紧贴在团队框架外面的下方
+    $('#hudSup').innerHTML = `<span class="supc${fk ? ' on' : ' none'}" data-tip="${fk ? tipCard({ t: fk.name, s: '合剂 · 全队 · 管这一趟', d: fk.desc }) : tipCard({ t: '没用合剂', d: '这一趟没有喝合剂。', f: '合剂在「去打副本」页选,拍卖行买' })}"><b${fk ? ` style="background:${fk.color}"` : ''}>${fk ? fk.icon : '剂'}</b>${fk ? fk.name : '没用合剂'}</span>`;
     $('#bMenu2').onclick = () => showMenu();
     $('#bBack').onclick = askLeave;
     btn.auto.classList.toggle('on', g.auto);
@@ -12433,7 +12761,7 @@ var SCN = (function () {
     });
     render(); drawMeter(true);
     // 布景和换房间的滚动都在 js/scene.js:返回这段过渡要多久,等它停稳了再开打
-    const sd = g.dungeonDef(), tms = SCN.enter({ dungeon: sd.id, pal: sd.pal, boss: !!room.boss, grand: !!room.boss && g.room === sd.rooms.length - 1, ring: D.arena, travel: !!trav && !(room.boss && noWalk), oldPos: trav, tok, heroes: sim.heroes, enemies: sim.enemies, speed, auto: g.auto });
+    const sd = g.dungeonDef(), tms = SCN.enter({ dungeon: sd.id, pal: sd.pal, boss: !!room.boss, grand: !!room.boss && g.room === sd.rooms.length - 1, ring: D.arena, travel: !!trav && !(room.boss && noWalk), oldPos: trav, tok, heroes: sim.heroes, enemies: sim.enemies, ground: Array.from($('#haz').children), speed, auto: g.auto });
     if (room.boss && noWalk) { noWalk = false; startReady(); }
     else if (tms) {
       phase = 'travel'; running = false;
@@ -13131,7 +13459,7 @@ var SCN = (function () {
     return 600 + r.reactions.length * 900;
   }
   // 大家自己 Roll:一件一件来,想要的人报点数
-  const CH = { need: '🎲 需求', need2: '🎲 副需求', greed: '<i class="coin"></i> 贪婪' }; // 副需求:能穿但不是本甲,本甲职业没人要才轮到
+  const CH = { need: '🎲 需求', need2: '🎲 凑合用', greed: '<i class="coin"></i> 贪婪' }; // 副需求:能穿但不是本甲,本甲职业没人要才轮到
   function rollAll() {
     if (phase !== 'loot' || autoBusy) return;
     if (!g.loot.length) { leaveLoot(800); return; }
@@ -13208,10 +13536,12 @@ var SCN = (function () {
     const cards = [0, 1, 2].slice(0, SLOTS).map(i => {
       const s = readSlot(i);
       if (!s) return `<div class="svc empty" data-new="${i}"><em>${i + 1}</em><b>＋</b><span>新建公会</span></div>`;
-      const f = D.factions[s.faction], lv = s.roster && s.roster.length ? Math.max.apply(null, s.roster.map(h => h.level)) : 0;
+      const f = D.factions[s.faction], R = s.roster || [], lv = R.length ? Math.round(R.reduce((a, h) => a + h.level, 0) / R.length) : 0;
+      const ilvs = R.map(h => { const its = Object.keys(h.gear || {}).map(k => D.items[h.gear[k]]).filter(it => it && it.ilv); return its.length ? its.reduce((a, it) => a + it.ilv, 0) / its.length : 0; }).filter(Boolean); // 每人身上装备的平均物品等级,再对有装备的人取平均
+      const ilv = ilvs.length ? Math.round(ilvs.reduce((a, b) => a + b, 0) / ilvs.length) : 0;
       return `<div class="svc${i === lastSlot ? ' last' : ''}" data-load="${i}" style="--fc:${f ? f.color : '#8a6a3a'}"><em>${i + 1}</em>
-        <div class="svcrest">${ART.glyph(s.crest)}</div><h3>${s.name}</h3>
-        <small>${f ? f.name : '还没选阵营'} · 公会 ${s.glevel || 1} 级</small><small>${(s.roster || []).length} 人 · 最高 ${lv} 级 · 通关 ${Object.keys(s.kills || {}).length} 个副本</small><small><i class="coin"></i> ${s.gold}</small>
+        <div class="svcrest${s.faction ? ' crx' : ''}">${ART.crest(s.faction, s.crest)}</div><h3>${s.name}</h3>
+        <small>${f ? f.name : '还没选阵营'} · 公会 ${s.glevel || 1} 级 · <i class="coin"></i> ${s.gold}</small><div class="svst"><span><b>${R.length}</b><em>人数</em></span><span><b>${lv}</b><em>平均等级</em></span><span><b>${ilv || '—'}</b><em>平均物品等级</em></span><span><b>${Object.keys(s.kills || {}).length}</b><em>通关副本</em></span></div>
         <span class="hbtn" data-load="${i}">载入</span><span class="svdel" data-del="${i}">删除</span></div>`;
     }).join('');
     ov.innerHTML = `<div class="card tcard0 tsave"><h1>${D.title}</h1><div class="svrow">${cards}</div>
@@ -13241,7 +13571,7 @@ var SCN = (function () {
         <div class="sut">公会名</div>
         <div class="nrow" style="margin-top:6px"><input id="nIn" maxlength="10" value="${name}"><span class="dice" id="nDice" data-tip="随机一个">🎲</span></div>
         <div class="sut">图章</div>
-        <div class="crs" style="--fc:${fac ? D.factions[fac].color : '#8a6a3a'}">${D.crests.map(k => `<span class="cr${crest === k ? ' on' : ''}" data-cr="${k}">${ART.glyph(k)}</span>`).join('')}</div>
+        <div class="crs" style="--fc:${fac ? D.factions[fac].color : '#8a6a3a'}">${D.crests.map(k => `<span class="cr${crest === k ? ' on' : ''}${fac ? ' crx' : ''}" data-cr="${k}">${ART.crest(fac, k)}</span>`).join('')}</div>
         <div class="btn${fac ? '' : ' dis'}" id="suOk">${fac ? '开张' : '先选阵营'}</div></div>`;
       const inp = $('#nIn');
       inp.oninput = () => { name = inp.value; };
@@ -13252,10 +13582,44 @@ var SCN = (function () {
       $('#suOk').onclick = () => {
         const v = name.trim().replace(/[<>&"]/g, '');
         if (!fac || !v) { snd('deny'); return; }
-        g.faction = fac; g.crest = crest; g.name = v; snd('win'); save(); closeOv(); tk('guild_create', { crest }); showHub('guild');
+        g.faction = fac; g.crest = crest; g.name = v; snd('win'); save(); closeOv(); tk('guild_create', { crest }); showHub('guild'); showIntro(); // 新建的公会才有开场(老存档不会走到这里)
       };
     };
     draw();
+  }
+  // 开场小演出:最初的三个人(坦克、输出、治疗)一个个走到一起,各说一两句,然后才轮到新手引导指「去打副本」。
+  // 点画面任何地方 = 下一句(人还在走就直接走到位);右上角「跳过」= 整段跳过。台词在 js/tutorial.js 的台词表(intro_*)
+  function showIntro() {
+    const L = TUT.lines || {}, R = g.roster, by = r => R.find(h => cdef(h)[r]) || null;
+    const tank = by('isTank'), heal = R.find(h => cdef(h).heal) || null, dps = R.find(h => h !== tank && h !== heal) || null;
+    const cast = [[tank, 520, -160], [dps, 770, 1440], [heal, 645, -160]].filter(x => x[0]); // 谁、站到哪(x)、从哪儿走进来
+    if (cast.length < 2) return;
+    const script = [[0, 'intro_t1', 1], [1, 'intro_d1', 2], [2, 'intro_h1', 3], [0, 'intro_t2'], [1, 'intro_d2'], [2, 'intro_h2']].filter(s => cast[s[0]] && L[s[1]]); // [第几个人, 台词, 这一句之前要先走进来几个人]
+    ov.className = 'show intro';
+    ov.innerHTML = `<div class="intro-floor"></div>${cast.map((c, i) => `<div class="ihero" data-i="${i}" style="left:${c[2]}px">${figure(c[0])}<div class="ishadow"></div></div>`).join('')}
+      <div class="isay" id="iSay"></div><div class="iskip" id="iSkip">跳过 ▸▸</div><div class="ihint">点一下继续</div>`;
+    const heroes = Array.from(ov.querySelectorAll('.ihero')), say = $('#iSay');
+    let step = -1, in0 = 0, timer = 0, over = false;
+    const walkIn = (i, fast) => { const e = heroes[i], c = cast[i]; if (!e || e._in) return; e._in = true; e.classList.toggle('walk', !fast); e.style.transition = fast ? 'none' : `left ${i === 2 ? 1.7 : 1.1}s ease-out`; e.style.left = c[1] + 'px'; if (c[2] > 640) e.classList.add('flip'); setTimeout(() => e.classList.remove('walk'), fast ? 0 : (i === 2 ? 1700 : 1100)); };
+    const end = () => { if (over) return; over = true; clearTimeout(timer); ov.onclick = null; ov.classList.add('iout'); setTimeout(() => { if (ov.classList.contains('intro')) closeOv(); }, 380); tk('intro_done', { step }); };
+    const next = fast => {
+      clearTimeout(timer); step++;
+      if (step >= script.length) { end(); return; }
+      const s = script[step], need = s[2] || 0, h = cast[s[0]][0];
+      let delay = 0;
+      while (in0 < Math.max(need, s[0] + 1)) { walkIn(in0, fast); delay = fast ? 0 : (in0 === 2 ? 1500 : 950); in0++; }
+      say.classList.remove('on');
+      setTimeout(() => {
+        if (over) return;
+        const x = cast[s[0]][1];
+        say.innerHTML = `<b style="color:${cdef(h).color}">${h.name}</b>${L[s[1]]}`;
+        say.style.left = Math.max(170, Math.min(1110, x)) + 'px'; say.classList.add('on'); snd('click');
+        heroes.forEach((e, i) => e.classList.toggle('talk', i === s[0]));
+        timer = setTimeout(() => next(false), 3600); // 不点也会自己往下走
+      }, delay);
+    };
+    ov.onclick = e => { if (e.target.closest('#iSkip')) { snd('click'); end(); return; } next(true); };
+    setTimeout(() => next(false), 350);
   }
   function showWipe() {
     const room = g.roomDef(), hp = sim.enemies.reduce((x, e) => x + e.hp, 0), mx = sim.enemies.reduce((x, e) => x + e.maxHp, 0), pct = hp / mx * 100;
@@ -13293,7 +13657,7 @@ var SCN = (function () {
     $('#home').onclick = () => { g.advance(); leaveBattle(); };
   }
 
-  window.__game = { get sim() { return sim; }, get g() { return g; }, get phase() { return phase; }, useBig, doAssign, toggleAuto, flush, showHub, enterDungeon, showTalents, stash, gotoRoom: i => { g.room = i; beginRoom(); } }; // gotoRoom:调试用,直接跳到第几关
+  window.__game = { get sim() { return sim; }, get g() { return g; }, get phase() { return phase; }, useBig, doAssign, toggleAuto, flush, showHub, enterDungeon, showTalents, showIntro, stash, gotoRoom: i => { g.room = i; beginRoom(); } }; // gotoRoom:调试用,直接跳到第几关
   // 新手引导(js/tutorial.js)要用到的东西都从这儿给它,引导的逻辑不写在这个文件里
   TUT.init({ get g() { return g; }, get sim() { return sim; }, get phase() { return phase; }, get tab() { return tab; }, get selUid() { return selUid; }, stage, tok, uf, btn,
     hz: id => hzEl[id], def: cdef, head: h => ART.heroHead(h.cls, h.look), save, snd, flush, tabs: () => { if (phase === 'hub') showHub(); },
